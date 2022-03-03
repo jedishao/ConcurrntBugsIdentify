@@ -69,7 +69,7 @@ class BiLSTM_CRF(nn.Module):
 
         # Iterate through the sentence
         for feat in feats:
-            alphas_t = []  # The forward tensors at this timestep
+            alphas_t = []  # The forward tensors at this time step
             for next_tag in range(self.tagset_size):
                 # broadcast the emission score: it is the same regardless of
                 # the previous tag
@@ -145,7 +145,7 @@ class BiLSTM_CRF(nn.Module):
         for bptrs_t in reversed(backpointers):
             best_tag_id = bptrs_t[best_tag_id]
             best_path.append(best_tag_id)
-        # Pop off the start tag (we dont want to return that to the caller)
+        # Pop off the start tag (we don't want to return that to the caller)
         start = best_path.pop()
         assert start == self.tag_to_ix[START_TAG]  # Sanity check
         best_path.reverse()

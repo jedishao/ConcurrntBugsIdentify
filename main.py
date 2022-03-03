@@ -126,13 +126,13 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, default=64)
     parser.add_argument("--lr", type=float, default=0.001)
     parser.add_argument("--n_epochs", type=int, default=40)
-    parser.add_argument("--trainset", type=str, default="./CCKS_2019_Task1/processed_data/train_dataset.txt")
-    parser.add_argument("--validset", type=str, default="./CCKS_2019_Task1/processed_data/val_dataset.txt")
-    parser.add_argument("--testset", type=str, default="./CCKS_2019_Task1/processed_data/test_dataset.txt")
+    parser.add_argument("--trainset", type=str, default="./dataset/processed_data/train_dataset.txt")
+    parser.add_argument("--validset", type=str, default="./dataset/processed_data/val_dataset.txt")
+    parser.add_argument("--testset", type=str, default="./dataset/processed_data/test_dataset.txt")
 
     ner = parser.parse_args()
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    model = Bert_BiLSTM_CRF(tag2idx).cuda()
+    model = Bert_BiLSTM_CRF(tag2idx)
 
     print('Initial model Done.')
     train_dataset = NerDataset(ner.trainset)

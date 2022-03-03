@@ -18,7 +18,8 @@ class Bert_BiLSTM_CRF(nn.Module):
                             num_layers=2, bidirectional=True, batch_first=True)
         self.dropout = nn.Dropout(p=0.1)
         self.linear = nn.Linear(hidden_dim, self.tagset_size)
-        self.crf = CRF(self.tagset_size, batch_first=True)
+        #self.crf = CRF(self.tagset_size, batch_first=True)
+        self.crf = CRF(self.tagset_size)
 
     def _get_features(self, sentence):
         with torch.no_grad():
