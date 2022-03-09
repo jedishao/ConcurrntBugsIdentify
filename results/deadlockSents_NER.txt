@@ -87,6 +87,7 @@ It appears that TUC first locks the cancel_mutex and then inside TUC, a task que
 The TUC first locks the queue, and then inside TUC, the cancel_mutex.
 This is a double RWlock. While holding a read lock, write lock cannot be acquired.
 The TUC was not released in a for loop and acquired again in the next loop iteration.
+The TUC was not released in a for loop and acquired again in the next loop iteration.
 The problem is that TUC A helds container lock and B helds memoryStore lock, then A is blocked on the unlock of memoryStore which is blocked on container lock.
 TUC A enters a loop, which calls wait in each iteration and does not leave the loop until some condition is satisfied.
 This is a double lock bug. The lock for the struct svm has already been locked when calling TUC.
