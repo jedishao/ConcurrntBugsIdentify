@@ -49,7 +49,7 @@ def dependence(nlp, sent):
                     print(str(to))
 
 
-def pattern1(sents_with_pos):
+def getPattern1Index(sents_with_pos):
     """
     :param sents_with_pos: sentences with POS tag
     :return: the index of sentences that are identified as mode 1
@@ -60,7 +60,8 @@ def pattern1(sents_with_pos):
         list_list = ast.literal_eval(line)
         sentsList.append(list_list)
     i = 0
-    tmp = []
+    index = []
+    # pattern 1
     for sens in sentsList:
         t, v, a = 0, 0, 0  # 'VERB', 'ADV'
         for token in sens:
@@ -71,9 +72,20 @@ def pattern1(sents_with_pos):
             elif str(token) == 'SYMP' and v > 0:
                 a += 1
         if a > 0:
-            tmp.append(i)
+            index.append(i)
         i += 1
-    print(tmp)
+    return index
+
+
+def getSentsByIndex(targetfile, index):
+    sentsList = []
+    results = []
+    for line in targetfile:
+        sentsList.append(line)
+
+    for i in index:
+        results.append(sentsList[i])
+    return results
 
 
 def main():
@@ -82,8 +94,8 @@ def main():
     pos_results = open("./results/pos_concurrent.txt")
     den_results = open("./results/den_concurrent.txt", "a")
 
-    #getPos2file(nlp, conSents, pos_results)
-    pattern1(pos_results)
+    # getPos2file(nlp, conSents, pos_results)
+    index = getPattern1Index(pos_results)
     # getDen(nlp, conSents, den_results)
 
     conSents.close()
