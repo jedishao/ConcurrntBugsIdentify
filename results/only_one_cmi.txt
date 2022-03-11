@@ -1,0 +1,23 @@
+CMI should not cause deadlock.
+I can confirm the deadlock in CMI.
+CMI is recursively invoked twice.
+The CMI acquires lock1 and gets stuck.
+The hang happens inside the second CMI.
+The anonymous CMI is blocking forever.
+CMI is currently a blocking operation.
+There are two CMI involved in this deadlock.
+The function CMI lock the locked container again.
+This deadlock is triggered by a unit test CMI.
+Since only run can drain CMI, the lock is never released.
+Threads using CMI will wait forever for a lock to be released.
+The unit test causing the deadlock is copy-pasted as follows.
+The lock for the struct svm has already been locked when calling CMI.
+I experience deadlocks at the point the CMI is processed and emptied.
+The CMI was not released in a for loop and acquired again in the next loop iteration.
+We're seeing a deadlock when two different threads load different CMI at the same time.
+The blocking may also lead to deadlocking the EventLoop in cases where a CMI is used.
+POSTing many buffers to an echoing server gives thread blocked failures when we use CMI approach.
+CMI A enters a loop, which calls wait in each iteration and does not leave the loop until some condition is satisfied.
+This task can never be completed though as the EventLoop Thread is blocked by our very own CMI waiting for the task to be completed.
+But, this can cause a deadlock when multiple threads are trying to load these CMI because they each hold a lock on the class and end up waiting for the others to finish.
+We have experienced several threads locked forever waiting inside calls to CMI in our production system within a few hours after upgrading to Redisson 3.11.4 from Redisson 3.8.0.

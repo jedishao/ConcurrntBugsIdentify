@@ -1,103 +1,103 @@
-TUC should not cause deadlock
-I can confirm the deadlock in TUC.
-There are two TUC involved in this deadlock.
-The function TUC lock the locked container again.
-If TUC is executed in between, deadlock will happen.
-Circular dependency between TUC and TUC causes thread deadlock.
-TUC is recursively invoked twice.
-In my case, the deadlock issue is hit when the TUC and TUC happened to be called at same time, one from main thread and another from eventloop thread.
+CMI should not cause deadlock
+I can confirm the deadlock in CMI.
+There are two CMI involved in this deadlock.
+The function CMI lock the locked container again.
+If CMI is executed in between, deadlock will happen.
+Circular dependency between CMI and CMI causes thread deadlock.
+CMI is recursively invoked twice.
+In my case, the deadlock issue is hit when the CMI and CMI happened to be called at same time, one from main thread and another from eventloop thread.
 This can cause deadlock when used from external threads or because the transport thread has changed (for instance a session reconnection with an scaled http server).
-This can create deadlock in TUC because a TUC may uses different request/websocket (reconnects) and event loops.
-If you call TUC on the completion of a TUC returned by Pulsar Client, like TUC then there is a good chance to create a deadlock.
+This can create deadlock in CMI because a CMI may uses different request/websocket (reconnects) and event loops.
+If you call CMI on the completion of a CMI returned by Pulsar Client, like CMI then there is a good chance to create a deadlock.
 We're seeing a deadlock when two different threads load different DataType classes at the same time.
-There is a chance of deadlock when TUC is linked with an TUC.
+There is a chance of deadlock when CMI is linked with an CMI.
 But, this can cause a deadlock when multiple threads are trying to load these DataType classes because they each hold a lock on the class and end up waiting for the others to finish.
-The blocking may also lead to deadlocking the EventLoop in cases where a TUC is used.
+The blocking may also lead to deadlocking the EventLoop in cases where a CMI is used.
 One scenario where a deadlock might happen is when the EventLoop is not able to completely flush the HEADERS frame on the wire because then Netty would internally create a task to flush the remaining bytes and put this task in its task queue.
-In cases when a TUC is being used it might lead to the EventLoop blocking forever (deadlock effectively).
-On the other hand, when channel layer calls into transport layer, it's possible to form a TUC to TUC lock order, which makes deadlock possible.
+In cases when a CMI is being used it might lead to the CMI blocking forever (deadlock effectively).
+On the other hand, when channel layer calls into transport layer, it's possible to form a CMI to CMI lock order, which makes deadlock possible.
 This causes deadlock of all other threads trying to grab the lock and can ultimately bring down an application as threads build up.
 I need a lease timeout to prevent deadlock in case the lock aquiring thread is killed or stuck.
 I think there's a deadlock between 3 and 4, but I'm not going to try it out.
 The unit test causing the deadlock is copy-pasted as follows. The hang happens inside the second NewElection.
 It was deadlocking waiting for the recvLoop to finish since the stream recv doesn't close until the handler exits.
-If the second TUC interleaves in between the two lock operations of the first TUC, deadlock will happen.
+If the second CMI interleaves in between the two lock operations of the first CMI, deadlock will happen.
 I'm using HSQLDB 2.0.0 (in-memory) with Hibernate and am experiencing a deadlock when multiple threads persist lobs concurrently.
-Circular dependency between TUC and TUC causes thread deadlocks (see attachment).
+Circular dependency between CMI and CMI causes thread deadlocks (see attachment).
 Hi, I'm getting a deadlock when doing a database shutdown.
 The deadlock is easier to reproduce on slower system.
 If it happens in a heavily concurrent situation, it is possible that the channel of the second thread is unsubscribed soon after the subscription, which leads to the deadlock.
 I experience deadlocks at the point the logfile is processed and emptied.
-However, this pending runnable may never be executed because the eventloop might be executing some other task, like TUC, that is trying to acquire TUC causing a deadlock.
-It happens that when the channel outbound buffer is full, the write operation drains the buffer on a flush changing the channel writability leading to potential deadlock in TUC.
-Please, find the attachment with the TUC report for the DeadLock around TUC and TUC.
-From my understanding of these stack traces and the threading model, this essentially means that any TUC call (regardless of the thread it is called from) can deadlock with a 'TUC' call.
+However, this pending runnable may never be executed because the eventloop might be executing some other task, like CMI, that is trying to acquire CMI causing a deadlock.
+It happens that when the channel outbound buffer is full, the write operation drains the buffer on a flush changing the channel writability leading to potential deadlock in CMI.
+Please, find the attachment with the CMI report for the DeadLock around CMI and CMI.
+From my understanding of these stack traces and the threading model, this essentially means that any CMI call (regardless of the thread it is called from) can deadlock with a 'CMI' call.
 The function returns without releasing the lock, leading to deadlock.
 I am experiencing deadlock when two different threads attempt to close the database with hsqldb 2.0.0 and 2.1.0.
-Deadlock occurs when both TUC and TUC are called at the same time.
-And in JDK 1.7_21, you get a deadlock if the TUC is locked while another thread calls TUC.
-However, a deadlock can occur due to contention between DB connection pool and TUC whenever a new message (or other mail item) is added.
-The call to t.Fatalf exited the current TUC which was consuming the channel, which caused a deadlock and eventual test timeout ratherthan a proper failure message.
-This deadlock is triggered by a unit test TUC.
-TUC takes TUC but does not drop it if there areno deleted devices. Hence docker deadlocks if one is using deferred device deletion feature.
+Deadlock occurs when both CMI and CMI are called at the same time.
+And in JDK 1.7_21, you get a deadlock if the CMI is locked while another thread calls CMI.
+However, a deadlock can occur due to contention between DB connection pool and CMI whenever a new message (or other mail item) is added.
+The call to t.Fatalf exited the current CMI which was consuming the channel, which caused a deadlock and eventual test timeout ratherthan a proper failure message.
+This deadlock is triggered by a unit test CMI.
+CMI takes CMI but does not drop it if there areno deleted devices. Hence docker deadlocks if one is using deferred device deletion feature.
 The unmount will fail due to the mount being busy thus causing the timeout and the second rm will then trigger the deadlock.
 This is causing a AB-BA deadlock if anyone at the same time tries to do any operation on that device like this:
 When using the Flyway database migration system with HyperSQL 2.3.4, the attempted application of migrations results in deadlock.
-If this happens between TUC and TUC, the first TUC will not be waked up, leading to deadlock.
+If this happens between CMI and CMI, the first CMI will not be waked up, leading to deadlock.
 I got a deadlock when multiple threads persist lobs concurrently.
-Servlet calls TUC in synchronized block. In getAttribute method, session object is locked in order to check foreground session lock.
-Moreover, TUC uses synchronized block. TUC is called after locking session object.
+Servlet calls CMI in synchronized block. In getAttribute method, session object is locked in order to check foreground session lock.
+Moreover, CMI uses synchronized block. CMI is called after locking session object.
 The Consumer verticle acuires lock1 and gets stuck.
 If the Context was not canceled, it will be blocked forever.
-The anonymous TUC is blocking forever, when context is canceled before the anonymous TUC writing to “errc” channel.
-Basically, there are two TUC blocking each other, and both of the two TUC execute select statement.
-Threads using TUC will wait forever for a lock to be released. There is no timeout when waiting for the lock.
+The anonymous CMI is blocking forever, when context is canceled before the anonymous CMI writing to “errc” channel.
+Basically, there are two CMI blocking each other, and both of the two CMI execute select statement.
+Threads using CMI will wait forever for a lock to be released. There is no timeout when waiting for the lock.
 This task can never be completed though as the EventLoop Thread is blocked by our very own newStream method waiting for the task to be completed.
-This is a problem because TUC holds its 'this' lock while calling TUC in multiple places.
-It seems to be caused by each thread running TUC on the same two TUC instances, but in a different order.
-POSTing many buffers to an echoing server gives thread blocked failures when we use TUC approach.
-It's seems like at some time, something has kept the monitor of TUC instance, preventing the resume call to execute the method.
-The current implementation of TUC synchronises on the TUC (which is necessary) and holds this lock when calling TUC or TUC.
-From my simple analysis it seems that the Exception handling and the request response seem to be locking on the TUC and TUC
-If two peer instances of TUC and TUC are running TUC on different threads at the same time, they can each end up holding their own lock while waiting (forever) for the other's.
-TUC calls TUC while holding TUC. TUC awaits a submitted runnable in eventloop.
-Methods of TUC and TUC are usually called under a lock.
-However, these listeners usually call into channel layer code, and may in turn acquire locks from there, which forms a TUC to TUC lock order.
-TUC is currently a blocking operation. It blocks until the HEADERS frame has been written on the wire.
+This is a problem because CMI holds its 'this' lock while calling CMI in multiple places.
+It seems to be caused by each thread running CMI on the same two CMI instances, but in a different order.
+POSTing many buffers to an echoing server gives thread blocked failures when we use CMI approach.
+It's seems like at some time, something has kept the monitor of CMI instance, preventing the resume call to execute the method.
+The current implementation of CMI synchronises on the CMI (which is necessary) and holds this lock when calling CMI or CMI.
+From my simple analysis it seems that the Exception handling and the request response seem to be locking on the CMI and CMI
+If two peer instances of CMI and CMI are running CMI on different threads at the same time, they can each end up holding their own lock while waiting (forever) for the other's.
+CMI calls CMI while holding CMI. CMI awaits a submitted runnable in eventloop.
+Methods of CMI and CMI are usually called under a lock.
+However, these listeners usually call into channel layer code, and may in turn acquire locks from there, which forms a CMI to CMI lock order.
+CMI is currently a blocking operation. It blocks until the HEADERS frame has been written on the wire.
 One such scenario is when you are writing a server in Netty and within that server you want to connect to a grpc service to fetch some data.
-If you now use a TUC and reuse the EventLoop of the server with the grpc client, the TLS handshake would block the server's EventLoop, which is also the very EventLoop responsible for completing the TLS HandShake.
+If you now use a CMI and reuse the EventLoop of the server with the grpc client, the TLS handshake would block the server's EventLoop, which is also the very EventLoop responsible for completing the TLS HandShake.
 That way neither the server nor the client would ever make progress again.
-Sometimes, even though the lock from the first thread is timed out and released automatically, the TUC and TUC keys are stuck and the second thread can't acquire the lock, even though nobody is holding it.
-The second thread is stuck for full acquisition timeout. Then, it fails to get the lock eventually, and keys TUC and TUC disappear, making the lock available again.
-We have experienced several threads locked forever waiting inside calls to TUC in our production system within a few hours after upgrading to Redisson 3.11.4 from Redisson 3.8.0.
-To summarize the issue, we see that the timeouts in the TUC sorted set created by TUC can gradually increase over time to be hours or days in the future despite the queue only containing less than 10 threads;
+Sometimes, even though the lock from the first thread is timed out and released automatically, the CMI and CMI keys are stuck and the second thread can't acquire the lock, even though nobody is holding it.
+The second thread is stuck for full acquisition timeout. Then, it fails to get the lock eventually, and keys CMI and CMI disappear, making the lock available again.
+We have experienced several threads locked forever waiting inside calls to CMI in our production system within a few hours after upgrading to Redisson 3.11.4 from Redisson 3.8.0.
+To summarize the issue, we see that the timeouts in the CMI sorted set created by CMI can gradually increase over time to be hours or days in the future despite the queue only containing less than 10 threads;
 This condition continues until the fair wait queue empties, or one of the threads dies and the rest of the threads are forced to wait for the far in the future timeout on the dead thread to lapse (this creates a dead lock-like situation).
-TUC calls TUC with no lease time, resulting in TUC's creating a 'watchdog' thread that continuously renews the lease on the lock in Redis.
+CMI calls CMI with no lease time, resulting in CMI's creating a 'watchdog' thread that continuously renews the lease on the lock in Redis.
 What we've seen is in rare cases this watchdog thread never gets canceled, meaning it continues renewing the lease indefinitely until the instance containing the thread is restarted.
-It seems the async TUC makes the channel in unsubscribing process can be used unexpectedly by another thread.
+It seems the async CMI makes the channel in unsubscribing process can be used unexpectedly by another thread.
 For some context, one of the first things that Flyway does when it starts is open up a connection to the database and lock its metadata table.
-The synchronized TUC waits for the TUC TUC, when the TUC TUC waits for the TUC TUC.
-The issue is that Thread-1 acquires a lock on TUC when TUC is called.
-Thread-1 is also attempting to invoke TUC the active sessions (i.e. TUC) which requires a lock on the session.
-Meanwhile, Thread-2 has already acquired a lock on TUC when it called TUC.
-Thread-2 is also attempting to acquire a lock on TUC for TUC, but the lock was already obtained by Thread-1.
-One thread got a lock on the database, but have to wait before a TUC method (TUC).
-The other thread wants the lock too, but is in the TUC method TUC.
-It appears that TUC first locks the cancel_mutex and then inside TUC, a task queue.
-The TUC first locks the queue, and then inside TUC, the cancel_mutex.
+The synchronized CMI waits for the CMI CMI, when the CMI CMI waits for the CMI CMI.
+The issue is that Thread-1 acquires a lock on CMI when CMI is called.
+Thread-1 is also attempting to invoke CMI the active sessions (i.e. CMI) which requires a lock on the session.
+Meanwhile, Thread-2 has already acquired a lock on CMI when it called CMI.
+Thread-2 is also attempting to acquire a lock on CMI for CMI, but the lock was already obtained by Thread-1.
+One thread got a lock on the database, but have to wait before a CMI method (CMI).
+The other thread wants the lock too, but is in the CMI method CMI.
+It appears that CMI first locks the cancel_mutex and then inside CMI, a task queue.
+The CMI first locks the queue, and then inside CMI, the cancel_mutex.
 This is a double RWlock. While holding a read lock, write lock cannot be acquired.
-The TUC was not released in a for loop and acquired again in the next loop iteration.
-The TUC was not released in a for loop and acquired again in the next loop iteration.
-The problem is that TUC A helds container lock and B helds memoryStore lock, then A is blocked on the unlock of memoryStore which is blocked on container lock.
-TUC A enters a loop, which calls wait in each iteration and does not leave the loop until some condition is satisfied.
-This is a double lock bug. The lock for the struct svm has already been locked when calling TUC.
-Inside podFitsOnNode function, there exists a path, where the podFitsOnNode function acquires TUC and returns without invoking TUC.
-It has been noticed by the go developers that RLock should not be recursively used in the TUC.
-Then TUC fails to close the resetChan because lock is already held by WriteFrame.
-This is a double lock bug. TUC acquires the TUC again, which is already held in serveStatus.
-Since only run can drain TUC, the lock is never released.
-The basic root cause is that one TUC finishes with holding a RLock, which will block the second TUC.
-TUC function and TUC function can block each other.
-The first TUC acquires TUC firstly, then tries to acquire TUC. The second TUC tries to acquire TUC.
+The CMI was not released in a for loop and acquired again in the next loop iteration.
+The CMI was not released in a for loop and acquired again in the next loop iteration.
+The problem is that CMI A helds container lock and B helds memoryStore lock, then A is blocked on the unlock of memoryStore which is blocked on container lock.
+CMI A enters a loop, which calls wait in each iteration and does not leave the loop until some condition is satisfied.
+This is a double lock bug. The lock for the struct svm has already been locked when calling CMI.
+Inside podFitsOnNode function, there exists a path, where the podFitsOnNode function acquires CMI and returns without invoking CMI.
+It has been noticed by the go developers that RLock should not be recursively used in the CMI.
+Then CMI fails to close the CMI because lock is already held by CMI.
+This is a double lock bug. CMI acquires the CMI again, which is already held in serveStatus.
+Since only run can drain CMI, the lock is never released.
+The basic root cause is that one CMI finishes with holding a RLock, which will block the second CMI.
+CMI function and CMI function can block each other.
+The first CMI acquires CMI firstly, then tries to acquire CMI. The second CMI tries to acquire CMI.
 I ran into a Java deadlock in a large application, and based on the stack trace of the blocked threads.
 There is several scenarios how a deadlock could happen.
