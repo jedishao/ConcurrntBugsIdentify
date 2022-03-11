@@ -3,18 +3,15 @@ import ast
 import spacy
 
 
-def getPos2file(nlp, conSents, results):
+def getPos2file(nlp, dataset, results):
     """
 
+    :param dataset:
     :param nlp:
-    :param conSents: target file
     :param results: results file
     :return: results
     """
-    sentsList = []
-    for line in conSents:
-        sentsList.append(str(line))
-    for sent in sentsList:
+    for sent in dataset:
         doc = nlp(sent)
         tmplist = []
         for token in doc:
@@ -77,14 +74,38 @@ def getPattern1Index(sents_with_pos):
     return index
 
 
-def getSentsByIndex(targetfile, index):
-    sentsList = []
+def getSentsByIndex(dataset, index):
     results = []
-    for line in targetfile:
-        sentsList.append(line)
-
     for i in index:
-        results.append(sentsList[i])
+        results.append(dataset[i])
+    return results
+
+
+def getDataset2list(targetFile):
+    sentsList = []
+    for line in targetFile:
+        sentsList.append(line)
+    return sentsList
+
+
+def getSentsOfPtn1(nlp, targetFile):
+    results = []
+    for sent in targetFile:
+        doc = nlp(sent)
+        for token in doc:
+            if str(token.dep_) == 'ROOT':
+                if str(token.lemma_) in ['invoke', 'lock', 'cause']:
+                    cmi = False
+                    symp = False
+                    for child in token.children:
+                        if str(child.dep_) == ' ':
+                            if str(child) == 'CMI':
+                                cmi = True
+                        elif str(child.dep_) == '':
+                            if str(child) == 'SYMP':
+                                symp = True
+                    if cmi and symp:
+                        results.append(sent)
     return results
 
 
@@ -94,9 +115,11 @@ def main():
     pos_results = open("./results/pos_concurrent.txt")
     den_results = open("./results/den_concurrent.txt", "a")
 
-    # getPos2file(nlp, conSents, pos_results)
+    # file-->pos-->pattern1(SVO)-->targetFile(sents)-->dependence
+    getPos2file(nlp, conSents, pos_results)
     index = getPattern1Index(pos_results)
-    # getDen(nlp, conSents, den_results)
+    pattern_1_set = getSentsByIndex(conSents, index)
+    ptn1_sents = getSentsOfPtn1(nlp, pattern_1_set)
 
     conSents.close()
     pos_results.close()
