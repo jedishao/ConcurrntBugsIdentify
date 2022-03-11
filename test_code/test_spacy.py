@@ -1,7 +1,6 @@
+import ast
 import spacy
 
-
-# print(spacy.explain("PROPN"))
 
 def pattern1():
     nlp = spacy.load("en_core_web_sm")
@@ -148,9 +147,10 @@ def testDep_():
 
 def testRoot():
     nlp = spacy.load("en_core_web_sm")
-    doc = nlp('Circular dependency between TUC and TUC causes thread deadlocks')
+    doc = nlp('There are two TUC involved in this deadlock.')
     for token in doc:
         if str(token.dep_) == 'ROOT':
+            print(token.text)
             print(list(token.children))
 
 
@@ -161,7 +161,71 @@ def testHead():
         print(str(token) + '--->' + str([right for right in token.rights]))
 
 
-pattern1()
+def getPos():
+    nlp = spacy.load("en_core_web_sm")
+    doc = nlp('There are two TUC involved in this deadlock.')
+    indx = []
+    for token in doc:
+        if str(token) == 'TUC':
+            indx.append('TUC')
+        else:
+            indx.append(str(token.pos_))
+    print(indx)
+
+
+def getPos4file():
+    nlp = spacy.load("en_core_web_sm")
+    conSents = open("../results/test.txt")
+    sentsList = []
+    for line in conSents:
+        sentsList.append(str(line))
+    for sens in sentsList:
+        indx = []
+        doc = nlp(sens)
+        for token in doc:
+            if str(token) == 'TUC':
+                indx.append('TUC')
+            else:
+                indx.append(str(token.pos_))
+        print(indx)
+
+
+def getPosPattern():
+    conSents = open("../results/test.txt")
+    sentsList = []
+    for line in conSents:
+        list_list = ast.literal_eval(line)
+        sentsList.append(list_list)
+    i = 0
+    tmp = []
+    for sens in sentsList:
+        t, v, a = 0, 0, 0  # 'VERB', 'ADV'
+        for token in sens:
+            if str(token) == 'TUC':
+                t += 1
+            elif str(token) == 'VERB' and t > 0:
+                v += 1
+            elif str(token) == 'ADV' and v > 0:
+                a += 1
+        if a > 0:
+            tmp.append(i)
+        i += 1
+    print(tmp)
+
+
+def writeTofile():
+    conSents = open("../results/test.txt")
+    target = open("../results/testdel.txt", 'a')
+    sentsList = []
+    for line in conSents:
+        sentsList.append(str(line))
+    index = [3, 6, 10, 16, 41, 51, 53, 61, 67, 69, 70, 72, 74, 76, 85, 86, 88, 94, 95, 99]
+    for i in index:
+        target.write(str(sentsList[i]) + '\n')
+
+
+# testRoot()
+print(spacy.explain("acl"))
 
 # print(1 and 3 in [1, 3, 3])
 
