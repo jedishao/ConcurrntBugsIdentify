@@ -2,6 +2,8 @@ import ast
 
 import spacy
 
+import corpus
+
 
 def getPos2file(nlp, dataset, results):
     """
@@ -15,8 +17,8 @@ def getPos2file(nlp, dataset, results):
         doc = nlp(sent)
         tmplist = []
         for token in doc:
-            if str(token) == 'TUC':
-                tmplist.append("TUC")
+            if str(token) == 'CMI':
+                tmplist.append("CMI")
             elif str(token.lemma_) == 'deadlock':
                 tmplist.append("SYMP")
             else:
@@ -62,11 +64,11 @@ def getPattern1Index(sents_with_pos):
     for sens in sentsList:
         t, v, a = 0, 0, 0  # 'VERB', 'ADV'
         for token in sens:
-            if str(token) == 'TUC':
+            if str(token) == 'CMI':
                 t += 1
             elif str(token) == 'VERB' and t > 0:
                 v += 1
-            elif str(token) == 'SYMP' and v > 0:
+            elif str(token) == 'ADV' and v > 0:
                 a += 1
         if a > 0:
             index.append(i)
@@ -94,15 +96,15 @@ def getSentsOfPtn1(nlp, targetFile):
         doc = nlp(sent)
         for token in doc:
             if str(token.dep_) == 'ROOT':
-                if str(token.lemma_) in ['invoke', 'lock', 'cause']:
+                if str(token.lemma_) in corpus.COP:
                     cmi = False
                     symp = False
                     for child in token.children:
-                        if str(child.dep_) == ' ':
+                        if str(child.dep_) in corpus.S:
                             if str(child) == 'CMI':
                                 cmi = True
-                        elif str(child.dep_) == '':
-                            if str(child) == 'SYMP':
+                        elif str(child.dep_) in corpus.ADV:
+                            if str(child) in corpus.TMP:
                                 symp = True
                     if cmi and symp:
                         results.append(sent)
@@ -112,18 +114,22 @@ def getSentsOfPtn1(nlp, targetFile):
 def main():
     nlp = spacy.load("en_core_web_sm")
     conSents = open("results/deadlockSents_NER.txt")
-    pos_results = open("./results/pos_concurrent.txt")
-    den_results = open("./results/den_concurrent.txt", "a")
+    write_pos = open("./results/pos_concurrent.txt", "w")
+    read_pos = open("./results/pos_concurrent.txt", "r")
+    # den_results = open("./results/den_concurrent.txt", "a")
 
     # file-->pos-->pattern1(SVO)-->targetFile(sents)-->dependence
-    getPos2file(nlp, conSents, pos_results)
-    index = getPattern1Index(pos_results)
-    pattern_1_set = getSentsByIndex(conSents, index)
+    dataset = getDataset2list(conSents)
+    getPos2file(nlp, dataset, write_pos)
+    index = getPattern1Index(read_pos)
+    pattern_1_set = getSentsByIndex(dataset, index)
     ptn1_sents = getSentsOfPtn1(nlp, pattern_1_set)
 
+    print(ptn1_sents)
+
     conSents.close()
-    pos_results.close()
-    den_results.close()
+    write_pos.close()
+    read_pos.close()
 
 
 if __name__ == '__main__':
