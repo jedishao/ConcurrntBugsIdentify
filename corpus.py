@@ -1,7 +1,7 @@
-COP = ['invoke', 'lock', 'cause']
+COP = ['invoke', 'lock', 'cause', 'block']
 
-TMP = ['twice']
+TMP = ['twice', 'again', 'forever']
 
-S = ['nsubjpass']
+S = ['nsubj', 'nsubjpass']
 
 ADV = ['advmod']
