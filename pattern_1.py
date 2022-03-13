@@ -13,10 +13,11 @@ def getCoarse_Ptn1Index(sents_with_pos):
         list_list = ast.literal_eval(line)
         sentsList.append(list_list)
     i = 0
-    index = []
+    CVA_index = []
+    CVSY_index = []
 
     for sens in sentsList:
-        c, v, a = 0, 0, 0  # 'VERB', 'ADV'
+        c, v, a, s = 0, 0, 0, 0  # 'VERB', 'ADV'
         for token in sens:
             if str(token) == 'CMI':
                 c += 1
@@ -24,13 +25,17 @@ def getCoarse_Ptn1Index(sents_with_pos):
                 v += 1
             elif str(token) == 'ADV':
                 a += 1
-        if c == 1 and v > 0 and a > 0:
-            index.append(i)
+            elif str(token) == 'SYMP':
+                s += 1
+        if c == 1 and v > 0 and a > 0 and s == 0:
+            CVA_index.append(i)
+        if c == 1 and v > 0 and s > 0:
+            CVSY_index.append(i)
         i += 1
-    return index
+    return CVA_index, CVSY_index
 
 
-def getSentsOfPtn1(nlp, coarse):
+def getSentsOfPtn1_1(nlp, coarse):
     """
     The final step for pattern 1
     :param coarse:
@@ -55,3 +60,5 @@ def getSentsOfPtn1(nlp, coarse):
                     if cmi and symp:
                         results.append(sent)
     return results
+
+# def getSentsOfPtn1_1(nlp, coarse):

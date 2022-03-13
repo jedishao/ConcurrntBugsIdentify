@@ -1,12 +1,12 @@
+CMI is recursively invoked twice.
+The anonymous CMI is blocking forever.
+The function CMI lock the locked container again.
 CMI should not cause deadlock.
 I can confirm the deadlock in CMI.
-CMI is recursively invoked twice.
 The CMI acquires lock1 and gets stuck.
 The hang happens inside the second CMI.
-The anonymous CMI is blocking forever.
 CMI is currently a blocking operation.
 There are two CMI involved in this deadlock.
-The function CMI lock the locked container again.
 This deadlock is triggered by a unit test CMI.
 Since only run can drain CMI, the lock is never released.
 Threads using CMI will wait forever for a lock to be released.

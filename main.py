@@ -18,9 +18,9 @@ def main():
     dataset = IOutils.getDataset2list(only_one)
     IOutils.getPos2file(nlp, dataset, write_pos)
     write_pos.close()
-    index = pattern_1.getCoarse_Ptn1Index(read_pos)
-    pattern_1_set = utils.getSentsByIndex(dataset, index)
-    ptn1_results = pattern_1.getSentsOfPtn1(nlp, pattern_1_set)
+    CVA_index, CVSY_index = pattern_1.getCoarse_Ptn1Index(read_pos)
+    pattern_cva_set = utils.getSentsByIndex(dataset, CVA_index)
+    ptn1_results = pattern_1.getSentsOfPtn1(nlp, pattern_cva_set)
 
     for sent in ptn1_results:
         print(sent, end="")
