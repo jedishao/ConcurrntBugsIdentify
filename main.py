@@ -19,10 +19,15 @@ def main():
     IOutils.getPos2file(nlp, dataset, write_pos)
     write_pos.close()
     CVA_index, CVSY_index = pattern_1.getCoarse_Ptn1Index(read_pos)
-    pattern_cva_set = utils.getSentsByIndex(dataset, CVA_index)
-    ptn1_results = pattern_1.getSentsOfPtn1(nlp, pattern_cva_set)
+    sent_cva_set = utils.getSentsByIndex(dataset, CVA_index)
+    sent_cvsy_set = utils.getSentsByIndex(dataset, CVSY_index)
+    # for s in sent_cvsy_set:
+    #     print(s, end="")
+    ptn11_results = pattern_1.getSentsOfPtn1_1(nlp, sent_cva_set)
+    # listd = ['CMI should not cause deadlock.']
+    ptn12_results = pattern_1.getSentsOfPtn1_2(nlp, sent_cvsy_set)
 
-    for sent in ptn1_results:
+    for sent in ptn12_results:
         print(sent, end="")
 
     # conSents.close()

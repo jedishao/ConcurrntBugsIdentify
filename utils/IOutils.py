@@ -23,8 +23,8 @@ def getPos2file(nlp, dataset, results):
         for token in doc:
             if str(token) == 'CMI':
                 tmplist.append("CMI")
-            elif str(token.lemma_) == 'deadlock':
-                tmplist.append("SYMP")
+            # elif str(token.lemma_) == 'deadlock':
+            #     tmplist.append('SYMP')
             else:
                 tmplist.append(str(token.pos_))
         results.write(str(tmplist) + '\n')

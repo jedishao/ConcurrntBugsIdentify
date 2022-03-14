@@ -25,9 +25,9 @@ def getCoarse_Ptn1Index(sents_with_pos):
                 v += 1
             elif str(token) == 'ADV':
                 a += 1
-            elif str(token) == 'SYMP':
+            elif str(token) == 'NOUN':
                 s += 1
-        if c == 1 and v > 0 and a > 0 and s == 0:
+        if c == 1 and v > 0 and a > 0:  # and s == 0
             CVA_index.append(i)
         if c == 1 and v > 0 and s > 0:
             CVSY_index.append(i)
@@ -49,16 +49,38 @@ def getSentsOfPtn1_1(nlp, coarse):
             if str(token.dep_) == 'ROOT':
                 if str(token.lemma_) in corpus.COP:
                     cmi = False
-                    symp = False
+                    adv = False
                     for child in token.children:
                         if str(child.dep_) in corpus.S:
                             if str(child) == 'CMI':
                                 cmi = True
                         elif str(child.dep_) in corpus.ADV:
-                            if str(child) in corpus.TMP:
-                                symp = True
-                    if cmi and symp:
+                            if str(child.lemma_) in corpus.TMP:
+                                adv = True
+                    if cmi and adv:
                         results.append(sent)
     return results
 
-# def getSentsOfPtn1_1(nlp, coarse):
+
+def getSentsOfPtn1_2(nlp, coarse):
+    results = []
+    for sent in coarse:
+        doc = nlp(sent)
+        for token in doc:
+            if str(token.dep_) == 'ROOT':
+                if str(token.lemma_) in corpus.COP:
+                    cmi = False
+                    symp = False
+                    for child in token.children:
+                        if str(child.dep_) in corpus.S:
+                            if str(child) == 'CMI':
+                                cmi = True
+                        elif str(child.dep_) == 'dobj':
+                             symp = True
+                if str(token.lemma_) in corpus.OTHER:
+                    if str(child.dep_) in corpus.OBJ:
+                         # if str(child) in corpus.TMP:
+                        symp = True
+                    if cmi and symp:
+                        results.append(sent)
+    return results

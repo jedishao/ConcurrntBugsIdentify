@@ -3,7 +3,8 @@ The anonymous CMI is blocking forever.
 The function CMI lock the locked container again.
 CMI should not cause deadlock.
 I can confirm the deadlock in CMI.
-The CMI acquires lock1 and gets stuck.
+The CMI acquires lock_1 and gets stuck.
+
 The hang happens inside the second CMI.
 CMI is currently a blocking operation.
 There are two CMI involved in this deadlock.
