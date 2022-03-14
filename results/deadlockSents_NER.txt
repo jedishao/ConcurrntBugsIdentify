@@ -47,7 +47,7 @@ If this happens between CMI and CMI, the first CMI will not be waked up, leading
 I got a deadlock when multiple threads persist lobs concurrently.
 Servlet calls CMI in synchronized block. In getAttribute method, session object is locked in order to check foreground session lock.
 Moreover, CMI uses synchronized block. CMI is called after locking session object.
-The Consumer verticle acuires lock1 and gets stuck.
+The CMI acquires lock_1 and gets stuck.
 If the Context was not canceled, it will be blocked forever.
 The anonymous CMI is blocking forever, when context is canceled before the anonymous CMI writing to “errc” channel.
 Basically, there are two CMI blocking each other, and both of the two CMI execute select statement.
