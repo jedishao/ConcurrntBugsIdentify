@@ -37,7 +37,7 @@ I am experiencing deadlock when two different threads attempt to close the datab
 Deadlock occurs when both CMI and CMI are called at the same time.
 And in JDK 1.7_21, you get a deadlock if the CMI is locked while another thread calls CMI.
 However, a deadlock can occur due to contention between DB connection pool and CMI whenever a new message (or other mail item) is added.
-The call to t.Fatalf exited the current CMI which was consuming the channel, which caused a deadlock and eventual test timeout ratherthan a proper failure message.
+The call to CMI exited the current CMI which was consuming the channel, which caused a deadlock and eventual test timeout ratherthan a proper failure message.
 This deadlock is triggered by a unit test CMI.
 CMI takes CMI but does not drop it if there areno deleted devices. Hence docker deadlocks if one is using deferred device deletion feature.
 The unmount will fail due to the mount being busy thus causing the timeout and the second rm will then trigger the deadlock.
@@ -69,7 +69,7 @@ If you now use a CMI and reuse the EventLoop of the server with the grpc client,
 That way neither the server nor the client would ever make progress again.
 Sometimes, even though the lock from the first thread is timed out and released automatically, the CMI and CMI keys are stuck and the second thread can't acquire the lock, even though nobody is holding it.
 The second thread is stuck for full acquisition timeout. Then, it fails to get the lock eventually, and keys CMI and CMI disappear, making the lock available again.
-We have experienced several threads locked forever waiting inside calls to CMI in our production system within a few hours after upgrading to Redisson 3.11.4 from Redisson 3.8.0.
+We have experienced several threads locked forever waiting inside calls to CMI? in our production system within a few hours after upgrading to Redisson 3.11.4 from Redisson 3.8.0.
 To summarize the issue, we see that the timeouts in the CMI sorted set created by CMI can gradually increase over time to be hours or days in the future despite the queue only containing less than 10 threads;
 This condition continues until the fair wait queue empties, or one of the threads dies and the rest of the threads are forced to wait for the far in the future timeout on the dead thread to lapse (this creates a dead lock-like situation).
 CMI calls CMI with no lease time, resulting in CMI's creating a 'watchdog' thread that continuously renews the lease on the lock in Redis.
@@ -95,7 +95,7 @@ Inside podFitsOnNode function, there exists a path, where the podFitsOnNode func
 It has been noticed by the go developers that RLock should not be recursively used in the CMI.
 Then CMI fails to close the CMI because lock is already held by CMI.
 This is a double lock bug. CMI acquires the CMI again, which is already held in serveStatus.
-Since only run can drain CMI, the lock is never released.
+Since only CMI can drain CMI, the lock is never released.
 The basic root cause is that one CMI finishes with holding a RLock, which will block the second CMI.
 CMI function and CMI function can block each other.
 The first CMI acquires CMI firstly, then tries to acquire CMI. The second CMI tries to acquire CMI.

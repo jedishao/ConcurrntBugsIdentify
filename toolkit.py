@@ -16,7 +16,7 @@ import spacy
 
 import corpus
 
-target = open("results/only_one_cmi.txt", 'r')
+target = open("results/test.txt", 'r')
 # con = open("results/deadlockSents_NER.txt", 'r')
 # results = open("results/only_one_cmi.txt", 'w')
 
@@ -43,8 +43,17 @@ for line in target:
 for sen in sents:
     doc = nlp(sen)
     for token in doc:
-        if str(token.dep_) == 'ROOT':
-            print(str(token))
+        if str(token) == 'CMI':
+            print(token.dep_)
+        # if str(token.dep_) == 'ROOT':
+        #     for child in token.children:
+        #         if str(child) == 'CMI':
+        #             print(child.dep_)
+                    # if str(child.dep_) in corpus.S:
+                    #     re.append(sen)
+
+# for r in re:
+#     print(r, end='')
 
 print('===============================================================================')
 # for s in index:
