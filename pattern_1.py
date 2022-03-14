@@ -2,7 +2,7 @@ import ast
 import corpus
 
 
-def getCoarse_Ptn1Index(sents_with_pos):
+def getPtn1byPos(sents_with_pos):
     """
     The first step for pattern 1, find all the sentences have [CMI][VERB][ADV]
     :param sents_with_pos: sentences with POS tag
@@ -35,9 +35,37 @@ def getCoarse_Ptn1Index(sents_with_pos):
     return CVA_index, CVSY_index
 
 
-def getSentsOfPtn1_1(nlp, coarse):
+def getPtn1byKw(nlp, sentences):
+    CVAS_set = []
+    C_set = []
+    for sents in sentences:
+        flag = True
+        cmi, cop, tmp, symp = 0, 0, 0, 0
+        doc = nlp(sents)
+        for token in doc:
+            if str(token) == 'CMI':
+                cmi += 1
+            elif str(token.lemma_) in corpus.COP:
+                cop += 1
+            elif str(token.lemma_) in corpus.TMP:
+                tmp += 1
+            elif str(token.lemma_) in corpus.SYMP:
+                symp += 1
+        if cmi == 1:
+            if cop > 0 and tmp > 0 and symp == 0:
+                CVAS_set.append(sents)
+            elif cop > 0 and symp > 0:
+                CVAS_set.append(sents)
+            else:
+                C_set.append(sents)
+        # if cmi == 1:
+        #     CVAS_set.append(sents)
+    return CVAS_set, C_set
+
+
+def getSentsOfPtn1(nlp, coarse):
     """
-    The final step for pattern 1
+    CMI is the subject
     :param coarse:
     :param nlp:
     :return:
@@ -48,8 +76,8 @@ def getSentsOfPtn1_1(nlp, coarse):
         for token in doc:
             if str(token.dep_) == 'ROOT':
                 if str(token.lemma_) in corpus.COP:
-                    cmi = False
-                    adv = False
+                    flag = True
+                    cmi, adv, symp = False, False, False
                     for child in token.children:
                         if str(child.dep_) in corpus.S:
                             if str(child) == 'CMI':
@@ -57,7 +85,27 @@ def getSentsOfPtn1_1(nlp, coarse):
                         elif str(child.dep_) in corpus.ADV:
                             if str(child.lemma_) in corpus.TMP:
                                 adv = True
+                        elif str(child.dep_) in corpus.OBJ:
+                            if str(child.lemma_) in corpus.SYMP:
+                                symp = True
                     if cmi and adv:
+                        results.append(sent)
+                        flag = False
+                    if cmi and symp and flag:
+                        results.append(sent)
+                elif str(token.lemma_) in corpus.OTHER:
+                    flag = True
+                    cmi, cop, symp = False, False, False
+                    for child in token.children:
+                        if str(child.dep_) in corpus.S:
+                            if str(child) == 'CMI':
+                                cmi = True
+                        elif str(child.dep_) == 'attr':
+                            for ch in child.children:
+                                if str(ch.dep_) in corpus.ADV:
+                                    if str(ch.lemma_) in corpus.COP:
+                                        cop = True
+                    if cmi and cop:
                         results.append(sent)
     return results
 
@@ -76,11 +124,11 @@ def getSentsOfPtn1_2(nlp, coarse):
                             if str(child) == 'CMI':
                                 cmi = True
                         elif str(child.dep_) == 'dobj':
-                             symp = True
+                            symp = True
                 if str(token.lemma_) in corpus.OTHER:
                     if str(child.dep_) in corpus.OBJ:
-                         # if str(child) in corpus.TMP:
+                        # if str(child) in corpus.TMP:
                         symp = True
-                    if cmi and symp:
-                        results.append(sent)
+                if cmi and symp:
+                    results.append(sent)
     return results

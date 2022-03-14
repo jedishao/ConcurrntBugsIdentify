@@ -1,13 +1,15 @@
-COP = ['invoke', 'lock', 'cause', 'block', 'acquire']
+COP = ['invoke', 'lock', 'cause', 'block', 'acquire', 'trigger', 'release', 'wait', 'load', 'involve']
 
-OTHER = ['be']
+OTHER = ['be', 'experience', 'lead', 'confirm', 'happen', 'test', 'see', 'give', 'enter', 'complete']
 
-TMP = ['twice', 'again', 'forever']
+TMP = ['twice', 'again', 'forever', 'never', 'already']
 
-SYMP = ['deadlock']
+SYMP = ['deadlock', 'stick', 'stuck', 'hang']
 
-OBJ = ['dobj']
+NUM = []
+
+OBJ = ['dobj', 'conj']
 
 S = ['nsubj', 'nsubjpass']
 
-ADV = ['advmod']
+ADV = ['advmod', 'amod']

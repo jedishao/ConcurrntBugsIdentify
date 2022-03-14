@@ -1,0 +1,8 @@
+CMI is recursively invoked twice.
+The anonymous CMI is blocking forever.
+The function CMI lock the locked container again.
+CMI should not cause deadlock.
+The CMI acquires lock_1 and gets stuck.
+I experience deadlocks at the point the CMI is processed and emptied.
+The CMI was not released in a for loop and acquired again in the next loop iteration.
+The blocking may also lead to deadlocking the EventLoop in cases where a CMI is used.
