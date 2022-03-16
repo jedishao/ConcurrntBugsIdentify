@@ -16,7 +16,7 @@ import spacy
 
 import corpus
 
-target = open("results/test.txt", 'r')
+target = open("results/deadlockSents_NER.txt", encoding='utf-8')
 # con = open("results/deadlockSents_NER.txt", 'r')
 # results = open("results/only_one_cmi.txt", 'w')
 
@@ -29,22 +29,24 @@ nlp = spacy.load("en_core_web_sm")
 for line in target:
     sents.append(line)
 
-# for sen in sents:
-#     flag = False
-#     doc = nlp(sen)
-#     for token in doc:
-#         if str(token) == 'CMI':
-#             print(str(token.dep_))
-#             if str(token.dep_) == 'nsubj' or str(token.dep_) == 'nsubjpass':
-#                 flag = True
-#     if flag:
-#         index.append(sen)
 
 for sen in sents:
+    c = 0
     doc = nlp(sen)
     for token in doc:
         if str(token) == 'CMI':
-            print(token.dep_)
+            c += 1
+    if c == 2:
+        index.append(sen)
+
+for i in index:
+    print(i, end='')
+
+# for sen in sents:
+#     doc = nlp(sen)
+#     for token in doc:
+#         if str(token) == 'CMI':
+#             print(token.dep_)
         # if str(token.dep_) == 'ROOT':
         #     for child in token.children:
         #         if str(child) == 'CMI':
