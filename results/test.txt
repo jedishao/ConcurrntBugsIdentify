@@ -1,5 +1,8 @@
-This deadlock is triggered by a unit test CMI.
-Threads using CMI will wait forever for a lock to be released. There is no timeout when waiting for the lock.
-We have experienced several threads locked forever waiting inside calls to CMI in our production system within a few hours after upgrading to Redisson 3.11.4 from Redisson 3.8.0.
-This is a double lock bug. The lock for the struct svm has already been locked when calling CMI.
-Since only run can drain CMI, the lock is never released.
+
+
+https://github.com/jedishao/FineLock
+https://github.com/redisson/redisson/issues/1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+test spider
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+

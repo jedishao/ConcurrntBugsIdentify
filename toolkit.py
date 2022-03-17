@@ -12,6 +12,9 @@
 #     k += 1
 # print(list2)
 import ast
+
+from lxml import etree
+import requests
 import spacy
 
 import corpus
@@ -28,7 +31,6 @@ re = []
 nlp = spacy.load("en_core_web_sm")
 for line in target:
     sents.append(line)
-
 
 for sen in sents:
     c = 0
@@ -47,24 +49,30 @@ for sen in sents:
 #     for token in doc:
 #         if str(token) == 'CMI':
 #             print(token.dep_)
-        # if str(token.dep_) == 'ROOT':
-        #     for child in token.children:
-        #         if str(child) == 'CMI':
-        #             print(child.dep_)
-                    # if str(child.dep_) in corpus.S:
-                    #     re.append(sen)
+# if str(token.dep_) == 'ROOT':
+#     for child in token.children:
+#         if str(child) == 'CMI':
+#             print(child.dep_)
+# if str(child.dep_) in corpus.S:
+#     re.append(sen)
 
 # for r in re:
 #     print(r, end='')
-from github import Github
 
-# Enter your Github username and password
-user = 'jedishao'  # Replace it
-password = 'Shao96+celtics'  # Replace it
-g = Github(user, password)
+url = 'https://github.com/jedishao/FineLock/issues/1'
 
-repo = g.get_repo("redisson/redisson")
-repo.get_issue(number=4185)
+issue_content = []
+response = requests.get(url)
+
+page_source = response.text
+tree = etree.HTML(page_source)
+print(tree.xpath('//h1[@class="gh-header-title mb-2 lh-condensed f1 mr-0 flex-auto wb-break-word"]/span')[0].xpath(
+    'string(.)'))
+# 获取issue内容
+# for i in range(7):
+#     print(tree.xpath('//h1/span')[i].xpath('string(.)'))
+
+print(issue_content)
 
 print('===============================================================================')
 # for s in index:
