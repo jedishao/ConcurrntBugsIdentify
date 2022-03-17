@@ -39,8 +39,8 @@ for sen in sents:
     if c == 2:
         index.append(sen)
 
-for i in index:
-    print(i, end='')
+# for i in index:
+#     print(i, end='')
 
 # for sen in sents:
 #     doc = nlp(sen)
@@ -56,6 +56,15 @@ for i in index:
 
 # for r in re:
 #     print(r, end='')
+from github import Github
+
+# Enter your Github username and password
+user = 'jedishao'  # Replace it
+password = 'Shao96+celtics'  # Replace it
+g = Github(user, password)
+
+repo = g.get_repo("redisson/redisson")
+repo.get_issue(number=4185)
 
 print('===============================================================================')
 # for s in index:
