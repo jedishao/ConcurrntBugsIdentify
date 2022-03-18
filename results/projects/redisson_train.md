@@ -1893,3 +1893,103 @@ https://github.com/redisson/redisson/issues/2692
 We have a number of instances of our app in production, and we’ve encountered a race condition where the same session might have changeSessionId invoked on the same session separate servers. This means one server might receive -2 from PTTL, which isn’t currently handled.
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+https://github.com/redisson/redisson/issues/53
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Does redisson support local cache?
+For some usage scenario, local read is very heavy, local write is not much, and the delay of data synchronization can be tolerated in seconds. Some configurable cache mechanism could be helpful.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/71
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Use Case:
+1)Extending the Redisson data types as part of a data abstraction layer.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/83
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Thread gets stuck while obtaining lock. Running 'keys L*' in redis-cli returns an empty list.
+
+The same lock name was likely concurrently obtained and held by another thread possibly on another jvm, and then released.
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/84
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+in RedissonLock.tryLockInner(long, TimeUnit):
+
+At line A the lock key is set only if it doesn't exist (NX), but on line B it's set assuming it still exists. If the lock timeouts between A and B, another process may obtain the lock, which is then overwritten at B.
+
+Here's a test case:
+
+This will reliably fail if:
+
+run in debug mode with a breakpoint placed in RedissonLock.tryLockInner(long, TimeUnit) on line B (line 306 for 508b903).
+the breakpoint is released after waiting at least half a second
+The same problem is also present in the no-args method RedissonLock.tryLockInner(). (though a race condition is possible only if upgrading an expiring lock)
+
+I wonder if reentrancy support shouldn't be done purely in java.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/87
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Unhandled IllegalStateException in RedissonLock #87
+
+I make heavy use of RLock in my app, and from time to time I find this in my logs.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/88
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Changed the semaphore initial value to 0, since every time
+we try to acquire it is because we subscribed and know we have
+to wait for another thread to signal it. This way, we just acquire
+it once, and avoid useless operations.
+Since the value was 1, the first thread to subscribe would go through
+the subscribe() method twice, meaning the entry's counter would be raised
+to 2, and on unsubscribe() decremented to 1, therefore, it would
+never be removed from ENTRIES.
+All tests are still passing, it's just slightly faster and allows the ENTRIES map to be cleaned up, which in turn means PubSub Connections are released.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/89
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Under heavy use on production, Redisson's locks get all locked up, and the application stalls. I'm using Redisson 1.1.5
+
+I have 1 thread locked trying to release a lock:
+
+Also of note, I have about 30 other threads locked awaiting for a lock (a different one from the one used by the previous thread).
+
+I checked the threads with jstack, here is the relevant output:
+
+this key is the one corresponding to the thread blocked trying to release a lock. The other threads, that are waiting for a separate lock are locked even though there is no-one taking up such lock....
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/93
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Race condition with lock/unlock notification fixed
+
+Thanks everyone for the effort and time. I greatly appreciate it. However, I fear these changes do not fix the issue. Nothing has really changed, the race condition persists (it's just a little trickier to trigger).
+
+Once again, the bug can be reproduced as follows:
+
+Thread A gets the lock
+Thread B tries to get the lock, fails, subscribes and waits for the subscription
+Thread C tries to get the lock and fails, and is sitting on the call to subscribe()
+Thread A releases the lock
+Thread B wakes up, acquires the lock, and proceeds to unsubscribe, removes the entry from ENTRIES and sits on the synchronized (connectionManager) without having acquired it.
+Thread C resumes, goes into subscribe, finds no available entry in ENTRIES and creates a new one, taking the already subscribed connection from connectionManager to listen on the channel and proceeds to wait for it.
+Thread B immediately resumes, acquiring the lock on connectionManager and requesting connectionManager to unsubscribe from the channel and remove all listeners (including the one added by Thread C). Thread C will never get notified, it's dead. All future requests for that lock that can't be fulfilled right away will just use the existing entry in ENTRIES and wait on the same promise, all getting locked forever. The application is dead.
+I would recommend reverting the changes from fd29bed, along with those introduced in bca4a17; and look into alternative solutions. I made a suggestion on #89 for which I was hoping to get some feedback.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/95
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+When a connection is reused, the listener should still be subscribed.
+This, along with all previous fixes, finally removes all known deadlock conditions for #89
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/100
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Currently if redisson client was shutdown abnormally locks created by this client will remain forever.
+This solution will create all locks as keys with expiration time set in redis. I'm not sure if this is best solution and what to do with lock() - lock(time, unit) - lock() sequences but it works for me.
+Any suggestions or changes are welcome.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
