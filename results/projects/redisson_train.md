@@ -381,105 +381,7 @@ RedissonFactory redissonFactory = new RedissonFactory();
 I use 1000 threads, and find that if i set the connection pool size to 500, the successful proportion achieves maximum。
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-https://github.com/redisson/redisson/issues/505
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-Juste a little something.
-In the FstCodec, when an object in encoded, an FSTObjectOutput is first borrowed from the FSTConfiguration, then used to write the object and then closed.
-In the FST Serialization Recommended threadsafe Use, they recommend, when using the factory method, not closing this stream in order for it to be reused.
-I think that only an oos.flush() instead of a oos.close() will do the job here.
-Not a big deal, but still....
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-https://github.com/redisson/redisson/issues/514
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-Hi, we have been using RedissonSortedSet and just found that on certain cases the order can be broken and I assume RedissonSortedSet is supposedly thread safe.
-Assuming RedissonSortedSet of integers are added with the following integers : 103, 101, 102. RedissonSortedSet state (list in the redis server) should be: 101, 102, 103. However, there are cases when it is not. It may become 102, 101, 103 instead. And looking at RedissonSortedSet's source code, it uses binary search that requires the list/state to be always sorted. Therefore it breaks many other functionality.
-The use case that breaks (in my case) is when we are adding multiple items and there is another thread that delete an item in between. Looking the source code implementation briefly, it may be because when removing an item it does not consider getCurrentVersion() (just a quick guess).
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-https://github.com/redisson/redisson/issues/521
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-Sorry for using an issue for my question, but I couldn't find a mailing list to post this question to :)
-I am using Redisson to store key/value pairs and was wondering whether it makes more sense to use just plain RBuckets for each pair or a single RMap. I am especially interested in the possibility of sharding these across nodes in a cluster setup (PRO feature?). The key/value pairs are immutable and I would expect a lof of PUTs and DELETEs of them. Any pros and cons?
-I do also use a lot of different "types" (around 8) of caches (with different serializations and TTLs). Currently I am using a different redis databases  for each type. This means I have to create a new connection (aka RedisonClient) for each of these. This also means a lot of Threads in the different ThreadPools, though I am already sharing the EventLoopGroup between the instances. Would there be any particular drawback in storing all of these in just one database to avoid the Thread overhead?
-Thanks in advance!
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-https://github.com/redisson/redisson/issues/530
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-Hi,
-I want to raise the issue with deadlocks again.
-This bug is still exist and making big headache. As before, It present itself only on very heavy loaded tasks, but in this case I is happens only when client talks to the claster which is located remotely.
-With a single-local or claster-local servers I was unable to reproduce it, but with remote server it happens with rate 1 / 20 (means from 20 runs of "heavy-load" JUnit test it happens only once)
-I can see where thread is locked down, it always stuck in CommandAsyncService.get(Future), on l.await() line and never exits from it. As I understand something wrong with mainPromise object, it is staying in incomplete state... and nobody change it. I tried to understand the logics in CommandAsyncService.async(...) function, which is actually deals with connection, retry, redirections and at end should release (or fail) the mainPromise object, but it is nightmare. All these spagetty with promises and futures made the code difficult to read and impossible to analyse. For sure BUG is there, but I am near to give-up. Any thoughts?
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-https://github.com/redisson/redisson/issues/543
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-Found this in 2.2.16, seems like this was not around in 2.2.10. But still verifying.
-When tryLock is called with 0 wait time, the thread blocks forever. I took a thread dump and it looks like the stack pasted below.
-A note on the environment: We are running this against an Elasticache cluster in AWS and accessing from 4 EC2 instances. We have seen a lot of command timeouts. I am not sure if that is some way leading to this.
-"pool-4-thread-5" #86 prio=5 os_prio=0 tid=0x00007f15ca23f800 nid=0xcd4 waiting for monitor entry [0x00007f15b90e5000]
-java.lang.Thread.State: BLOCKED (on object monitor)
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-https://github.com/redisson/redisson/issues/545
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-I am using RedissonLock in my system.
-The lock realted logic in service is like this:
-    public boolean tryLock(String key, long time, TimeUnit unit) 
-
-But in the log I found:
-2016-07-04 15:15:39,533 DEBUG [http-nio-18090-exec-2] OrderService: Got lock for:ticket.lock.order.86
-2016-07-04 15:15:39,541 DEBUG [http-nio-18090-exec-2] OrderService: Not hold lock for:ticket.lock.order.86
-
-I can see the the thread name is same, so the thread got the lock and the thread try to unlock is same thread.
-Is there any problem in my code? Or in the logic of lock.isHeldByCurrentThread() ?
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-https://github.com/redisson/redisson/issues/548
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-There are times we don't want to explicitly call RedissonClient::shutdown,
-but because redisson creates some non-daemon threads when using the MasterSlaveConnectionManager (by using HashedWheelTimer's default thread factory)
-then the JVM will never be able to quit without calling the shutdown method.
-Please add support or change the default behaviour to start HashedWheelTimer with daemon threads.
-https://github.com/mrniko/redisson/blob/master/src/main/java/org/redisson/connection/MasterSlaveConnectionManager.java#L202
-new HashedWheelTimer(new DefaultThreadFactory("HashedWheelTimer", true), minTimeout, TimeUnit.MILLISECONDS);
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-https://github.com/redisson/redisson/issues/573
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-When set rertyAttemps to 0. connection pool size is 100. use 100 threads to read the redis cluster,it will throw exception like "Connection pool exhausted! for slots: [[8192-12287]] Disconnected hosts: [/10.2.30.72:6389] Hosts with fully busy connections: [/10.2.30.70:6381]".
-In my point of view,it's caused by LoadBalance.
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-https://github.com/redisson/redisson/issues/656
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-it's reproducible, my code is below.
-RLock singlelock = redissonClient.getLock("lock2");
-   
-redlock lock result will be success, but when I check redis, I found the multi locks belong to different thread.
-like:
-lock1 : 8d3c3d43-03b0-4cd8-8966-8bbd088f8c58:1
-lock2 : 8d3c3d43-03b0-4cd8-8966-8bbd088f8c58:29
-lock3 : 8d3c3d43-03b0-4cd8-8966-8bbd088f8c58:1
-I did more test and found:
-
-if the single lock is the first of redlock, it's ok.
-when I move multilock2 to first position ,it will return false correctly.
-the code below
-
-RedissonRedLock redlock = new RedissonRedLock(multilock2,multilock1,multilock3);
-boolean redlock_result = redlock.tryLock(5,300, TimeUnit.SECONDS);
-
-if there are just 2 multi locks, it's ok.
-the code below will return false.
-
-RedissonRedLock redlock = new RedissonRedLock(multilock1,multilock2);
-boolean redlock_result = redlock.tryLock(5,300, TimeUnit.SECONDS);
-
-I am wondering if it is a bug or not?
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 https://github.com/redisson/redisson/issues/674
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -2272,3 +2174,113 @@ Client check ackObject only if ack timeout has occurred. If client can't set it 
 If worker can't set ackObject then it means that ack timeout already occurred on client side and invocation should skipped.
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+https://github.com/redisson/redisson/issues/511
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Add RedissonFairLock 
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/512
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Added RedissonFairLockTest to travis job list 
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/514
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Hi, we have been using RedissonSortedSet and just found that on certain cases the order can be broken and I assume RedissonSortedSet is supposedly thread safe.
+Assuming RedissonSortedSet of integers are added with the following integers : 103, 101, 102. RedissonSortedSet state (list in the redis server) should be: 101, 102, 103. However, there are cases when it is not. It may become 102, 101, 103 instead. And looking at RedissonSortedSet's source code, it uses binary search that requires the list/state to be always sorted. Therefore it breaks many other functionality.
+The use case that breaks (in my case) is when we are adding multiple items and there is another thread that delete an item in between. Looking the source code implementation briefly, it may be because when removing an item it does not consider getCurrentVersion() (just a quick guess).
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/505
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Juste a little something.
+In the FstCodec, when an object in encoded, an FSTObjectOutput is first borrowed from the FSTConfiguration, then used to write the object and then closed.
+In the FST Serialization Recommended threadsafe Use, they recommend, when using the factory method, not closing this stream in order for it to be reused.
+I think that only an oos.flush() instead of a oos.close() will do the job here.
+Not a big deal, but still....
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+https://github.com/redisson/redisson/issues/521
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Sorry for using an issue for my question, but I couldn't find a mailing list to post this question to :)
+I am using Redisson to store key/value pairs and was wondering whether it makes more sense to use just plain RBuckets for each pair or a single RMap. I am especially interested in the possibility of sharding these across nodes in a cluster setup (PRO feature?). The key/value pairs are immutable and I would expect a lof of PUTs and DELETEs of them. Any pros and cons?
+I do also use a lot of different "types" (around 8) of caches (with different serializations and TTLs). Currently I am using a different redis databases  for each type. This means I have to create a new connection (aka RedisonClient) for each of these. This also means a lot of Threads in the different ThreadPools, though I am already sharing the EventLoopGroup between the instances. Would there be any particular drawback in storing all of these in just one database to avoid the Thread overhead?
+Thanks in advance!
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/530
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Hi,
+I want to raise the issue with deadlocks again.
+This bug is still exist and making big headache. As before, It present itself only on very heavy loaded tasks, but in this case I is happens only when client talks to the claster which is located remotely.
+With a single-local or claster-local servers I was unable to reproduce it, but with remote server it happens with rate 1 / 20 (means from 20 runs of "heavy-load" JUnit test it happens only once)
+I can see where thread is locked down, it always stuck in CommandAsyncService.get(Future), on l.await() line and never exits from it. As I understand something wrong with mainPromise object, it is staying in incomplete state... and nobody change it. I tried to understand the logics in CommandAsyncService.async(...) function, which is actually deals with connection, retry, redirections and at end should release (or fail) the mainPromise object, but it is nightmare. All these spagetty with promises and futures made the code difficult to read and impossible to analyse. For sure BUG is there, but I am near to give-up. Any thoughts?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/543
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Found this in 2.2.16, seems like this was not around in 2.2.10. But still verifying.
+When tryLock is called with 0 wait time, the thread blocks forever. I took a thread dump and it looks like the stack pasted below.
+A note on the environment: We are running this against an Elasticache cluster in AWS and accessing from 4 EC2 instances. We have seen a lot of command timeouts. I am not sure if that is some way leading to this.
+"pool-4-thread-5" #86 prio=5 os_prio=0 tid=0x00007f15ca23f800 nid=0xcd4 waiting for monitor entry [0x00007f15b90e5000]
+java.lang.Thread.State: BLOCKED (on object monitor)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/545
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+I am using RedissonLock in my system.
+The lock realted logic in service is like this:
+    public boolean tryLock(String key, long time, TimeUnit unit) 
+
+But in the log I found:
+2016-07-04 15:15:39,533 DEBUG [http-nio-18090-exec-2] OrderService: Got lock for:ticket.lock.order.86
+2016-07-04 15:15:39,541 DEBUG [http-nio-18090-exec-2] OrderService: Not hold lock for:ticket.lock.order.86
+
+I can see the the thread name is same, so the thread got the lock and the thread try to unlock is same thread.
+Is there any problem in my code? Or in the logic of lock.isHeldByCurrentThread() ?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/548
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+There are times we don't want to explicitly call RedissonClient::shutdown,
+but because redisson creates some non-daemon threads when using the MasterSlaveConnectionManager (by using HashedWheelTimer's default thread factory)
+then the JVM will never be able to quit without calling the shutdown method.
+Please add support or change the default behaviour to start HashedWheelTimer with daemon threads.
+https://github.com/mrniko/redisson/blob/master/src/main/java/org/redisson/connection/MasterSlaveConnectionManager.java#L202
+new HashedWheelTimer(new DefaultThreadFactory("HashedWheelTimer", true), minTimeout, TimeUnit.MILLISECONDS);
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/573
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+When set rertyAttemps to 0. connection pool size is 100. use 100 threads to read the redis cluster,it will throw exception like "Connection pool exhausted! for slots: [[8192-12287]] Disconnected hosts: [/10.2.30.72:6389] Hosts with fully busy connections: [/10.2.30.70:6381]".
+In my point of view,it's caused by LoadBalance.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/656
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+it's reproducible, my code is below.
+RLock singlelock = redissonClient.getLock("lock2");
+   
+redlock lock result will be success, but when I check redis, I found the multi locks belong to different thread.
+like:
+lock1 : 8d3c3d43-03b0-4cd8-8966-8bbd088f8c58:1
+lock2 : 8d3c3d43-03b0-4cd8-8966-8bbd088f8c58:29
+lock3 : 8d3c3d43-03b0-4cd8-8966-8bbd088f8c58:1
+I did more test and found:
+
+if the single lock is the first of redlock, it's ok.
+when I move multilock2 to first position ,it will return false correctly.
+the code below
+
+RedissonRedLock redlock = new RedissonRedLock(multilock2,multilock1,multilock3);
+boolean redlock_result = redlock.tryLock(5,300, TimeUnit.SECONDS);
+
+if there are just 2 multi locks, it's ok.
+the code below will return false.
+
+RedissonRedLock redlock = new RedissonRedLock(multilock1,multilock2);
+boolean redlock_result = redlock.tryLock(5,300, TimeUnit.SECONDS);
+
+I am wondering if it is a bug or not?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
