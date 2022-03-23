@@ -61,7 +61,7 @@ if __name__ == '__main__':
         # f.write(str(number))
         # f.write('\n')
         issues_list = []
-        for i in range(4186):
+        for i in range(8991):
             i = i + 1
             issues_list.append(str(i))
         # 格式：/combust/mleap/issues/716
@@ -78,7 +78,7 @@ if __name__ == '__main__':
             print(issue_url)
             f.write(issue_url)
             f.write('\n')
-            f.write(title+'\n')
+            f.write(str(title)+'\n')
             f.write('>' * 100)
             f.write('\n')
             f.write(str(content).strip())

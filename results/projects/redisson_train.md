@@ -2123,3 +2123,152 @@ https://github.com/redisson/redisson/issues/285
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 I was crashed into a blocking issue when I was doing some configuration on my windows laptop. RLock.isLocked() got hung forever with callstack as following:
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/305
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Сheck lock existence in forceUnlockAsync method
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/306
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Extract Async interface for RedissonCountDownLatch 
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/329
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+It's very wired. I just run a very simple test case to try redisson lock. But the result is not good.
+Can anyone show me why RLock didn't work?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/342
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+use StringCodec with config，RedissonLock.tryLock() will occur ClassCastException
+Config config = new Config();
+config.setCodec(StringCodec.INSTANCE);****
+...
+RedissonClient redisson = Redisson.create(config);
+......
+lock.tryLock();
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/348
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Implement AtomicReference
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/376
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Implement MultiLock object based on RLock objects collection
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/409
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+I am trying to use redisson 2.2.7 for distributed locks. I have a 3 node Elasticache cluster with one of them as master.
+
+When I try to get lock using the following code, i get an error saying that i cant write to a Slave. My assumption is that i can feed a list of nodes to the redisson client as Elasticache nodes and it will figure out who the master is...is that not true?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/421
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+If you try to create a RedissonClient and get a timeout error, the created netty threads aren't destroyed and you can never terminate the Java program but with a System.exit(). For example:
+
+    Config config = new Config();
+    config.useSingleServer().setConnectTimeout(2);
+    RedissonClient client = Redisson.create(config); // <-- timeout exception
+If this code fails, then several netty threads remain in execution and they are never destroyed, because the "client" variable is the only point where you can "shutdown" those threads, but that RedissonClient instance hasn't been created (because an exception has been thrown).
+
+A possible solution is to shutdown the failed connection at MasterSlaveConnectionManager.init(), which is the point that all kind of connection managers run to create a connection. Surrounding:
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/436
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+in ReadLock and WriteLock, the unlock method use thread id to determine whether it is owned by this thread. it works fine for a single machine.
+However, when it is used in a distributed processing framework such as MapReduce, the Read and Write lock cannot be correctly unlocked.
+I browse the source codes and find that the UUID is generated in the lock, I think it is better to use UUID as lock id istead of thread id or provides a way to let users to set a unque id.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/455
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+I use Redisson 2.2.10 to implement distributed lock in my project. And then I run load test for this distributed lock using SINGLE redis mode. But I found there are many long latency APIs and it's wired that almost all the long latency APIs are a little greater than 1000ms. The average latency and 99 percent latecy is about 15ms and 30ms respectively. And then I used jstack to get the call stack and found most of the threads are WAITING at the same place just as the following
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/465
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Hi,
+
+I am using a single server connection and set the connection pool size to 10. I have created multiple threads to test a code snippet where I am saving an object to RBucket<> object and deleting it afterwards in a same transaction block. I get following error sometime in the process,
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/467
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Deadlock using RedissonMultiLock
+I am using simple app to run on 2 clients to test locks.
+While using RedissonMultiLock with 3 locks both clients blocks.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/480
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Rlock Exception in cluster mode 
+Hi
+I am using redis 3.0.6 (4 node cluster ) and redisson version 2.2.5.
+Sometimes when I try lock a key I get the following exceptions:
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/486
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Rlock performance issue 
+
+I am using reddison Rlock with a cluster setup , and sometimes I see latency( up to 1000ms) when trying to acquire the lock or unlock.
+I saw this issue opened by zhxjouc (#455) with a similar problem and I am working with 2.2.13 but I am still getting latency when a thread is trying lock a key.
+My code is running with Java thread pool for accessing redis, I notice that if I work with pool of size 1-2
+almost no latency when getting the lock, but working with 30-50 threads cause the lock delay.
+It could be thread overhead issue but I think that 1000ms is too long for that.
+Any help on how can I get better performance when locking an unlocking?.
+Thanks
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/491
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Dead Locks Happen in lock() Process
+
+when heavy concurrency happens in my application, a few lock requests will "sink" without any responses, even after the lock lease time has passed. All of these requests wait at RedissonLock.lockInterruptibly().The exact position is RedissonLock.get() after RedissonLock.subscribe().
+
+In my opinion, this may be due to a thread removes the netty listener which is used by another thread. It can happen in this way:
+
+Thread A is in the loop of getting the lock after subscription.
+Thread B has also applied subscription and waits for result.
+Thread A gets the lock very soon and enters RedissonLock.unsubscribe(). In this step, it possibly removes all the listeners on the same channel, which includes the listener used by Thread B. It causes Thread B can never get subscription response and hang on forever.
+The similar issue is at [https://github.com//pull/93]. But I think it is not solved completely.
+
+Also I suggest to apply the ttl algorithm to RedissonLock.get() because this step can cost some time. And if it has a timeout, dead lock can be prevented in a work-around way.
+
+This is the thread dump when dead lock happens:
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/503
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Hi,
+I'm trying to create an infrastructure where different machines acquire shared locks through Redisson. Once the lock is acquired, some async tasks gets done, finally, when I finish the job, I'm releasing the Redisson lock through the thread currently running - but i receive the following error
+
+java.lang.IllegalMonitorStateException: attempt to unlock lock, not locked by current thread by node id: xxxxx thread-id: 57
+
+So, I understand the meaning of that, but since I want to perform asynchronous work, I cannot use the acquiring thread to perform the release.
+
+Is there a solution for asynchronous programming? Should I not use Redisson Lock?
+I also references the issue on SO
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/507
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Race-condition during ack checking is possible. For example, ack timeout = 1000 ms:
+
+worker receives Request in 999 ms sends ack, but it comes in 1010ms or something like that.
+client checks ack in 1000 ms and throws RemoteServiceAckTimeoutException
+worker invokes method
+
+To solve this problem ackObject was introduced. Worker or client set it to 1 via SETNX command. Worker set it during ack sending. Client during ack receiving.
+Client check ackObject only if ack timeout has occurred. If client can't set it means that worker have done it already. So client should poll an element from queue again.
+If worker can't set ackObject then it means that ack timeout already occurred on client side and invocation should skipped.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
