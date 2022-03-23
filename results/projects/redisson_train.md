@@ -2218,6 +2218,24 @@ With a single-local or claster-local servers I was unable to reproduce it, but w
 I can see where thread is locked down, it always stuck in CommandAsyncService.get(Future), on l.await() line and never exits from it. As I understand something wrong with mainPromise object, it is staying in incomplete state... and nobody change it. I tried to understand the logics in CommandAsyncService.async(...) function, which is actually deals with connection, retry, redirections and at end should release (or fail) the mainPromise object, but it is nightmare. All these spagetty with promises and futures made the code difficult to read and impossible to analyse. For sure BUG is there, but I am near to give-up. Any thoughts?
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+https://github.com/redisson/redisson/issues/533
+Exception in using RedissonMultiLock
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+The RedissonMultiLock works fine if all the redis nodes are alive.
+
+If I shutdown one of the redis nodes, it will throw RedisConnectionException
+Exception in thread "main" org.redisson.client.RedisConnectionException: Can't init enough connections amount! Only 0 from 5 were initialized. Server: /192.168.223.128:8000
+
+According to The Redlock algorithm, it should try to lock another node but not throw exception. Do I use RedissonMultiLock correctly?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/542
+RedissonRedLock.unlock() is using forceUnlockAsync()
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+RedissonRedlLock overrides unlock() of RedissonMultiLock and it will force to unlock all instances.
+Is it more reasonable to use unlock method of RedissonMultiLock?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 https://github.com/redisson/redisson/issues/543
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Found this in 2.2.16, seems like this was not around in 2.2.10. But still verifying.
@@ -2228,6 +2246,7 @@ java.lang.Thread.State: BLOCKED (on object monitor)
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 https://github.com/redisson/redisson/issues/545
+RedissonLock.isHeldByCurrentThread() doesn't check properly. 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 I am using RedissonLock in my system.
 The lock realted logic in service is like this:
@@ -2251,10 +2270,200 @@ https://github.com/mrniko/redisson/blob/master/src/main/java/org/redisson/connec
 new HashedWheelTimer(new DefaultThreadFactory("HashedWheelTimer", true), minTimeout, TimeUnit.MILLISECONDS);
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+https://github.com/redisson/redisson/issues/558
+loop lock blocked when master-slave failover
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/561
+Redisson map get makes the thread waiting forever 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+The map is a regular <Integer, String> map, and by calling a get on some key we see the following thread trace:
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/562
+attempt to unlock lock, not locked by current thread by node id 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Redisson uses expiration of lock object by default to avoid "hanged" locks if you use lock() method without lease time parameter. This expiration is renewal every 30 seconds by internal scheduler, take a look at RedissonLock.scheduleExpirationRenewal(). In your case you're using such lock method at DistributedLock:34
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 https://github.com/redisson/redisson/issues/573
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 When set rertyAttemps to 0. connection pool size is 100. use 100 threads to read the redis cluster,it will throw exception like "Connection pool exhausted! for slots: [[8192-12287]] Disconnected hosts: [/10.2.30.72:6389] Hosts with fully busy connections: [/10.2.30.70:6381]".
 In my point of view,it's caused by LoadBalance.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/575
+A random delay is added when the lock is repeatedly acquired 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+When a client to acquire the lock failure, the client should retry after a random delay, the reason why the use of random delay is to avoid different client and try again. The results all clients can't get the lock.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/577
+Replace Future interface to RFuture for async methods · Issue #577 · redisson/redisson · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Can you talk about the motivation to replace java.util.concurrent.Future with RFuture?
+
+Additionally, if we have an interface that returns either java.util.concurrent.Future or java.util.concurrent.CompletionStage will the call to the service be non blocking while the remote service works on the request?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/581
+tryLock method throw Exception:attempt to unlock lock, not locked by current thread by node id: 157ddcf5-0cc2-445d-bdea-98160a459bd5 thread-id: 42 · Issue #581 · redisson/redisson · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@mrniko
+hi, I stress test tryLock(long waitTime, long leaseTime, TimeUnit unit) method, throw Exception:attempt to unlock lock, not locked by current thread by node id: 157ddcf5-0cc2-445d-bdea-98160a459bd5 thread-id: 42
+unnormal code:
+    RedissonClient redisson = redissonDistributedLock.getRedisson();
+    RLock lock = redisson.getLock(sb.toString());
+    try {
+        lock.tryLock(10L, 5L, TimeUnit.SECONDS);
+        resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }finally{
+        lock.unlock();
+    }
+
+normal code:
+RedissonClient redisson = redissonDistributedLock.getRedisson();
+RLock lock = redisson.getLock(sb.toString());
+try {
+while(true){
+if(lock.tryLock(10L, 5L, TimeUnit.SECONDS)){
+resultVo = activityTakeRecordService.recevieActivityLottery(paramsMap);
+break;
+}
+}
+} catch (InterruptedException e) {
+e.printStackTrace();
+}finally{
+lock.unlock();
+}
+1:but use lock() or lock(long leaseTime, TimeUnit unit) method is normal, why?
+2:tryLock() can not be block? lock() is blocked?
+3:tryLock(long waitTime, long leaseTime, TimeUnit unit) method, waitTime must be more than leaseTime value, otherwise occasionally have "attempt to unlock lock, not locked by current thread by node id" ecxeption, in stress test condition, why?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/584
+lock.unlock · Issue #584 · redisson/redisson · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+} finally {
+if (locked) {
+if (lock.getHoldCount() > 0) {
+lock.unlock();
+}
+                }
+            }
+
+if (lock.getHoldCount() > 0) this ,why not include unlock?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/586
+redisson lock failure problem · Issue #586 · redisson/redisson · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+redisson version:2.2.24
+@mrniko
+hi, i user jmeter pressure measurement  redisson lock.
+scene :
+Pressure test scenarios:
+Using two tomcat, simulating the two service requests, each request the server queue to obtain a lock, concurrency of 5000, continued request for 20 minutes,After acquiring the lock counter, increments by 1. It appears six times double counting problem, log is as follows::
+A server
+B server
+
+lock and unlock code
+//lock
+private final static ConcurrentMap<String,RLock> lockMap = new ConcurrentHashMap<String,RLock>();
+public static synchronized RLock lock(String appNo,String bizNo ,Integer waitTime) throws 
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/588
+Q: To use RedissonRedLock locking mechanism do we need to create multiple locks? · Issue #588 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+My use case is simple (I think). I need to make sure that for a specific keyspace, only one client can create an entry i.e. akey with value for it. If multiple threads/clients etc access the "creation" method at the very same time, then only the first one should get access to create the entry & all others should be rejected.
+I was trying to accomplish using the following code snippet.
+    /*
+    * 1. Test if the object with the specified identifiers does not exist already.
+    * */
+    /*
+      * 2. Acquire a distributed Redis lock, auto-expire it after reasonable amount of time.
+    * */
+    /*
+      * 3. Guard against clients which got access to this block of code, after the first client already created the entry.
+    * */
+
+But this seems to not work at all. I executed this method using executor service, where I ran 2 threads in parallel.
+And it seems that one of the threads gets is able create the lock, do the work & unlock it. But the second one is not even able to get the lock & the method never finishes execution.
+After I changed the locking mechanism to Fair Lock things work as expected.
+I am not sure why this is? Is it because of the fact that the RedissonRedLock expects multiple locks? But I dont think I would need that in my case.
+FYI here is the snippet of code I use to paralelly start 2 executions.
+
+Am I doing something wrong?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/597
+Check that RLock still belongs to owner during renewal expiration  · Issue #597 · redisson/redisson · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+No description provided.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/601
+Trouble with change from io.netty.util.concurrent.Future to org.redisson.api.RFuture · Issue #601
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+I'm updating our app to use Redisson 2.3.0, and I'm having some trouble with the breaking change (io.netty.util.concurrent.Future to org.redisson.api.RFuture).
+Previously, I had been using the fastPutAsync method for RMapAsync like this:
+
+I'm trying to change that Future<Boolean> (which is the netty Future) to RFuture, but I'm having a bit of trouble getting it right.  All I'm really after is being able to log success/failures of the fastPutAsync() method.
+How would this be accomplished using the RFuture?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/603
+Implement Semaphore.reducePermits method · Issue #603 · redisson/redisson · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+No description provided.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/604
+Implement PermitExpirableSemaphore · Issue #604 · redisson/redisson · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+In some cases ability to acquire permit with leaseTime is required. It's not possible to implement it with standard Semaphore object, because it's impossible to determine which permit should be expired. Example:
+1. client #1 acquires 1 permit with leaseTime = 30 seconds
+2. client #2 acquires 1 permit with leaseTime = 15 seconds
+3. client #2 or someone else releases 1 permit.
+
+How to know which timeout should be deleted in this case for 30 seconds or 15 seconds?
+
+To overcome this problem each acquired permit should have own unique id - 128-bits random number (UUID). So new RSemaphoreWithIds object should be introduced. Thus client could release only own acquired permits. If it tries to release wrong id or same id second time exception would be thrown.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/612
+rlock error report · Issue #612 · redisson/redisson · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/619
+Add `nettyThreads` and `executor` settings · Issue #619 · redisson/redisson · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+No description provided.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/624
+Incorrect RedissonRedLock.tryLock behaviour · Issue #624 · redisson/redisson · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Lock could acquired by several threads at once when leaseTime parameter less than waitTime parameter passed into RedissonRedLock.tryLock
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/631
+RedissonRedLock & RedissonMultiLock lock method stuck · Issue #631 · redisson/redisson · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+If more than 3 locks are supplied to RedissonRedLock or RedissonMultiLock instance then lock method could stuck
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/redisson/redisson/issues/633
+Implement random wait time in RedissonRedLock & RedissonMultiLock lock method · Issue #633 · redisson/redisson · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+This issue related to #575
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 https://github.com/redisson/redisson/issues/656
