@@ -502,3 +502,200 @@ Change looks easy to understand. Nice work.
 Forgive me if already discussed, but what's your opinion on just using
 LinkedHashMap vs conditionally TreeMap for consistent ordering for tests?
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/361
+Remove all blocking from the NettyClientTransport. Fixes #116 by buchgr · Pull Request #361 · grpc/grpc-java · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+We are currently blocking in NettyClientTransport.newStream(...) until the channel is active and/or the TLS Handshake is complete.
+In certain cases this may lead to deadlock of the eventloop, see #116 for details.
+
+Modifications:
+
+Remove all blocking by buffering writes until the channel is ready to receive those i.e. it is active, TLS is negotiated or the HTTP to HTTP/2 upgrade was sucessfull.
+
+Result:
+
+No more blocking parts when using Netty on the client side.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/408
+Bad transport may be used for starting stream. · Issue #408 · grpc/grpc-java · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Currently we reference activeTransport to the newly created transport before the new transport is started , so if the new transport failed starting with an exception, the subsequent stream still try to use the bad activeTransport.
+
+This is by design.
+
+There are multiple, multiple races between channel and the transport that can't be solved in Channel because the Channel is creating streams on a different thread. Instead, the transport has to be coded to fail new streams after it has failed by throwing IllegalStateException.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/424
+Allow 100 streams initially rather than 10. by nmittler · Pull Request #424 · grpc/grpc-java · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+The HTTP/2 spec suggests 100 as the recommended minimum for SETTINGS_MAX_CONCURRENT_STREAMS (https://tools.ietf.org/html/draft-ietf-httpbis-http2-17#section-6.5.2). We should use this value as our default.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/433
+Requesting more messages from the Deframer causes unnecessary context-switching · Issue #433 · grpc/grpc-java · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+In the case of a incoming stream of messages the flow-control window may accommodate more than one message. If the deframer has several messages in its currently held buffer we end up doing a lot of context switching to request more messages out as we end up with a sequence like
+deframer.request(1) -> jump to app thread -> onPayload() -> call.request(1) -> jump to event loop -> deframer.request(1)
+
+Eric and I chatted about this. There are a couple of options on the table, the simpler more immediate fix is to have the deframer default its pending message count to 1, this would fix the issue for unary calls.
+
+The more through fix which would help streaming calls is to make the deframer somewhat thread-safe so the application thread can request more messages without a thread hop. In this case the application thread running inside the channels serializing executor would allow request(x) to schedule more onPayload calls onto the tail of the channel executor which would then pick them up and run them in the same thread. This would be a very significant win for streaming calls as it would eliminate context-switches in the case where there were lots of messages sitting in the deframer as they fit within the flow-control window
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/449
+Consider delaying terminated state until application no longer processing · Issue #449 · grpc/grpc-java · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+In ServerImpl and ChannelImpl, we proceed to terminated as soon as all the transports have terminated. However, we should probably wait for all the SerializingExecutors to drain, since that is more of what the application would expect and it is useful to know that all the workers are done.
+
+This was decided against, due to the synchronization required even when not using the feature. The synchronization is commonly occurring anyway in the ExecutorService being used, so waiting for a application-provided ExecutorService to shutdown is a pretty easy workaround.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/510
+Introduce support for calls as composable objects · Issue #510 · grpc/grpc-java · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Let's suppose we call it "Callable" (actual name may differ), and it is related to Call as is f.i. Iterable to Iterator, or Observable to Observer in the Rx pattern.
+The basic contract would be:
+class Callable<I, O> {
+   abstract Call<I, O> newCall(Channel ch);
+}
+
+Basic creation operations for Callable would be:
+static Callable<I, O> create(MethodDescriptor<I, O> method);
+static Callable<I, O> create(BiFunction<I, O> function);
+
+Sequential composition would be supported, as well as various ways to parallelize execution:
+<Q> Callable<I, Q> followedBy(Callable<O, Q> second);
+Callable<List<I>, List<O>> inParallel();
+...
+
+Building blocks for dealing with API programming patterns would be supported:
+Callable<I, O> retrying(RetryOptions options);
+<R> Callable<I,R> paging(Class<R> resourceType, PagingOptions options);
+
+Additional scenarios which might be supported by callables or related means:
+
+Resource modification (Read-Modify-Write cycle), with conditions
+Media upload and download
+Long running operations
+PubSub
+Conversion to/from Rx and to/from Java 8 streams (no need to reinvent the wheel here. If someone wants to do processing of responses or produce requests, those frameworks should have everything)
+...
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/517
+"WARN java.lang.IllegalStateException: Refcount has already reached zero" during shutdown · Issue #517 · grpc/grpc-java · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+We are frequently seeing this exception during server shutdown but not in all cases. I did a little digging and it looks like the SharedResourceHolder on DEFAULT_EXECUTOR is being called twice in ServerImpl.java: once when transportClosed() is called and again in serverShutdown(). Looks like serverShutdown() first shuts down all transports, so perhaps this is what is triggering the call to transportClosed() before it attempts to release the holder again for a second time.
+Thanks,
+David
+INFO  [2015-06-07 21:52:09,390] org.eclipse.jetty.server.handler
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/544
+Avoid GCM in unit tests
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+GCM is very slow, and doesn't provide any benefit in unit tests. Even if
+we were using tcnative and GCM is fast, using more available ciphers in
+tests still makes sense. With this change building with Java 7 works
+again, although that isn't the reason for the change.
+
+On my machine with parallel building, it cuts full build time from
+92 seconds to 39 seconds. For an incremental build after only changing
+an interop test, the build time is cut from 73 seconds to 15 seconds.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/623
+okhttp: make transport.start() async. by madongfly · Pull Request #623 · grpc/grpc-java · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+The basic ideas are:
+
+Do connecting in the same serializing executor that AsyncFrameWriter used, so that the stream operations like syncStream(), data() will be executed only after the connection is connected.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+https://github.com/grpc/grpc-java/issues/626
+OkHttpClientTransport.newCall should be async · Issue #626 · grpc/grpc-java · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Our API is async, and so doing blocking for MAX_CONCURRENT_STREAMS is breaking that. We should go fully async.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/636
+Catch exceptions thrown by Executor.execute · Issue #636 · grpc/grpc-java · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+direct executor lets RuntimeExceptions pass through the call stack. We need to defend against that in places we would permit direct executor. Even without direct executor, execute can throw with rejected exception, so it is really a case we should handle.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/656
+Reverse interceptor execution order by ejona86 · Pull Request #656 · grpc/grpc-java · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+The previous order was unintuitive as the following would execute in the
+reverse order:
+
+Channel channel;
+channel = ClientInterceptors.intercept(channel, interceptor1,
+                                                interceptor2);
+// vs
+channel = ClientInterceptors.intercept(channel, interceptor1);
+channel = ClientInterceptors.intercept(channel, interceptor2);
+After this change, the have equivalent behavior. With this change, there
+are no more per-invocation allocations and so calling 'next' twice is no
+longer prohibited.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/683
+Add a transport ready for use with retry by carl-mastrangelo · Pull Request #683 · grpc/grpc-java · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+This calls the listener from within start(). Do we want to permit the re-entrant behavior or run this on another thread?
+
+I think you will need to hold a lock on this in order to make sure that the listener is called in a thread-safe manner.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+  
+https://github.com/grpc/grpc-java/issues/765
+Flake: Cannot transition phase from STATUS to MESSAGE
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Perhaps a race between the deadline executor and the actual response. If the deadline is reached, the transport will be put in STATUS right?
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/789
+Simplify Netty pipeline using Buffering handler 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+The current pipeline configurations using one of the buffering handlers (tls, plaintext, etc.) are rather complicated and it's not always clear which handlers will handle exceptions in various cases.
+
+We currently add the buffering handler and the HTTP/2 handler at startup. The buffering handler holds any writes until the startup handshake (e.g. SSL/TLS) completes, at which point it directs all buffered writes to the HTTP/2 handler. While those writes are occuring, the buffering handler stays in the pipeline (this is due to threading behavior of Netty WRT writes occuring outside of the event loop). If any problems occur while those writes are taking place, exception handling could occur in either the buffering handler or the HTTP/2 handler. It would be desirable to guarantee that exception handling can occur in only a single place at any point in time.
+
+Proposed change:
+
+Part 1): Add a ChannelHandlerAdapter as the last handler in the pipeline. Netty has a race condition when writes occur from outside of the event loop. The last ChannelHandlerContext is extracted in this thread and then the write is called. If however, the pipeline is changed between when the context is obtained and the write occurs ... badness ensues. As a workaround, there is some hacky code in the buffering handler to account for this race. A better solution to this problem would be to simply enforce the existence of a handler at the tail of the pipeline which never changes. This will just be a pass-through, but must implement the write method (this is to avoid another Netty gotcha, where it will skip handlers if it has determined that they are uninterested in the event).
+
+Part 2): With the handler from Part 1 in place, the installation of the buffering and HTTP/2 handlers can be modified to a replace. Initially, only the buffering handler is installed (not the HTTP/2 handler). When the startup handshake completes successfully, the buffering handler will replace itself with the HTTP/2 handler, and then empty it's queued writes to the HTTP/2 handler.
+
+In this way we guarantee that only one of these handlers exists in the pipeline at a time. Failures due to the initial handshake will be handled by the buffering handler. Failures due to writes will always be handled by the HTTP/2 handler.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/792
+okHttp: Set max_concurrent_stream to 0 before the connection is connected. 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+So that the written messages will be queued inside the pending stream instead of the serializingExecutor.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/854
+{Channel,Server}.awaitTerminated should wait for application to complete processing · Issue #854 · grpc/grpc-java · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+As we discussed, we were going to have awaitTerminated() wait until all application notifications execute. We can achieve that by tracking number of unclosed calls (clientcall or servercall): when creating a new call register it, and after the application listener's close is called de-register it. In awaitTerminated it would wait for the registrations to become empty/zero.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/875
+InProcessTransport doesn't call onReady · Issue #875 · grpc/grpc-java · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+The in-process transport supports flow control and supports isReady(), but it never calls onReady(). It seems to be just an oversight/bug. Since the in-process transport connects immediately, onReady() should probably be called on the client immediately in newStream().
+Locking will be a little interesting since for a single request() both client and server listeners may need to be called (because numMessages can be > 1). It looks like {client,server}Requested() could maybe return a boolean for whether {client,server}Requested > 0 && {client,server}Requested <= numMessages, which would imply onReady() should be called.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+https://github.com/grpc/grpc-java/issues/919
+Make shared Executors daemons, and implement shutdownNow() by carl-mastrangelo · Pull Request #919 · grpc/grpc-java · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
