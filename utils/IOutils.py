@@ -28,3 +28,25 @@ def getPos2file(nlp, dataset, results):
             else:
                 tmplist.append(str(token.pos_))
         results.write(str(tmplist) + '\n')
+
+
+def getTestset(dataset):
+    lineList = []
+    for data in dataset:
+        line = data.replace('\n', '').replace('\r', '')
+        lineList.append(line)
+        # if str(line) == '5':
+        # print(len(str(line)))
+    results = {}
+    ls = []
+    number = 0
+    for line in lineList:
+        if line.isnumeric():
+            if number != 0:
+                results[number] = ls
+            number = int(line)
+            ls = []
+        else:
+            ls.append(line)
+
+    return results

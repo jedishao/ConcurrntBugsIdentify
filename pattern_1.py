@@ -163,3 +163,17 @@ def testKW(nlp, dataset):
     return results
 
 
+def finalversion(nlp, dataset):
+    results = []
+    index = 0
+    for sents in dataset:
+        cob = 0
+        cop, adv = False, False
+        doc = nlp(sents)
+        for token in doc:
+            if str(token.lemma_) in corpus.COB:
+                cob += 1
+        if cob >= 1:
+            results.append(index)
+        index += 1
+    return results
