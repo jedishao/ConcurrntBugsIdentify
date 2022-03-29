@@ -8,6 +8,8 @@ SYMP = ['deadlock', 'stick', 'stuck', 'hang']
 
 STE = ['thread', 'lock', 'transcation']
 
+COB = ['race', 'deadlock']
+
 NUM = []
 
 OBJ = ['dobj', 'conj']
