@@ -164,16 +164,22 @@ def testKW(nlp, dataset):
 
 
 def finalversion(nlp, dataset):
-    results = []
-    index = 0
+    cob, cop, adv, symp = 0, 0, 0, 0
     for sents in dataset:
-        cob = 0
-        cop, adv = False, False
         doc = nlp(sents)
         for token in doc:
             if str(token.lemma_) in corpus.COB:
                 cob += 1
-        if cob >= 1:
-            results.append(index)
-        index += 1
-    return results
+            elif str(token.lemma_) in corpus.COP:
+                cop += 1
+            elif str(token.lemma_) in corpus.SYMP:
+                symp += 1
+            elif str(token.lemma_) in corpus.TMP:
+                adv += 1
+    count = cop + symp + adv
+    if cob > 0:
+        return True
+    elif count > 1:
+        return True
+    else:
+        return False
