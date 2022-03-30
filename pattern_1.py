@@ -2,6 +2,9 @@ import ast
 import corpus
 
 
+# [CMI][COP]([TMP]+[SYMP])
+
+
 def getPtn1byPos(sents_with_pos):
     """
     The first step for pattern 1, find all the sentences have [CMI][VERB][ADV]
@@ -12,6 +15,7 @@ def getPtn1byPos(sents_with_pos):
     for line in sents_with_pos:
         list_list = ast.literal_eval(line)
         sentsList.append(list_list)
+    # for the readability of .txt file
     i = 0
     CVA_index = []
     CVSY_index = []
@@ -27,18 +31,18 @@ def getPtn1byPos(sents_with_pos):
                 a += 1
             elif str(token) == 'NOUN':
                 s += 1
-        if c == 1 and v > 0 and a > 0:  # and s == 0
-            CVA_index.append(i)
-        if c == 1 and v > 0 and s > 0:
-            CVSY_index.append(i)
+        if c == 1 and v > 0:
+            if a > 0:  # and s == 0
+                CVA_index.append(i)
+            elif s > 0:
+                CVSY_index.append(i)
         i += 1
     return CVA_index, CVSY_index
 
 
-def getPtn1byKw(nlp, sentences):
-    CVAS_set = []
-    C_set = []
-    for sents in sentences:
+def getPtn1byKw_CVA(nlp, dataset):
+    CVA_set = []
+    for sents in dataset:
         flag = True
         cmi, cop, tmp, symp = 0, 0, 0, 0
         doc = nlp(sents)
@@ -49,18 +53,28 @@ def getPtn1byKw(nlp, sentences):
                 cop += 1
             elif str(token.lemma_) in corpus.TMP:
                 tmp += 1
+        if cmi == 1:
+            if cop > 0 and tmp > 0:
+                CVA_set.append(sents)
+    return CVA_set
+
+
+def getPtn1byKw_CVSY(nlp, dataset):
+    CVSY_set = []
+    for sents in dataset:
+        cmi, cop, symp = 0, 0, 0
+        doc = nlp(sents)
+        for token in doc:
+            if str(token) == 'CMI':
+                cmi += 1
+            elif str(token.lemma_) in corpus.COP:
+                cop += 1
             elif str(token.lemma_) in corpus.SYMP:
                 symp += 1
         if cmi == 1:
-            if cop > 0 and tmp > 0 and symp == 0:
-                CVAS_set.append(sents)
-            elif cop > 0 and symp > 0:
-                CVAS_set.append(sents)
-            else:
-                C_set.append(sents)
-        # if cmi == 1:
-        #     CVAS_set.append(sents)
-    return CVAS_set, C_set
+            if cop > 0 and symp > 0:
+                CVSY_set.append(sents)
+    return CVSY_set
 
 
 def getSentsOfPtn1(nlp, coarse):
@@ -132,3 +146,40 @@ def getSentsOfPtn1_2(nlp, coarse):
                 if cmi and symp:
                     results.append(sent)
     return results
+
+
+def testKW(nlp, dataset):
+    results = []
+    index = 1
+    for sents in dataset:
+        count = 0
+        doc = nlp(sents)
+        for token in doc:
+            if str(token.lemma_) in corpus.SYMP or str(token.lemma_) in corpus.TMP:
+                count += 1
+        if count >= 1:
+            results.append(index)
+        index += 1
+    return results
+
+
+def finalversion(nlp, dataset):
+    cob, cop, adv, symp = 0, 0, 0, 0
+    for sents in dataset:
+        doc = nlp(sents)
+        for token in doc:
+            if str(token.lemma_) in corpus.COB:
+                cob += 1
+            elif str(token.lemma_) in corpus.COP:
+                cop += 1
+            elif str(token.lemma_) in corpus.SYMP:
+                symp += 1
+            elif str(token.lemma_) in corpus.TMP:
+                adv += 1
+    count = cop + symp + adv
+    if cob > 0:
+        return True
+    elif count > 1:
+        return True
+    else:
+        return False
