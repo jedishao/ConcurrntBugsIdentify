@@ -8,7 +8,7 @@ from utils import utils
 
 def main():
     nlp = spacy.load("en_core_web_sm")
-    conSents = open("results/projects/redisson_train.txt")
+    conSents = open("results/projects/redisson_train.txt", encoding='utf-8')
     # only_one = open('results/only_one_cmi.txt')
     # write_pos = open("./results/pos_concurrent.txt", "w")
     # read_pos = open("./results/pos_concurrent.txt")
