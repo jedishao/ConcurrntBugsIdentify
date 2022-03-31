@@ -1,8 +1,6 @@
-https://github.com/eclipse-vertx/vert.x/issues/57
+57
 Race condition in clustering · Issue #57 · eclipse-vertx/vert.x · GitHub
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 No description provided.
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 https://github.com/eclipse-vertx/vert.x/issues/60
 Race condition in event bus sending 
