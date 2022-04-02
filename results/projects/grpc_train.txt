@@ -1,0 +1,134 @@
+17
+Race for Netty between cancel and stream creation
+AbstractClientStream.cancel won't cancel the stream on the wire if it appears the stream has not yet been allocated, as is described by the comment:
+// Only send a cancellation to remote side if we have actually been allocated
+// a stream id and we are not already closed. i.e. the server side is aware of the stream.
+However, what happens if this is the case, is that the transport is not notified of the stream destruction, and the stream will still eventually be created by the transport and not be cancelled. This issue does not seem a problem with the OkHttp transport, since it allocates the stream id before returning any newly created stream. However, Netty delays id allocation until just before the stream headers are sent, which 1) is always done asynchronously and 2) may be strongly delayed due to MAX_CONCURRENT_STREAMS.
+It appears that the optimization in AbstractClientStream should be removed outright and sendCancel's doc be updated to specify the expectation to handle such cases (as opposed to directly cause RST_STREAM). Both OkHttp and Netty seem to be handling such cases already. More importantly, the optimization seems highly prone for races given that id allocation is occurring in the transport thread whereas AbstractClientStream.cancel is happening on some application thread; using the normal synchronization between application and transport threads seems more than efficient enough and simpler.
+
+18
+Decompression occurring in Transport thread
+Apparently we are decompressing in the transport thread just so that we are able to provide the correct byte length to messageRead(). It seems we should remove the length argument to messageRead(), use Buffers.openStream(nextFrame, true), pass that stream to messageRead() (instead of calling toByteArray), and then set nextFrame = null.
+
+116
+Buffer Messages until TLS Handshake and HTTP2 Negotiation complete
+When grpc uses Netty as the client transport all RPC calls (aka HTTP2 Streams) block until the TLS Handshake and the HTTP2 negotiation is complete.
+This blocking implementation (in grpc) is currently required as Netty's SslHandler doesn't buffer messages until the Handshake is complete ("You must make sure not to write a message while the handshake is in progress unless you are renegotiating."), and there is nothing to stop the user from starting to make RPC calls immediately.
+This behavior comes with two problems:
+With RPC calls blocking until the TLS Handshake is complete, every call launched before the TLS Handshake and HTTP2 Negotiation are done will block its thread from which one would expect async behavior though.
+In cases when a DirectExecutor is being used it might lead to the EventLoop blocking forever (deadlock effectively). There is several scenarios how a deadlock could happen. One such scenario is when you are writing a server in Netty and within that server you want to connect to a grpc service to fetch some data. If you now use a DirectExecutor and reuse the EventLoop of the server with the grpc client, the TLS handshake would block the server's EventLoop, which is also the very EventLoop responsible for completing the TLS HandShake. That way neither the server nor the client would ever make progress again.
+@nmittler , @ejona86 and I talked about this problem earlier today and we agreed to get rid of the blocking behavior by adding an additional ChannelHandler to the end of the pipeline (tail) that will buffer any data until TLS & HTTP2 are working. After that it will send the buffered messages through the pipeline and remove itself from the pipeline.
+@nmittler @ejona86 @louiscryan
+
+118
+Buffer RPC Calls for when the MAX_CONCURRENT_STREAMS limit is hit.
+The number of concurrent RPC calls we can do is limited by HTTP2's MAX_CONCURRENT_STREAMS setting. Currently when using Netty as the client transport, each call made after this limit is reached blocks its calling thread until the number of active streams goes below the maximum again. The blocking is necessary as otherwise Netty would simply reject the stream with a PROTOCOL_ERROR, thus we want to buffer those calls and only pass them to Netty once there is room for new streams again.
+Similar to #116 a user would again expect asynchronous behavior here.
+The proposed solution to this problem is to remove the before mentioned buffering / blocking from grpc-java and let Netty handle it instead. To do this we will add a new Http2ConnectionEncoder implementation to Netty that acts as a decorator to the DefaultHttp2ConnectionEncoder. It will intercept calls to writeHeaders, writeData and writeRstStream and buffer all frames of streams that have been created after the maximum streams limit was reached and pass through the others. The encoder will also add a listener to the connection so that when an active stream is closed the next stream from the buffer can be created. A call to writeRstStream will cause the buffered stream to be deleted from the buffer. Frames other than HEADERS, DATA and RST_STREAM will be passed directly to the DefaultHttp2ConnectionEncoder.
+We propose to contribute this change back to Netty as it will likely also be useful for other people using Netty's HTTP2 codec.
+
+120
+Remove blocking parts from NettyClientTransport
+NettyClientTransport#newStream is currently a blocking operation. It blocks until the HEADERS frame has been written on the wire. This is behavior is not what people who use our asynchronous API would come to expect.
+The blocking also is the cause for severe performance issues in the QPS Client as it results in more or less in as many threads being created as there are concurrent calls going on (We have seen ~850 Threads for 1000 concurrent calls, resulting in OOM).
+The blocking may also lead to deadlocking the EventLoop in cases where a DirectExecutor is used. One scenario where a deadlock might happen is when the EventLoop is not able to completely flush the HEADERS frame on the wire because then Netty would internally create a task to flush the remaining bytes and put this task in its task queue. This task can never be completed though as the EventLoop Thread is blocked by our very own newStream method waiting for the task to be completed ...
+This issue depends on #116 and #118 to be resolved first.
+
+
+238
+Race in Server handler initialization
+When initializing an incoming client connection, we call startAsync() on the transport, which registers the handler on a separate thread. This is obviously a race, and it would have probably been fixed if I had finished Service removal in #35.
+Symptom:
+DEBUG i.n.channel.DefaultChannelPipeline - Discarded inbound message SimpleLeakAwareByteBuf(PooledUnsafeDirectByteBuf(ridx: 0, widx: 259, cap: 1024)) that reached at the tail of the pipeline. Please check your pipeline configuration.
+The quickest fix would be to call awaitRunning() from initChannel(). That reduces the rate new connections can connect, but is probably the most expedient solution, until #35 is finished.
+
+246
+ClientAuthInterceptor synchronizes on wrong object
+The "this" in synchronized (this), is not the correct object to synchronize on:
+https://github.com/grpc/grpc-java/blob/master/auth/src/main/java/io/grpc/auth/ClientAuthInterceptor.java#L77
+It should be ClientAuthInterceptor.this instead. As the code stands, there is no synchronization between threads so you can see NullPointerExceptions as lastMetadata is set but not cached.
+
+340
+Buffer writes until flush, before sending to transport thread
+This design could benefit both okhttp, as it reduces synchronization overhead. It also would also improve flush behavior and make flushes predictable when MAX_CONCURRENT_STREAMS is exceeded.
+
+578
+OkHttpClientTransport.start should be async
+Connecting should be run in an executor. The main problem is that we currently can't create the frameWriter (an AsyncFrameWriter) until we have connected. The frameReader doesn't seem to be as big of an issue as we can just delay executing clientFrameHandler.
+We could try to use the same SerializingExecutor that is used inside AsyncFrameWriter. We would need to lazily initialize some things used on that thread, but we would be able to guarantee that the connection is started before real writes occur and they would be automatically queued.
+This would fix the true problem that is causing #577.
+
+583
+OkHttp's cancellation is not properly synchronized
+OkHttpClientStream.sendCancel() calls finishStream() from an application thread. But finishStream() calls transportReportStatus() without any lock held. That is not synchronized correctly, as transportReportStatus() may only be called from the transport thread (i.e., while lock is held).
+It seems that all usages of streams is done while lock is held except for within finishStream() and data(). data() can actually race with finishStream() and end up sending DATA frames after the RST_STREAM. It seems it would be best to just have stream protected by lock, because it having its own synchronization isn't providing much benefit and isn't leading to correct code.
+
+696
+In-process transport deadlock during shutdown
+Simultaneously shutting down both server and client sharing the same in-process transport can lead to a deadlock. During server shutdown, the transport lock is held while calling transportShutdown on the channel listener, which attempts to lock the channel. At the same time, channel.shutdownNow() holds the channel lock while also trying to lock the transport which leads to a deadlock:
+Found one Java-level deadlock:
+Found 1 deadlock.
+
+967
+Update examples in light of daemon threads
+At the very least, the hello world server example is broken, because it exits immediately. It needs a call to server.awaitTerminated(). This was caused by the swapping to daemon threads in 07a7279.
+As reported on StackOverflow.
+
+330
+OkHttpClientTransport.onGoAway() races with startPendingStreams()
+onGoAway has two phases: do things necessary under lock and final cleanup. In the first phase it collects the streams to terminate in the second and sets goAway.
+startPendingStreams() does not observe goAway and also creates new streams that should be failed due to the goAway. From an initial look, it seems it would be best to remove failPendingStreams() and simply integrate its two phases into onGoAway()'s two phases; that is, when holding the lock in onGoAway, replace pendingStreams with an empty list, and then when not holding the lock call transportReportStatus
+
+605
+BufferingHttp2ConnectionEncoder does not shutdown properly on channelInactive
+There is a nasty race condition during the handling of channelInactive in NettyClientHandler which goes a bit like this....
+This reproduces for NettyClientTransportTest.bufferedStreamsShouldBeClosedWhenTransportTerminates with 5.0beta5.
+Having streams being created as a side-effect of channel inactivation is undesirable.
+Potential fixes include Reorder teardown in Http2ConnectionHandler.BaseDecoder.channelInactive so encoders are closed() before streams are closed.
+Make BufferedHttp2ConnectionEncoder check channel.isActive() when trying to create streams.
+
+887
+OkHttp: race between sendCancel and sendFrame
+If sendCancel is called (by timeout for example) before the stream is started, a following sendFrame will cause a NPE:
+java.lang.NullPointerException
+
+999
+Possible race condition ServerImpl between start() and shutdown()
+I believe it may be possible if start and stop are called concurrently that the shared executor may not get released.  I'm not sure if this is an actual problem, but it does go against the @ ThreadSafe annotation.
+
+152
+The Future interface doesn't implement cancellation
+Currently Future returned by the future interface is a SettableFuture and it doesn't implement the RPC cancellation. It should be as easy as implementing AbstractFuture.interruptTask().
+
+317
+Integration test largeUnary failing
+We recently ran into an issue with one of our services where sending large responses results in transport errors being logged as well as eventual transport failure. I managed to reproduce this behavior in integration test largeUnary as well. When running a single iteration of largeUnary the test passes although connection errors are logged:
+(ThreadPoolExecutor.java:1142)
+However, running largeUnary in a simple loop causes transport failure after a few iterations. This happens with both netty and okhttp client variants, as well as with netty local channel.
+
+239
+Lacking preconditions for start() in ChannelImpl.CallImpl
+For instance, calling request() before start() has been called results in a NullPointerException.
+
+408
+Bad transport may be used for starting stream
+Currently we reference activeTransport to the newly created transport before the new transport is started , so if the new transport failed starting with an exception, the subsequent stream still try to use the bad activeTransport.
+This is by design.
+There are multiple, multiple races between channel and the transport that can't be solved in Channel because the Channel is creating streams on a different thread. Instead, the transport has to be coded to fail new streams after it has failed by throwing IllegalStateException.
+
+517
+"WARN java.lang.IllegalStateException: Refcount has already reached zero" during shutdown
+We are frequently seeing this exception during server shutdown but not in all cases. I did a little digging and it looks like the SharedResourceHolder on DEFAULT_EXECUTOR is being called twice in ServerImpl.java: once when transportClosed() is called and again in serverShutdown(). Looks like serverShutdown() first shuts down all transports, so perhaps this is what is triggering the call to transportClosed() before it attempts to release the holder again for a second time.
+
+626
+OkHttpClientTransport.newCall should be async
+Our API is async, and so doing blocking for MAX_CONCURRENT_STREAMS is breaking that. We should go fully async.
+
+636
+Catch exceptions thrown by Executor.execute
+direct executor lets RuntimeExceptions pass through the call stack. We need to defend against that in places we would permit direct executor. Even without direct executor, execute can throw with rejected exception, so it is really a case we should handle.
+
+875
+InProcessTransport doesn't call onReady
+The in-process transport supports flow control and supports isReady(), but it never calls onReady(). It seems to be just an oversight/bug. Since the in-process transport connects immediately, onReady() should probably be called on the client immediately in newStream().
+Locking will be a little interesting since for a single request() both client and server listeners may need to be called (because numMessages can be > 1). It looks like {client,server}Requested() could maybe return a boolean for whether {client,server}Requested > 0 && {client,server}Requested <= numMessages, which would imply onReady() should be called.
