@@ -6,37 +6,6 @@ No description provided.
 Race condition in event bus sending
 When two or more event loops attempt to send to the new server concurrently and the connection has not yet been setup.
 
-78
-Fix for incorrectly ordered code in JS web-app tutorial
-I was following the JS tutorial using beta5 and got stuck at the point after adding the SockJSBridge to web_server.js. The chrome console showed a 404 for http://localhost:8080/eventbus/info and none of the static data appeared in the page.
-After Googling I found this thread which suggested that the SockJSBridge needs to be initialized only after the request handler is attached to the server. Sure enough, switching the example code around fixed the problem.
-I've patched the markdown file with a corrected code sample.
-
-117
-remove redundant inner class by pidster
-The thread pool factory defined as an inner class is redundant, so is removed by this commit
-
-124
-Experimental boot loader by pidster
-Some corrections, should work in parallel with the original version so the Windows .bat file should still work.
-
-250
-Vert.x embedded capabilities and API
-This is to follow up the discussion thread at https://groups.google.com/forum/?fromgroups#!topic/vertx/dkFMoE-aq5I
-For the purpose of this request, I will call the application that is embedding Vert.x as MAIN application, and I will call EMBEDDED application the Vert.x system.
-In regards to the Vert.x embedded capabilities I would like to have when I use Vert.x in custom application are:
-Ability to start, stop Vert.x for a given configuration all via APIs
-Ability to run multiple isolated Verticles as per normal Vert.x design
-Ability to leverage thread-model with configurable options (thread pool sizes)
-Ability to leverage/run existing bus modules from a give package or a configured repo
-Ability to join Vert.x clusters
-Ability to run Verticles written in others languages (Ruby, Javascript, etc)
-Ability to install Verticle and bus handlers that live in MAIN application class loader
-this last ability is very important to give easy access from the EMBEDDED verticles to the MAIN application beans.
-A common example can be: expose REST/Web interface of an existing application. Somehow the Verticle must have access to the MAIN application beans with the given limitations that this verticle won't be isolated from the MAIN classloader and therefore there is no guarantee of state isolation. In other words even if the given verticle will be (classloader) isolated from the others verticle, will share the MAIN application classloader making his state vulnerable to access from other threads living in the MAIN classloader. It will be developer responsibility to guarantee consistency.
-Things that don't make sense while embedding Vert.x the main() and other startup scritps won't be used, a clean API must be provided configuration files, directory locations, and other external resources must be provided container functionality such as module-autodeployment or auto-relaod won't be required.
-The key abilities of Vert.x reside in the threading model, the polyglot engines, and the bus modularity, I would like to preserve those capabilities while embedding Vert.x
-
 303
 Race condition in deploying modules
 If deploy two modules of same name at same time, can result in one not being deployed.
@@ -74,25 +43,12 @@ After I change the
 It seems everything was ok.
 I wondering if it is proper to change the HashSet to ConcurrentHashSet, if so shall I make a pull request?
 
-473
-Little vertx threads improvement by jdonnerstag
-Unfortunately the code has diverged too much to apply this, so closing.
-
 477
 Container.exit() doesn't undeploy modules
 While trying to figure out why one of my new worker modules doesn't allow Vert.x to shut down cleanly, I realized that the approach I was taking doesn't work.  Container#exit() only calls VerticleManager#unblock(); it does not undeploy any verticles.  This means that a Verticle's stop() method is never called, and that any non-daemon threads spawned by a worker will keep the JVM from exiting.
 
-525
-Regression : ensure threads names are not modified (eg. by Jython) by julien3
-Regression from d564f0a
-
-584
-Document thread safety of core classes
-In the JavaDoc.
-People using them embedded need to know this
-
 646
-Rare exception during auto-redeploy.
+Rare exception during auto-redeploy
 When using the auto-redeploy feature in beta6 (and it is great, really great) I sometime get an exception like this:
 INFO: Module dk.bckfnn~mymod~1.0.0-SNAPSHOT has changed, reloading it.
 jun 17, 2013 10:06:46 AM io.netty.util.concurrent.SingleThreadEventExecutor$2 run
@@ -107,28 +63,14 @@ Synchronize require() in Ruby verticles
 When starting multiple instances of the same module/verticle type concurrently, and where the verticle does a require(), this can result in failures because require() in the shared ruby runtime is not threadsafe.
 We can fix this by overriding the require() method with a version that synchronizes access to the original version.
 
-759
-Adding possibility to use thread context class loader to load cluster.xml for embedded vert.x by gaol
-Can you make sure your commits are signed off as describer here https://groups.google.com/forum/?fromgroups#!topic/vertx/WjKTl9FXvjc ?
-
-799
-Remove usage of Thread-Local for performance reasons by normanmaurer
-@purplefox ok to merge in ?
-
-978
-Fix sendHead() in http client request by untoldwind
-If the underlying connection is already establish (e.g. by a previous GET request with keep alive), the connected() callback is invoked in the very same thread as sendHead(). Since the writeHead flag is set after the connect the HTTP header is actually never written.
-ATM the only workaround is to call sendHead() twice (which is very ugly).
-
-998
-Bug fix : unset the TCCL on wrong thread when executing blocking handler by vietj
-
 663
 Problem with shared map
 I'm currently debugging an issue I have with a shared map. It might be due to a misunderstanding on my part. If so, I'm sorry for the noise. Below is a minimal test case that demonstrates the problem. In the Putter verticle, I add a new map entry, and in the Getter verticle I
 Print the keySet().
 Print the result of containsKey() with the inserted key.
 But for some reason the two don't agree on the contents of the map. E.g. I get the output:
+[gameId: 1, playerId: 4]
+false
 So I'm guessing there's some concurrency issue at play here.
 I ran this test case with:
 The last two commands are just to trigger the Putter and Getter to do their jobs, respectively.
@@ -136,43 +78,3 @@ Best regards,
 Elvis Stansvik
 Test case:
 Starter.java
-
-926
-Enhanced RouteMatcher so routes can be updated and removed while in use by tcollinsworth
-Technically the try/finally should surround the for loop in the removeMatchingBindings method otherwise any concurrent route additions or concurrent removeMatchingBindings might cause ConcurrentModificationException.
-
-421
-Remove Context singleton by jdonnerstag
-static Context is a Singleton thus causing side effect during testing but more importantly, if more than one Vertx instance is running on one VM. The proposed change moves the threadlocal from Context into vertx (without static; no more singleton), which is already forwarded to almost all all major components and hence required only little changes. Most changes look like Context.getContext() => vertx.getContext().
-
-497
-Extend thread pool executor implementation
-The existing ThreadPoolExecutor implementations do not expose their metrics.
-Provide a custom ThreadPoolExecutorFactory that simplifies this and exposes the metrics, in preparation for the addition of JMX support.
-
-500
-Move language tests to associated language implementation.
-Moving the language tests to each language implementations test source set will make it easier for contributors to see the requirements for developing a language implementation.
-It may also mean that builds of the project can run faster through Gradle's parallelisation features.
-
-739
-Should vert.x add support for stm(software transaction memory)
-I dare think that vert.x should add support for stm(software transaction memory) for while developing we could not ignore the configuration for database transaction currently most of us make choice to integration with spring framework(for it provide the transaction feature) but it also has us to include many third party framework jar to support
-it(or integrated with jboss transcation) and most also have us to make vert.x under the embedded mod for developing.
-As akka itself provides support for stm, so why not vert.x adds support for it(or provide the third party solution for it in the manual)
-
-958
-Thread safety
-Some Java8-ification, cleanup and tweaks but mainly thread-safety work - need to make sure that some of our objects are usable from other threads - this is important for the non verticle embedded case.
-
-959
-Java8-ification, tweaks, and thread safety. Make sure Vert.x objects can...
-... be used from other threads - important in the embedded without verticle use case
-I assume the addition of the synchronization primitives at method scope are to allow for threaded use in varying contexts. What's the justification for this approach versus an internal lock?
-I like the new handling of Codecs. I've always thought that the Codec stuff should be completely removed from the EventBus into an external class/manger type thing. The EB is starting to look a bit crowded IMO.
-
-967
-Thread safety
-synchronized is removed but synchronization still occurs at line 1034. this was the only way to make the callback not under the lock (in a case runOnContext is called with the same thread and not in a new task in the eventloop).
-@purplefox purplefox on Nov 14, 2014
-agreed. although if a thread already owns the lock and encounters another synchronized for the same object, the overhead is zero aiui.

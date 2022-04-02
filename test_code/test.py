@@ -13,8 +13,9 @@ import corpus
 # orange = nlp(u"good")
 
 # print(apples.similarity(orange))
+import labelOfdata
 
-fileObject = open('../results/projects/redisson_train.txt', 'r')
+fileObject = open('../results/projects/vertx_train.txt', 'r')
 lineList = []
 for line in fileObject:
     lin = line.replace('\n', '').replace('\r', '')
@@ -32,7 +33,10 @@ for l in lineList:
 
 print(results)
 
-
+lab=[]
+for la in labelOfdata.vertx.keys():
+    lab.append(labelOfdata.vertx[la])
+print(lab)
 #
 # for line in fileObject:
 #     lineList.append(str(line))
