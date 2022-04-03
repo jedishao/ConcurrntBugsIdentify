@@ -1,0 +1,62 @@
+40
+Any plan to add TTL to a Lock operation? Don't confuse with tryLock with TIME.
+I refer to a situation where a thread is dead and leave a resource locked (deadlock).
+
+83
+Deadlock while obtaining lock
+Thread gets stuck while obtaining lock. Running 'keys L*' in redis-cli returns an empty list.
+The same lock name was likely concurrently obtained and held by another thread possibly on another jvm, and then released.
+
+84
+Lock reentrancy race
+in RedissonLock.tryLockInner(long, TimeUnit):
+At line A the lock key is set only if it doesn't exist (NX), but on line B it's set assuming it still exists. If the lock timeouts between A and B, another process may obtain the lock, which is then overwritten at B.
+Here's a test case:
+This will reliably fail if:
+run in debug mode with a breakpoint placed in RedissonLock.tryLockInner(long, TimeUnit) on line B (line 306 for 508b903).
+the breakpoint is released after waiting at least half a second
+The same problem is also present in the no-args method RedissonLock.tryLockInner(). (though a race condition is possible only if upgrading an expiring lock)
+I wonder if reentrancy support shouldn't be done purely in java.
+
+95
+When a connection is reused, the listener should still be subscribed.
+This, along with all previous fixes, finally removes all known deadlock conditions for #89
+
+251
+Report possible race issues
+Hi, Developers of mrniko/redisson,
+I am writing to report two race issues on use of ConcurrentHashMap. The issues are reported by our tool in an automatic way. Although manually confirmed, they would be false positives, given we do not know the specification of the program. We would very appreciate if you could check below for details and confirm with us whether they are real problems. For more information, please refer to our website:
+
+467
+Deadlock using RedissonMultiLock
+I am using simple app to run on 2 clients to test locks.
+While using RedissonMultiLock with 3 locks both clients blocks.
+
+507
+Possible race-condition in RemoteService
+Race-condition during ack checking is possible. For example, ack timeout = 1000 ms:
+worker receives Request in 999 ms sends ack, but it comes in 1010ms or something like that.
+client checks ack in 1000 ms and throws RemoteServiceAckTimeoutException
+worker invokes method
+To solve this problem ackObject was introduced. Worker or client set it to 1 via SETNX command. Worker set it during ack sending. Client during ack receiving.
+Client check ackObject only if ack timeout has occurred. If client can't set it means that worker have done it already. So client should poll an element from queue again.
+If worker can't set ackObject then it means that ack timeout already occurred on client side and invocation should skipped.
+
+530
+Deadlock on lock() and not only.
+I want to raise the issue with deadlocks again.
+This bug is still exist and making big headache. As before, It present itself only on very heavy loaded tasks, but in this case I is happens only when client talks to the claster which is located remotely.
+With a single-local or claster-local servers I was unable to reproduce it, but with remote server it happens with rate 1 / 20 (means from 20 runs of "heavy-load" JUnit test it happens only once)
+I can see where thread is locked down, it always stuck in CommandAsyncService.get(Future), on l.await() line and never exits from it. As I understand something wrong with mainPromise object, it is staying in incomplete state... and nobody change it. I tried to understand the logics in CommandAsyncService.async(...) function, which is actually deals with connection, retry, redirections and at end should release (or fail) the mainPromise object, but it is nightmare. All these spagetty with promises and futures made the code difficult to read and impossible to analyse. For sure BUG is there, but I am near to give-up. Any thoughts?
+
+724
+Possible PublishSubscribe race-condition
+There is a rare possibility of race-condition during channel re-connection and RTopic subscription invoked first time.
+
+987
+RScoredSortedSet race condition with Redis cluster
+We are running two redis servers in AWS, one master, and a replica. The read mode is the default (slave).
+In our application code we have something like this..
+The issue is that since reads go to the slave, addasync returns from master and before the data replicates to the other server it tries to pull the new revrank and returns null. imo the following api would make more sense and avoid that race condition..
+In the meantime I will either add retry logic or change the read mode to master but that's not going to scale in the long run so it would be nice to have this addressed.
+Cheers!

@@ -164,22 +164,34 @@ def testKW(nlp, dataset):
 
 
 def finalversion(nlp, dataset):
-    cob, cop, adv, symp = 0, 0, 0, 0
+    exc, cob, cop, adv, symp, ste, neg = 0, 0, 0, 0, 0, 0, 0
+    # keywords with exception
     for sents in dataset:
         doc = nlp(sents)
         for token in doc:
-            if str(token.lemma_) in corpus.COB:
-                cob += 1
-            elif str(token.lemma_) in corpus.COP:
-                cop += 1
-            elif str(token.lemma_) in corpus.SYMP:
-                symp += 1
-            elif str(token.lemma_) in corpus.TMP:
-                adv += 1
+            # if str(token.lemma_) in corpus.COB:
+            #     cob += 1
+            # if str(token.lemma_) in corpus.COP:
+            #     cop += 1
+            # elif str(token.lemma_) in corpus.SYMP:
+            #     symp += 1
+            # elif str(token.lemma_) in corpus.TMP:
+            #     adv += 1
+            # if str(token.lemma_) in corpus.EXC:
+            #     exc += 1
+            # elif str(token.lemma_) in corpus.STE:
+            #     ste += 1
+            if str(token.lemma_) in ['not']:
+                neg += 1
     count = cop + symp + adv
-    if cob > 0:
-        return True
-    elif count > 1:
+    # count = neg +
+    # ee = exc + ste
+    # if ee > 1 and exc > 0:
+    #     return True
+    # if cob > 0:
+    #     return True
+    if neg > 0:
         return True
     else:
         return False
+

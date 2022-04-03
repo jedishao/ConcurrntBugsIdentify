@@ -6,7 +6,9 @@ TMP = ['twice', 'again', 'forever', 'never', 'already']
 
 SYMP = ['deadlock', 'stick', 'stuck', 'hang']
 
-STE = ['thread', 'lock', 'transcation']
+EXC = ['exception', 'error']
+
+STE = ['thread', 'lock', 'transcation', 'race']
 
 COB = ['race', 'deadlock']
 

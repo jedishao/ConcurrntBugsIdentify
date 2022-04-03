@@ -6,23 +6,7 @@ from utils import IOutils
 from utils import utils
 
 
-def main():
-    nlp = spacy.load("en_core_web_sm")
-    conSents = open("results/projects/redisson_train.txt", encoding='utf-8')
-    # only_one = open('results/only_one_cmi.txt')
-    # write_pos = open("./results/pos_concurrent.txt", "w")
-    # read_pos = open("./results/pos_concurrent.txt")
-    # den_results = open("./results/den_concurrent.txt", "a")
-    results = {}
-    dataset = IOutils.getTestset(conSents)
-
-    for key in dataset.keys():
-        # print(dataset[key])
-        if pattern_1.finalversion(nlp, dataset[key]):
-            results[key] = 1
-        else:
-            results[key] = 0
-    print(results)
+def results(dataset):
     fp = []
     fn = []
     one = 0
@@ -30,16 +14,41 @@ def main():
         # matrix.append(k)
         if results[k] == 1:
             one += 1
-        if results[k] != labelOfdata.redisson_label[k]:
+        if results[k] != labelOfdata.redisson[k]:
             if results[k] == 1:
                 fp.append(k)
             else:
                 fn.append(k)
 
-    print(fp)
-    print(len(fp))
-    print(fn)
-    print(len(fn))
+
+def main():
+    nlp = spacy.load("en_core_web_sm")
+    conSents = open("results/projects/redisson_run.txt", encoding='utf-8')
+    # only_one = open('results/only_one_cmi.txt')
+    # write_pos = open("./results/pos_concurrent.txt", "w")
+    # read_pos = open("./results/pos_concurrent.txt")
+    # den_results = open("./results/den_concurrent.txt", "a")
+    results = {}
+    dataset = IOutils.getTestset(conSents)
+    print(dataset.keys())
+    for key in dataset.keys():
+        # print(dataset[key])
+        if pattern_1.finalversion(nlp, dataset[key]):
+            results[key] = 1
+        else:
+            results[key] = 0
+
+    one = []
+    zero = []
+    for re in results.keys():
+        if results[re] == 1:
+            one.append(re)
+        else:
+            zero.append(re)
+    print(len(one))
+    print(one)
+    print(len(zero))
+    print(zero)
     # file-->pos-->pattern1(SVO)-->targetFile(sents)-->dependence
     # dataset = getDataset2list(conSents)
     # dataset = IOutils.getDataset2list(conSents)

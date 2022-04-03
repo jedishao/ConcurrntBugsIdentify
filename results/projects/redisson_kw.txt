@@ -1,0 +1,251 @@
+5
+Hi there!
+As I understand, Future returned by RedisAsyncConnection moves API user back to the blocking world. Java futures are NOT non-blocking by nature, they have blocking get(). Thus API user needs to spawn new threads and say hello to threading overhead again. Then why Netty is used?
+I propose to return promises (Java's 8 CompletableFuture, Guava's ListenableFuture or jdeferred's promises).
+Thanks,
+Denis
+
+26
+In RBucket we have:
+get connection
+do something
+return back to pool
+Before using this, I was simply getting a RedisConnection from the connection manager like this:
+The RedisConnection class javadoc states that the connection is thread-safe. So I was keeping a singleton reference over one connection to issue some simple commands like get, set, del, ... from several threads.
+Questions:
+Is a RedisConnection class is intended to be used this way (multiple threads doing get/set/del ops) ?
+If yes, would it be possible to expose this behavior so that users could get from Redisson a connection (with auto-reconnect) ? This connection could be kept as a singleton ref during the entire lifetime of the server and not be returned back to the pool, because this connection will be used often (i.e. session management). This will avoid the burden of the get from pool / return to pool code.
+Thanks!
+
+35
+Note: I don't really know if there is a better place to ask for these sorts of questions... ;-)
+Besides all the cool features added to Redisson to use locks, queues, maps, etc... How does Redisson performs compared to Jedis in terms of:
+memory usage
+speed
+number of concurrent connections supported
+use in multi-threading app requiring in both case using a pool
+thread-safety
+etc...
+For having used both, I strongly prefer the api of Redisson (using publish subscribe in a reliable way with Jedis is a pain, and also there is no codec). But I am wondering, since their implementation only rely on simple sockets and a pool, how it compares to Redisson, which is based on Netty.
+Also concerning thread-safety, having already aked a question about it, and in both libraries a connection pool is used for each operation and it is better to do so. So does thread-safety on a connection level really used ?
+Thanks!
+
+49
+Using Distributed Map, put obj is ok, when get some obj by key, an exception will occur:
+the exception will not occur when get naive java obj (String, int, ...)
+
+64
+I didn't catch your code example above. What is FastThreadLocal ?
+
+53
+Does redisson support local cache?
+For some usage scenario, local read is very heavy, local write is not much, and the delay of data synchronization can be tolerated in seconds. Some configurable cache mechanism could be helpful.
+
+71
+Use Case:
+1)Extending the Redisson data types as part of a data abstraction layer.
+
+114
+General Question
+would calling lockInterruptibly(long leaseTime, TimeUnit unit) multiple times act like a watchdog reset? and reset the TTL
+
+139
+This allows me to check if there was an error setting the TTL on a RLock
+
+176
+A Redis script is transactional by definition, so everything you can do with a Redis transaction, you can also do with a script, and usually the script will be both simpler and faster. http://redis.io/topics/transactions
+PR includes
+solution for lock should expire automaticaly if lock owner gone #100 (automatic locks expiration)
+additional command output handlers required for scripts
+number of fixes in codecs and codec usages
+changes in tests to allow easy redis server location setup
+bugfix for timeout configuration in RedisClient introduced in commit e923b26
+
+183
+The idea is go away from lettuce due to some api limitiations and absence of commands pipeline support. Also command handling - encoding/decoding should be implemented with lock free approach.
+
+206
+ReentrantReadWriteLock implementation
+
+207
+Semaphore implementation
+
+208
+Introduce redisson-all.jar to have ability to run it as standalone node.
+Add isAnonymousClass checking for Runnable param
+Add ability to inject RedissonClient object into task
+
+223
+Rmap.addAndGetAsync (and any *Async methonds) - as i understand it shouldn't lock the calling thread, and return value (Future) as soon as possible.
+But if for any reason connection is not established yet the calling thread will be blocked.
+And if redis server is not available at all it will be blocked for very long period of time.
+Maybe i'm wrong but it doesn't look like async nor lock-free.
+
+224
+Is there a reason that RCountDownLatch doesn't implement RExpirable? I'd like to be able to create a CountDownLatch that goes to 0 or is deleted if countDown isn't called the desired number of times before a timeout.
+
+228
+Distribute lock code read
+
+278
+Why RedissonLock.tryLockInner not call 'setnx' command?
+
+305
+Сheck lock existence in forceUnlockAsync method
+
+306
+Extract Async interface for RedissonCountDownLatch
+
+348
+Implement AtomicReference
+
+376
+Implement MultiLock object based on RLock objects collection
+
+511
+Add RedissonFairLock
+
+512
+Added RedissonFairLockTest to travis job list
+
+505
+FstCodec: FSTObjectOutput proper usage
+Juste a little something.
+In the FstCodec, when an object in encoded, an FSTObjectOutput is first borrowed from the FSTConfiguration, then used to write the object and then closed.
+In the FST Serialization Recommended threadsafe Use, they recommend, when using the factory method, not closing this stream in order for it to be reused.
+I think that only an oos.flush() instead of a oos.close() will do the job here.
+Not a big deal, but still....
+
+521
+Storing simple key/value pairs in RMap vs. RBucket
+Sorry for using an issue for my question, but I couldn't find a mailing list to post this question to :)
+I am using Redisson to store key/value pairs and was wondering whether it makes more sense to use just plain RBuckets for each pair or a single RMap. I am especially interested in the possibility of sharding these across nodes in a cluster setup (PRO feature?). The key/value pairs are immutable and I would expect a lof of PUTs and DELETEs of them. Any pros and cons?
+I do also use a lot of different "types" (around 8) of caches (with different serializations and TTLs). Currently I am using a different redis databases  for each type. This means I have to create a new connection (aka RedisonClient) for each of these. This also means a lot of Threads in the different ThreadPools, though I am already sharing the EventLoopGroup between the instances. Would there be any particular drawback in storing all of these in just one database to avoid the Thread overhead?
+Thanks in advance!
+
+
+542
+RedissonRedLock.unlock() is using forceUnlockAsync()
+RedissonRedlLock overrides unlock() of RedissonMultiLock and it will force to unlock all instances.
+Is it more reasonable to use unlock method of RedissonMultiLock?
+
+554
+why key never don,t expire?
+i have use ression ,ression version is:2.2.15
+problem for: my code is mylock.lock(2L, TimeUnit.SECONDS);
+why ttl key value is loop for 20-30 ,  un locked.
+please help me,  thank you.
+
+577
+Replace Future interface to RFuture for async methods
+
+584
+lock.unlock
+if (lock.getHoldCount() > 0) this ,why not include unlock?
+
+588
+Q: To use RedissonRedLock locking mechanism do we need to create multiple locks?
+My use case is simple (I think). I need to make sure that for a specific keyspace, only one client can create an entry i.e. akey with value for it. If multiple threads/clients etc access the "creation" method at the very same time, then only the first one should get access to create the entry & all others should be rejected.
+I was trying to accomplish using the following code snippet.
+But this seems to not work at all. I executed this method using executor service, where I ran 2 threads in parallel.
+And it seems that one of the threads gets is able create the lock, do the work & unlock it. But the second one is not even able to get the lock & the method never finishes execution.
+After I changed the locking mechanism to Fair Lock things work as expected.
+I am not sure why this is? Is it because of the fact that the RedissonRedLock expects multiple locks? But I dont think I would need that in my case.
+FYI here is the snippet of code I use to paralelly start 2 executions.
+Am I doing something wrong?
+
+597
+Check that RLock still belongs to owner during renewal expiration
+No description provided.
+
+603
+Implement Semaphore.reducePermits method
+No description provided.
+
+604
+Implement PermitExpirableSemaphore
+In some cases ability to acquire permit with leaseTime is required. It's not possible to implement it with standard Semaphore object, because it's impossible to determine which permit should be expired. Example:
+How to know which timeout should be deleted in this case for 30 seconds or 15 seconds?
+To overcome this problem each acquired permit should have own unique id - 128-bits random number (UUID). So new RSemaphoreWithIds object should be introduced. Thus client could release only own acquired permits. If it tries to release wrong id or same id second time exception would be thrown.
+
+619
+Add `nettyThreads` and `executor` settings
+No description provided.
+
+633
+Implement random wait time in RedissonRedLock & RedissonMultiLock lock method
+This issue related to #575
+
+634
+Remain time calculation for RLock, RSemaphore and RCountDownLatch objects should take in account command time execution
+Remain time calculation should take in account command time execution when waitTime param defined during "sync" method invocation of RLock, RSemaphore, RCountDownLatch object.
+
+670
+redis lock subscribe
+when redis unlock publish the message,where is deal with the message and release semaphore?I can't find
+
+682
+Hi,
+we sometimes run into OutOfMemoryException while Redisson is trying to log a warning, since it includes the content in the log message [1]. Would it be possible to check for the instance type and in case of byte[] just log something else? I.e.
+From what I can see that's the only place where large content might be locked, though I am not sure about the log.error in CommandDecoder#decode, as it is using the CommandData.toString() content.
+Thanks,
+
+803
+add attribute distribution lock to "LiveObject"
+
+833
+Can RedissonFairLock work if my application was deployed on more than one server
+For example, i deploy my application on 3 servers
+now,
+the first request as req1 processed by server1
+the secoind request as req2 processed by server2
+the third request as req3 processed by server3
+will RedissonFairLock works to make sure three requests be synchronized and the process order is
+req1,req2,req3?
+
+875
+why excuted RAtomicLong.addAndGet(long delta), but Bucket.get() return Integer result?
+
+907
+Using locks to synchronize master/standby functionality?
+I'm using a lock in Hazelcast to implement "single master" functionality for service applications. Hazelcast's lock is release when the owner dies.
+So basically, say I have two applications that provide the same service, called A and B. A and B both start, but B grabs the lock for that service. B becomes ACTIVE and starts its processing. A becomes STANDBY and waits for that lock.
+B dies, the lock is released. A grabs the lock and it becomes ACTIVE and starts its processing.
+B restarts, tries to grab the lock but fails, so it becomes STANDBY and it waits for the lock.
+Now I read in a ticket that a lock is still held when the owning process dies, which is counter to what I need.
+Can you make any suggestions how to implement this functionality in Redisson?
+Thanks again
+
+955
+what is the best way  to store a MultiLock between web request?
+If i want to lock a MultiLock in a web request,and unlock it in another web request, what is the best
+way to store the multilock ? Maybe  the two web request will been distribute to different tomcat server.
+The root cause is we can not unlock a multilock with a lock name .
+
+956
+how to use redLock in cluster
+I have build the cluster of redis, 3 master, 3 slave. According to the Redlock algorithm: 'It tries to acquire the lock in all the N instances sequentially, using the same key name and random value in all the instances'.'
+i think every lock name is must same, it's right?the following is my example, this is right?
+Thanks!
+
+962
+Add RLockReactive
+No description provided.
+
+963
+Add RReadWriteLockReactive
+No description provided.
+
+966
+why not poll a RedisConnection directly without using connectionFuture
+in class CommandAsyncService 498-503 line
+final RFuture connectionFuture;
+In my opinion, after the bootstrap(RedissonClient redisson = Redisson.create(config)),we have
+Created serveral long connections  from the client to redis server.
+Can we poll the connection from che ClientConnectionsEntry.freeSubscribeConnections  directly
+without using the connectionFuture. I think using che connectionFuture is nonecessary。
+Who can answer the question？Thanks
+
+977
+Add RSemaphoreReactive
+No description provided.

@@ -15,7 +15,7 @@ import corpus
 # print(apples.similarity(orange))
 import labelOfdata
 
-fileObject = open('../results/projects/vertx_train.txt', 'r')
+fileObject = open('../results/projects/redisson_run.txt', 'r')
 lineList = []
 for line in fileObject:
     lin = line.replace('\n', '').replace('\r', '')
@@ -31,11 +31,12 @@ for l in lineList:
             results[number] = ls
         number = int(l)
 
-print(results)
+print(results.keys())
 
-lab=[]
-for la in labelOfdata.vertx.keys():
-    lab.append(labelOfdata.vertx[la])
+lab = []
+for la in labelOfdata.redisson.keys():
+    if labelOfdata.redisson[la] == 1:
+        lab.append(la)
 print(lab)
 #
 # for line in fileObject:

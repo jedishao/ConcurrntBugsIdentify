@@ -1,0 +1,200 @@
+39
+I'm trying to use Lock and Unlock on Jersey Resource.
+User makes a POST request
+System LOCK "A"
+System does some stuff
+System UNLOCK "A"
+User makes another POST request
+System LOCK "A"
+System does some stuff
+System UNLOCK "A"
+The system crashes at point 6 (view attachment).
+If i try to make some LOCK-UNLOCK in a while loop it works, but when i make these LOCK-UNLOCK from different Threads it does not works.
+WARN [2014-07-10 10:36:15,734] io.netty.channel.DefaultChannelPipeline: An exceptionCaught() event was fired, and it reached at the tail of the pipeline. It usually means the last handler in the pipeline did not handle the exception.
+
+106
+RedissonList iterator as it tries to keep "up to date" with data has a race condition in which if between the .hasNext() and the .next() call the set is emptied the list will throw NoSuchElementException.
+This also effects RedissonSet, but much less likely to hit the race condition. It causes RedissonSet line 96 to throw a null pointer exception.
+
+118
+when use lock,but throw some class cast exception,sample code :
+
+155
+lock.lock(2, TimeUnit.SECONDS)
+RLock lock = redisson.getLock("anyLock");
+lock.lock(2, TimeUnit.SECONDS);
+lock.unlock();
+run it ,report error:
+
+156
+lock.lock(2, TimeUnit.SECONDS) report error ERR wrong number of arguments for 'set' command
+RLock lock = redisson.getLock("anyLock");
+lock.lock(2, TimeUnit.SECONDS);
+lock.unlock();
+run it ,report error:
+
+169
+ConnectionManager call hangs forever if exception is thrown during Command processing
+Bug found that can cause MasterSlaveConnectionManager to hang forever on get() call if exception is thrown anywhere in CommandHandler.
+To replicate the bug, you can use RedissonMap with JsonJacksonCodec to put instance of class that doesn't have default constructor. When you try to fetch that object by using RedissonMap.get() call, deserialization of object will fail in MapOutput because of missing appropriate constructor and thread calling RedissonMap.get() will block forever.
+In more details, this is happening because get() method awaits forever on Future object, which is released when Command.complete() is called. This complete() call is executed in decode() method of CommandHandler after RedisStateMachine processes Redis response. If, for example, RedisStateMachine throws an exception, complete() won't be called and result/exception will never be set to the Future object. This is causing calling thread to block forever in MasterSlaveConnectionManager.get() method.
+Pull request with test case that is proving this bug and bug fix proposition will be published shortly.
+
+
+171
+Issue in locking on key in concurrency
+In my project, I have a servlet, that call a utility class.
+Utility class calls a wrapper class that  I have implemented over redisson lock.
+Wrapper class holds RLock object for a thread and provides lock and unlock methods that call RLock's lock and unlock method
+But while running a apache ab-test tool for concurrency, Following exception occurs.
+Can you tell me if I am missing something over here?
+java.lang.IllegalMonitorStateException: Attempt to unlock lock, not locked by current id: 286dad3d-dd4b-434e-bca7-30c35eec01eb thread-id: 158
+at org.redisson.RedissonLock$4.execute(RedissonLock.java:416)
+
+199
+Concurrency Issues
+Today I tried some tests to experiment with Redisson's performance using a build from /master and discovered significant concurrency issues. I'm not sure what the state of this code is, so perhaps these issues are known ones, but wanted to make sure you guys are aware of them.
+I have a very simple app that a) Creates a Redisson instance with a connection pool of 50 to masters and 50 to slaves, then b) creates a quick thread pool using Executors.newFixedThreadPool() and then c) feeds it Runnables, each of which generates a random string and adds it to the end of a Deque.
+Whenever I do any of these three things: 1) Add >1 millions of queued Runnables or 2) Increase the number of threads >20 or 3) add a .contains() call on the Deque (more on that in a sec), I get a ton of exceptions that don't include any of my code in the stack trace. Here's one such snippet:
+
+216
+Warnings about serialization exceptions being swallowed (using SerializationCodec with non-Serializable class)
+I wound up pulling my hair out after upgrading from 1.3.1 to 2.1.0 and starting some new projects - the root cause being my attempt to use the SerilizationCodec with objects that were not Serializable. Simplest reproduction:
+Expected: a warning about serialization with a root cause of a java.io.NotSerializableException.
+Actual: nothing in the logs, threads just hang around wait()ing on DefaultPromise.
+I'm not a netty expert so unfortunately I have no PR to fix this. My best guess at root cause lies in
+I get a nice warning message:
+
+254
+EOFException when I use RLock with SerializationCodec
+I configure Redisson to use SerializationCodec instead of default JsonJacksonCodec. Then I run my code in environment with concurrent threads and use Lock object to sync thread. After that I get exception and unlock only after expiration in 30 sec. Previous major version of Redisson does't contain this issues. Similar problem I have when I use CountDown.
+
+386
+Running out of connections
+I use Elasticache Redis as my redis server, 1 master, 1 slave (fairly large machine, this is an autoscaling micro webservice).  I used to use an older version and it worked good (from a connections point of view), but I had to upgrade from 2.1.2 due to distributed lock fixes. I am currently using 2.2.4, but after about 12-24 hours I see the " RedisConnectionException:Can't aquire connection from pool! " exceptions.
+I expected it had to do with Elasticache closing idle connections, so I turned that back off for now, but it didn't effect this behavior, it seems to be related with my update from 2.1.2 to 2.2.4.
+Does redisson not refresh its connection pool as connections close, do they timeout, or is this something else entirely?
+I am using SingleServer or MasterSlave Configuration, with defaults, the current behavior is seen with SingleServer. (I haven't added configurations for slaves yet)
+The only functionality I currently use in Redisson is the Distributed lock mechanism, to control 2 sets of locks.
+Flow of using lock: get lock, set expire to 15s, (try) process,(finally) unlock (or set lock to expire in 500ms)
+Redis has plenty of connections available. only 1300 or so used out of about 7k
+
+409
+ElasticacheCluster not working correctly with DistributedLocks
+I am trying to use redisson 2.2.7 for distributed locks. I have a 3 node Elasticache cluster with one of them as master.
+When I try to get lock using the following code, i get an error saying that i cant write to a Slave. My assumption is that i can feed a list of nodes to the redisson client as Elasticache nodes and it will figure out who the master is...is that not true?
+
+421
+orphan netty threads on connection failure
+If you try to create a RedissonClient and get a timeout error, the created netty threads aren't destroyed and you can never terminate the Java program but with a System.exit(). For example:
+If this code fails, then several netty threads remain in execution and they are never destroyed, because the "client" variable is the only point where you can "shutdown" those threads, but that RedissonClient instance hasn't been created (because an exception has been thrown).
+A possible solution is to shutdown the failed connection at MasterSlaveConnectionManager.init(), which is the point that all kind of connection managers run to create a connection. Surrounding:
+
+465
+Need suggestion for connection issue
+I am using a single server connection and set the connection pool size to 10.
+I have created multiple threads to test a code snippet where I am saving an object to RBucket<> object and deleting it afterwards in a same transaction block.
+I get following error sometime in the process,
+
+480
+Rlock Exception in cluster mode
+I am using redis 3.0.6 (4 node cluster ) and redisson version 2.2.5.
+Sometimes when I try lock a key I get the following exceptions:
+
+503
+Asynchronous lock release
+I'm trying to create an infrastructure where different machines acquire shared locks through Redisson. Once the lock is acquired, some async tasks gets done, finally, when I finish the job, I'm releasing the Redisson lock through the thread currently running - but i receive the following error
+java.lang.IllegalMonitorStateException: attempt to unlock lock, not locked by current thread by node id: xxxxx thread-id: 57
+So, I understand the meaning of that, but since I want to perform asynchronous work, I cannot use the acquiring thread to perform the release.
+Is there a solution for asynchronous programming? Should I not use Redisson Lock?
+I also references the issue on SO
+
+533
+Exception in using RedissonMultiLock
+The RedissonMultiLock works fine if all the redis nodes are alive.
+If I shutdown one of the redis nodes, it will throw RedisConnectionException
+Exception in thread "main" org.redisson.client.RedisConnectionException: Can't init enough connections amount! Only 0 from 5 were initialized. Server: /192.168.223.128:8000
+According to The Redlock algorithm, it should try to lock another node but not throw exception. Do I use RedissonMultiLock correctly?
+
+549
+redisson org.redisson.client.RedisException: NOAUTH Authentication required. exception in 2.1.0
+I got redisson org.redisson.client.RedisException: NOAUTH Authentication required. exception in 2.1.0
+The codes I used with Redisson are like this:
+When I try to call DistributedRedisLock.lock, it throws the exception described above
+
+573
+When set rertyAttemps to 0. connection pool size is 100. use 100 threads to read the redis cluster,it will throw exception like
+In my point of view,it's caused by LoadBalance.
+
+581
+tryLock method throw Exception:attempt to unlock lock, not locked by current thread by node id: 157ddcf5-0cc2-445d-bdea-98160a459bd5 thread-id: 42
+@mrniko
+hi, I stress test tryLock(long waitTime, long leaseTime, TimeUnit unit) method, throw Exception:attempt to unlock lock, not locked by current thread by node id: 157ddcf5-0cc2-445d-bdea-98160a459bd5 thread-id: 42
+unnormal code:
+normal code:
+1:but use lock() or lock(long leaseTime, TimeUnit unit) method is normal, why?
+2:tryLock() can not be block? lock() is blocked?
+3:tryLock(long waitTime, long leaseTime, TimeUnit unit) method, waitTime must be more than leaseTime value, otherwise occasionally have "attempt to unlock lock, not locked by current thread by node id" ecxeption, in stress test condition, why?
+
+612
+rlock error report
+[]
+
+738
+DistributedLock - Lock is getting acquired by multiple threads.
+We are using distributed lock to ensure that only one thread can take a particular action, among a group of threads spread across multiple EC2 instances.
+Here is a snippet that represents what we are doing.
+lockWaitTimeInSeconds=3
+lockLeaseTimeInSeconds=120 (our job processing finishes within this time)
+The issue is that we are seeing multiple threads from being able to acquire and do the job.
+What might be the issue? Do you see an error in the way we are using distributed locks...is there a better way to solve this problem?
+Our goal is to ensure that for every job run...only one thread gets to do the job.
+
+755
+Documentation on locks
+I was wondering if the documentation could be clarified on what happens to each of the lock types should one redisson node request a lock, then die before releasing it while another node is waiting on it.
+If the documentation could also note suggested ways to prevent deadlocking in such cases (should deadlocking occur) that would be good too. It's not clear if the distributed locking takes into account the loss of a node while holding a lock.
+
+780
+RedisNodeNotFoundException : Never catch, so never release the countdownlatch
+Hello,
+I have a cluster 3 master and 3 slaves, freshly created.
+You can see the conf in config dir and the creation script is init_and_launch_cluster.sh
+I launch a Java junit test which use Redisson.
+The test initialise redisson (with a scan interval set to 100 ms in order to produce the bug quicker),
+and insert key into the redis cluster in 15 thread.
+I launch the kill-random-redis-master_local.sh script. This script kill a random master, wait 15s (nodetimeout is 10s),
+relaunch the killed master, wait 10s, and start over.
+In generally 10 minutes, I have this exception :
+I can't understand why there is this exception, but it is not catch anywhere.
+So the thread which handle this command is stuck in await of the countdownlatch (CountDownLatch:148)
+After 15 RedisNodeNotFoundException, all my insert thread are stuck, i can't insert any more
+I made a little project on github, to help people reproduce this : https://github.com/ylorenza/redis_bug_producer
+Thanks for you're help
+Ps :  In pj you found the log of the last reproction i made (redis 3.2.6 and redission 3.3.0)
+logs.tar.gz
+
+87
+Unhandled IllegalStateException in RedissonLock #87
+I make heavy use of RLock in my app, and from time to time I find this in my logs.
+
+147
+Use issues ----lock(long leaseTime, TimeUnit unit)
+when i run the method
+com.lambdaworks.redis.RedisException: ERR wrong number of arguments for 'set' command
+How to solve this problem？
+
+178
+org.redisson.RedissonLock.tryLockInner throw java.lang.NullPointerException
+in RedissonLock.java Line 291, if Boolean res is null, the 291 line if(!res) throw java.lang.NullPointerException.
+
+229
+RLock.tryLock() thows Exception
+
+342
+use StringCodec with config，RedissonLock.tryLock() will occur ClassCastException
+
+355
+RedisConnectionException in High Concurrence
+I use redis as required data store, but in high concurrence, there are almost 50% connection failed. I want to know whether to optimize my redis server(use cluster) or my client? Is there any great suggestion? infinity retry until success? And My test code are list after:
+I use 1000 threads, and find that if i set the connection pool size to 500, the successful proportion achieves maximum。

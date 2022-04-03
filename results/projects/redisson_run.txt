@@ -1,0 +1,23 @@
+174
+Hello,
+I am using redis and redisson for my service deployed on Amazon server. Server has older kernel version that suffers from leap second bug. Will it affect redis or redisson lock in any manner? If so what is the possible solution to it?
+
+601
+Trouble with change from io.netty.util.concurrent.Future to org.redisson.api.RFuture
+I'm updating our app to use Redisson 2.3.0, and I'm having some trouble with the breaking change (io.netty.util.concurrent.Future to org.redisson.api.RFuture).
+Previously, I had been using the fastPutAsync method for RMapAsync like this:
+I'm trying to change that Future<Boolean> (which is the netty Future) to RFuture, but I'm having a bit of trouble getting it right.  All I'm really after is being able to log success/failures of the fastPutAsync() method.
+How would this be accomplished using the RFuture?
+
+674
+performance slow, when multiple thread
+I use 1000 mutliple thread to test the list operation. the costTime is average 1000~2000ms. But when single thread it costs 1ms.
+How many cores do you have? If you want 1000 mutliple thread works as fast as single in 1ms when you need a 1000 cores.
+
+899
+Cache ops taking too long
+Currently i'm using Redisson 2.7.4 as JCache Provider, and some cache operations are taking a long time to execute, as can be seen in the log below:
+in some cases it takes ~30 minutes
+Taking a thread dump I noticed that all EJB async threads (and some http-executor threads too) were in the same state, generating a huge queue in the async thread pool:
+Thread dump for some threads (Complete thread dump can be downloaded here):
+
