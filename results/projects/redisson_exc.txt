@@ -17,7 +17,7 @@ RedissonList iterator as it tries to keep "up to date" with data has a race cond
 This also effects RedissonSet, but much less likely to hit the race condition. It causes RedissonSet line 96 to throw a null pointer exception.
 
 118
-when use lock,but throw some class cast exception,sample code :
+when use lock, but throw some class cast exception,sample code :
 
 155
 lock.lock(2, TimeUnit.SECONDS)
@@ -120,7 +120,7 @@ According to The Redlock algorithm, it should try to lock another node but not t
 redisson org.redisson.client.RedisException: NOAUTH Authentication required. exception in 2.1.0
 I got redisson org.redisson.client.RedisException: NOAUTH Authentication required. exception in 2.1.0
 The codes I used with Redisson are like this:
-When I try to call DistributedRedisLock.lock, it throws the exception described above
+When I try to call CMI, it throws the exception described above
 
 573
 When set rertyAttemps to 0. connection pool size is 100. use 100 threads to read the redis cluster,it will throw exception like
@@ -137,7 +137,7 @@ normal code:
 3:tryLock(long waitTime, long leaseTime, TimeUnit unit) method, waitTime must be more than leaseTime value, otherwise occasionally have "attempt to unlock lock, not locked by current thread by node id" ecxeption, in stress test condition, why?
 
 612
-rlock error report
+CMI error report
 []
 
 738
@@ -149,11 +149,6 @@ lockLeaseTimeInSeconds=120 (our job processing finishes within this time)
 The issue is that we are seeing multiple threads from being able to acquire and do the job.
 What might be the issue? Do you see an error in the way we are using distributed locks...is there a better way to solve this problem?
 Our goal is to ensure that for every job run...only one thread gets to do the job.
-
-755
-Documentation on locks
-I was wondering if the documentation could be clarified on what happens to each of the lock types should one redisson node request a lock, then die before releasing it while another node is waiting on it.
-If the documentation could also note suggested ways to prevent deadlocking in such cases (should deadlocking occur) that would be good too. It's not clear if the distributed locking takes into account the loss of a node while holding a lock.
 
 780
 RedisNodeNotFoundException : Never catch, so never release the countdownlatch
@@ -175,26 +170,26 @@ Ps :  In pj you found the log of the last reproction i made (redis 3.2.6 and red
 logs.tar.gz
 
 87
-Unhandled IllegalStateException in RedissonLock #87
+Unhandled EXC in CMI #87
 I make heavy use of RLock in my app, and from time to time I find this in my logs.
 
 147
-Use issues ----lock(long leaseTime, TimeUnit unit)
+Use issues ---- lock (long leaseTime, TimeUnit unit)
 when i run the method
-com.lambdaworks.redis.RedisException: ERR wrong number of arguments for 'set' command
+EXC: ERR wrong number of arguments for 'set' command
 How to solve this problem？
 
 178
-org.redisson.RedissonLock.tryLockInner throw java.lang.NullPointerException
+CMI throw EXC
 in RedissonLock.java Line 291, if Boolean res is null, the 291 line if(!res) throw java.lang.NullPointerException.
 
 229
-RLock.tryLock() thows Exception
+CMI thows Exception
 
 342
-use StringCodec with config，RedissonLock.tryLock() will occur ClassCastException
+use StringCodec with config, CMI will occur EXC
 
 355
-RedisConnectionException in High Concurrence
+EXC in High Concurrence
 I use redis as required data store, but in high concurrence, there are almost 50% connection failed. I want to know whether to optimize my redis server(use cluster) or my client? Is there any great suggestion? infinity retry until success? And My test code are list after:
-I use 1000 threads, and find that if i set the connection pool size to 500, the successful proportion achieves maximum。
+I use 1000 threads, and find that if i set the connection pool size to 500, the successful proportion achieves maximum
