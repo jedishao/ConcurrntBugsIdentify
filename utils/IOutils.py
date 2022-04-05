@@ -39,11 +39,16 @@ def getTestset(dataset):
         # print(len(str(line)))
     results = {}
     ls = []
-    for line in lineList:
-        if line.isnumeric():
-            number = int(line)
+    index = 0
+    while index < len(lineList):
+        if lineList[index].isnumeric():
+            number = int(lineList[index])
+            index += 1
+            while index < len(lineList) and not lineList[index].isnumeric():
+                ls.append(lineList[index])
+                index += 1
+            index -= 1
             results[number] = ls
             ls = []
-        else:
-            ls.append(line)
+        index += 1
     return results
