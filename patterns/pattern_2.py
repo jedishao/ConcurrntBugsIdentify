@@ -11,7 +11,6 @@ def check(nlp, dataset):
             # constraint (race condition)
             if str(token.lemma_) == 'race':
                 if str(token.head) == 'condition':
-                    print(token)
                     return True
     return False
 
