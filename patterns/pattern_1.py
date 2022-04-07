@@ -6,6 +6,9 @@ def check(nlp, dataset):
     for line in dataset:
         doc = nlp(line)
         for token in doc:
+            if str(token.lemma_) == 'asynchronous':
+                return False
+        for token in doc:
             if str(token.lemma_) in corpus.STE:
                 # constraint (stm is noun (lock screen, etc.))
                 if str(token.pos_) == 'NOUN':
