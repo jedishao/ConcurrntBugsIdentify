@@ -12,6 +12,8 @@ def check(nlp, dataset):
             if str(token.lemma_) == 'race':
                 if str(token.head) == 'condition':
                     return True
+            if str(token.lemma_) == 'deadlock':
+                return True
     return False
 
 
