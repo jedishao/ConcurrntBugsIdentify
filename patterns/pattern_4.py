@@ -35,7 +35,6 @@ def check(nlp, dataset):
 def pattern4_1(token):
     flag, ste, sym = False, False, False
     for child in token.children:
-        print(str(child.dep_))
         # subject
         if str(child.dep_) in corpus.S:
             # [CMI]-->
