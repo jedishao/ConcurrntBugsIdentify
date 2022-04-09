@@ -8,7 +8,9 @@ def check(nlp, dataset):
     for line in dataset:
         doc = nlp(line)
         for token in doc:
-            if str(token.lemma_) in corpus.LOG:
+            if str(token.lemma_).lower() in corpus.LOG:
                 if str(token.pos_) == 'NOUN':
+                    return True
+                elif str(token) == 'S_T_A':
                     return True
     return False
