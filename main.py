@@ -1,47 +1,49 @@
 import spacy
 
+import Identify
 import labelOfdata
-import pattern_1
 from utils import IOutils
-from utils import utils
 
 
-def results(dataset):
+def ree(dataset):
     fp = []
     fn = []
     one = 0
     for k in dataset.keys():
         # matrix.append(k)
-        if results[k] == 1:
+        if dataset[k] == 1:
             one += 1
-        if results[k] != labelOfdata.redisson[k]:
-            if results[k] == 1:
+        if dataset[k] != labelOfdata.grpc[k]:
+            if dataset[k] == 1:
                 fp.append(k)
             else:
                 fn.append(k)
+    return fp, fn
 
 
 def main():
     nlp = spacy.load("en_core_web_sm")
-    conSents = open("results/projects/redisson_run.txt", encoding='utf-8')
+    conSents = open("results/projects/grpc_train.txt", encoding='utf-8')
+    #  conSents = open("results/projects/test.txt", encoding='utf-8')
+    # conSents = open("results/projects/redisson_pp.txt", encoding='utf-8')
     # only_one = open('results/only_one_cmi.txt')
     # write_pos = open("./results/pos_concurrent.txt", "w")
     # read_pos = open("./results/pos_concurrent.txt")
     # den_results = open("./results/den_concurrent.txt", "a")
-    results = {}
+    result = {}
     dataset = IOutils.getTestset(conSents)
-    print(dataset.keys())
+
     for key in dataset.keys():
-        # print(dataset[key])
-        if pattern_1.finalversion(nlp, dataset[key]):
-            results[key] = 1
+        if Identify.identify(nlp, dataset[key], key):
+            result[key] = 1
         else:
-            results[key] = 0
+            result[key] = 0
 
     one = []
     zero = []
-    for re in results.keys():
-        if results[re] == 1:
+    #print(result)
+    for re in result.keys():
+        if result[re] == 1:
             one.append(re)
         else:
             zero.append(re)
@@ -69,7 +71,9 @@ def main():
     # for sent in C_set:
     #     print(sent)
     # print(dataset[sent], end="")
-
+    fp, fn = ree(result)
+    print(fp)
+    print(fn)
     conSents.close()
     # only_one.close()
 
