@@ -52,25 +52,25 @@ def main():
     print(len(zero))
     print(zero)
     # file-->pos-->pattern1(SVO)-->targetFile(sents)-->dependence
-    # dataset = getDataset2list(conSents)
-    # dataset = IOutils.getDataset2list(conSents)
-    # IOutils.getPos2file(nlp, dataset, write_pos)
+    # data = getDataset2list(conSents)
+    # data = IOutils.getDataset2list(conSents)
+    # IOutils.getPos2file(nlp, data, write_pos)
     # write_pos.close()
-    # test_results = pattern_1.testKW(nlp, dataset)
+    # test_results = pattern_1.testKW(nlp, data)
     # CVA_index, CVSY_index = pattern_1.getPtn1byPos(read_pos)
-    # CVA_dataset = utils.getSentsByIndex(dataset, CVA_index)
-    # CVSY_dataset = utils.getSentsByIndex(dataset, CVSY_index)
+    # CVA_dataset = utils.getSentsByIndex(data, CVA_index)
+    # CVSY_dataset = utils.getSentsByIndex(data, CVSY_index)
     # CVA_set = pattern_1.getPtn1byKw_CVA(nlp, CVA_dataset)
     # CVSY_set = pattern_1.getPtn1byKw_CVSY(nlp, CVSY_dataset)
 
     # for sent in CVAS_set:
-    #     print(dataset[sent], end="")
+    #     print(data[sent], end="")
 
     print('\n' + '==============================================')
     # print(CVSY_index)
     # for sent in C_set:
     #     print(sent)
-    # print(dataset[sent], end="")
+    # print(data[sent], end="")
     fp, fn = ree(result)
     print(fp)
     print(fn)
