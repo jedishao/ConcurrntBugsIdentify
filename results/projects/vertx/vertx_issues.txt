@@ -1,0 +1,155 @@
+
+
+zzzzz
+3540
+DatagramSocket multicast group listen improvement · Issue #3540 · eclipse-vertx/vert.x · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+The DatagramSocket#listenMulticastGroup(String, Handler<AsyncResult<DatagramSocket>>) is almost impossible to use because it will not be able to select a valid network interface, ending up with:
+SEVERE: Unhandled exception
+java.lang.NullPointerException: networkInterface
+	at io.netty.util.internal.ObjectUtil.checkNotNull(ObjectUtil.java:33)
+	at io.netty.channel.socket.nio.NioDatagramChannel.joinGroup(NioDatagramChannel.java:409)
+	at io.netty.channel.socket.nio.NioDatagramChannel.joinGroup(NioDatagramChannel.java:371)
+	at io.netty.channel.socket.nio.NioDatagramChannel.joinGroup(NioDatagramChannel.java:365)
+	at io.vertx.core.datagram.impl.DatagramSocketImpl.listenMulticastGroup(DatagramSocketImpl.java:96)
+
+Vert.x delegates the call to the Netty datagram channel joinGroup(InetAddress) which fails. This method is actually not tested in Netty, which makes me think that it is error prone.
+We should either
+1/ keep it and do a better job at finding a valid network interface
+2/ an issue should be opened in Netty to improve the behavior of this method (perhaps it is not possible)
+3/ the method should be deprecated in Vert.x 3 and removed in Vert.x 4 to force users to provide a network interface
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+3541
+HTTP with TLS should disable H2C · Issue #3541 · eclipse-vertx/vert.x · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+H2C is restricted to plain text, the HTTP server should not configure any H2C handler (direct or with HTTP upgrade) when running a TLS configured server. Currently it configures Http1xUpgradeToH2CHandler but not Http1xOrH2CHandler.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+3542
+Server WebSocket close operation should not throw IllegalStateException when already closed · Issue #3542 · eclipse-vertx/vert.x · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Like WebSocket client, also there is strong point for doing this.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+3543
+HTTP client request timeout will not reschedule a timer when response data has been received · Issue #3543 · eclipse-vertx/vert.x · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+The handling of the HTTP client request internal for request timeout might be not rescheduled when the timer fires and data has been received. This happens because the timer handling will not reset the request timer state and will reschedule a timer that will cancel the timer that has just been reset.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+3544
+[Doc] Broken link on https://vertx.io/docs/vertx-junit5/java/ · Issue #3544 · eclipse-vertx/vert.x · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+On https://vertx.io/docs/vertx-junit5/java/, there is a broken link at the bottom of the page: on the JUnit 5 additional extensions, the
+link to Vert.x Junit 5 Web Client leads to a 404
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+3545
+Enabling Micrometer metrics while using a UNIX native domain socket causes NPE · Issue #3545 · eclipse-vertx/vert.x · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Questions
+If having enabled MicrometerMetrics while connecting to an UNIX native domain socket it result in an NPE when io.vertx.core.net.impl.SocketAddressImpl is instantiated. The SocketAddress is instantiated with a port, host constructor but the host argument is null and it has a require not null check in the constructor.
+The issue can be avoided by turning off Micrometer but a more precise solution is to disable NET_CLIENT Metrics domain.
+The stack trace:
+java.lang.NullPointerException: no null host accepted at java.util.Objects.requireNonNull(Objects.java:247) ~[?:?] at io.vertx.core.net.impl.SocketAddressImpl.<init>(SocketAddressImpl.java:30) ~[vertx-core-3.9.2.jar:3.9.2] at io.vertx.micrometer.impl.VertxNetClientMetrics$Instance.connected(VertxNetClientMetrics.java:65) ~[vertx-micrometer-metrics-3.9.2.jar:3.9.2] at io.vertx.micrometer.impl.VertxNetClientMetrics$Instance.connected(VertxNetClientMetrics.java:56) ~[vertx-micrometer-metrics-3.9.2.jar:3.9.2] at io.vertx.core.net.impl.NetClientImpl.lambda$null$5(NetClientImpl.java:223) ~[vertx-core-3.9.2.jar:3.9.2] at io.vertx.core.impl.ContextImpl.executeTask(ContextImpl.java:366) ~[vertx-core-3.9.2.jar:3.9.2] at io.vertx.core.impl.EventLoopContext.execute(EventLoopContext.java:43) ~[vertx-core-3.9.2.jar:3.9.2] at io.vertx.core.impl.ContextImpl.executeFromIO(ContextImpl.java:229) ~[vertx-core-3.9.2.jar:3.9.2] at io.vertx.core.impl.ContextImpl.executeFromIO(ContextImpl.java:221) ~[vertx-core-3.9.2.jar:3.9.2] at io.vertx.core.net.impl.NetClientImpl.lambda$connected$6(NetClientImpl.java:221) ~[vertx-core-3.9.2.jar:3.9.2] at io.vertx.core.net.impl.VertxHandler.setConnection(VertxHandler.java:85) ~[vertx-core-3.9.2.jar:3.9.2] at io.vertx.core.net.impl.VertxHandler.handlerAdded(VertxHandler.java:102) ~[vertx-core-3.9.2.jar:3.9.2] at io.netty.channel.AbstractChannelHandlerContext.callHandlerAdded(AbstractChannelHandlerContext.java:938) ~[netty-transport-4.1.51.Final.jar:4.1.51.Final] at io.netty.channel.DefaultChannelPipeline.callHandlerAdded0(DefaultChannelPipeline.java:609) ~[netty-transport-4.1.51.Final.jar:4.1.51.Final] at io.netty.channel.DefaultChannelPipeline.addLast(DefaultChannelPipeline.java:223) ~[netty-transport-4.1.51.Final.jar:4.1.51.Final] at io.netty.channel.DefaultChannelPipeline.addLast(DefaultChannelPipeline.java:195) ~[netty-transport-4.1.51.Final.jar:4.1.51.Final] at io.vertx.core.net.impl.NetClientImpl.connected(NetClientImpl.java:232) ~[vertx-core-3.9.2.jar:3.9.2] at io.vertx.core.net.impl.NetClientImpl.lambda$doConnect$3(NetClientImpl.java:187) ~[vertx-core-3.9.2.jar:3.9.2] at io.vertx.core.net.impl.ChannelProvider.lambda$connect$1(ChannelProvider.java:78) ~[vertx-core-3.9.2.jar:3.9.2] at io.vertx.core.net.impl.ChannelProvider.connected(ChannelProvider.java:160) ~[vertx-core-3.9.2.jar:3.9.2] at io.vertx.core.net.impl.ChannelProvider.lambda$handleConnect$2(ChannelProvider.java:143) ~[vertx-core-3.9.2.jar:3.9.2] at io.netty.util.concurrent.DefaultPromise.notifyListener0(DefaultPromise.java:577) ~[netty-common-4.1.51.Final.jar:4.1.51.Final] at io.netty.util.concurrent.DefaultPromise.notifyListenersNow(DefaultPromise.java:551) ~[netty-common-4.1.51.Final.jar:4.1.51.Final] at io.netty.util.concurrent.DefaultPromise.notifyListeners(DefaultPromise.java:490) ~[netty-common-4.1.51.Final.jar:4.1.51.Final] at io.netty.util.concurrent.DefaultPromise.setValue0(DefaultPromise.java:615) ~[netty-common-4.1.51.Final.jar:4.1.51.Final] at io.netty.util.concurrent.DefaultPromise.setSuccess0(DefaultPromise.java:604) ~[netty-common-4.1.51.Final.jar:4.1.51.Final] at io.netty.util.concurrent.DefaultPromise.trySuccess(DefaultPromise.java:104) ~[netty-common-4.1.51.Final.jar:4.1.51.Final] at io.netty.channel.DefaultChannelPromise.trySuccess(DefaultChannelPromise.java:84) ~[netty-transport-4.1.51.Final.jar:4.1.51.Final] at io.netty.channel.epoll.AbstractEpollChannel$AbstractEpollUnsafe.fulfillConnectPromise(AbstractEpollChannel.java:615) ~[netty-transport-native-epoll-4.1.51.Final-linux-x86_64.jar:4.1.51.Final] at io.netty.channel.epoll.AbstractEpollChannel$AbstractEpollUnsafe.connect(AbstractEpollChannel.java:563) ~[netty-transport-native-epoll-4.1.51.Final-linux-x86_64.jar:4.1.51.Final] at io.netty.channel.DefaultChannelPipeline$HeadContext.connect(DefaultChannelPipeline.java:1342) ~[netty-transport-4.1.51.Final.jar:4.1.51.Final] at io.netty.channel.AbstractChannelHandlerContext.invokeConnect(AbstractChannelHandlerContext.java:548) ~[netty-transport-4.1.51.Final.jar:4.1.51.Final] at io.netty.channel.AbstractChannelHandlerContext.connect(AbstractChannelHandlerContext.java:533) ~[netty-transport-4.1.51.Final.jar:4.1.51.Final] at io.netty.channel.AbstractChannelHandlerContext.connect(AbstractChannelHandlerContext.java:517) ~[netty-transport-4.1.51.Final.jar:4.1.51.Final] at io.netty.channel.DefaultChannelPipeline.connect(DefaultChannelPipeline.java:978) ~[netty-transport-4.1.51.Final.jar:4.1.51.Final] at io.netty.channel.AbstractChannel.connect(AbstractChannel.java:253) ~[netty-transport-4.1.51.Final.jar:4.1.51.Final] at io.netty.bootstrap.Bootstrap$3.run(Bootstrap.java:250) ~[netty-transport-4.1.51.Final.jar:4.1.51.Final] at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:164) ~[netty-common-4.1.51.Final.jar:4.1.51.Final] at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:472) ~[netty-common-4.1.51.Final.jar:4.1.51.Final] at io.netty.channel.epoll.EpollEventLoop.run(EpollEventLoop.java:387) ~[netty-transport-native-epoll-4.1.51.Final-linux-x86_64.jar:4.1.51.Final] at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:989) ~[netty-common-4.1.51.Final.jar:4.1.51.Final] at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74) ~[netty-common-4.1.51.Final.jar:4.1.51.Final] at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30) ~[netty-common-4.1.51.Final.jar:4.1.51.Final] at java.lang.Thread.run(Thread.java:830) [?:?] 
+Version
+3.9.2 (and all down to 3.9.0). Haven't tested 3.8.X because the Redis client that we use for the native socket was added in 3.9.
+Context
+I ran into the issue when combining the Vertex Redis client to connect via UNIX domain socket while having Vertx Micrometer active.
+Do you have a reproducer?
+https://github.com/Stimzz/vertx-metrics-native-socket-reproducer
+Run the unit test and the test will crash with NPE. Uncomment the .addDisabledMetricsCategory(MetricsDomain.NET_CLIENT) line in the test when setting MetricsOptions and the case will succeed (to prevent Micrometer client from attempting to log the connection event on the domain socket).
+The unit test just use the the NetClient directly on a domain socket. We initially discovered this when using the Redis client but this works as well more directly.
+Steps to reproduce
+
+Activate Vertx micrometer
+Activate native transport and attempt connecting to a UNIX domain socket. The connection will throw a NPE.
+
+Extra
+Observed on Ubuntu 18.04 and 20.04 both running Adoptopenjdk 13 hotspot.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+3546
+`RecordParser` issue in Vert.x 3.9.2 · Issue #3546 · eclipse-vertx/vert.x · GitHub
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Version
+3.9.2
+Context
+Unfortunately this commit broke something for us after upgrading to 3.9.2. We use a RecordParser to parse a chunked http response. The RecordParser is trying to re-use the input buffers for parsing but when using ssl, the response buffers returned by netty have their internal maxCapacity set to the length of the chunk, which means nothing can be added to these buffers. As a consequence, the following exception occurs:
+java.lang.IndexOutOfBoundsException: writerIndex(1) + minWritableBytes(1) exceeds maxCapacity(1): UnpooledByteBufAllocator$InstrumentedUnpooledUnsafeDirectByteBuf(ridx: 0, widx: 1, cap: 1/1)
+  at io.netty.buffer.AbstractByteBuf.ensureWritable0(AbstractByteBuf.java:295)
+  at io.netty.buffer.AbstractByteBuf.ensureWritable(AbstractByteBuf.java:282)
+  at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1104)
+  at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1097)
+  at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1088)
+  at io.netty.buffer.WrappedByteBuf.writeBytes(WrappedByteBuf.java:780)
+  at io.vertx.core.buffer.impl.BufferImpl.appendBuffer(BufferImpl.java:209)
+  at io.vertx.core.parsetools.impl.RecordParserImpl.handle(RecordParserImpl.java:283)
+  at io.vertx.reactivex.core.parsetools.RecordParser.handle(RecordParser.java:460)
+
+Reproducer
+Here is a reproducer that succeeds with Vert.x 3.9.1 but fails with Vert.x 3.9.2:
+@Test
+public void testRecordParser(TestContext ctx) {
+  var o = Observable.fromArray("a", "\n", "b\nc")
+    // this is how the buffers are returned from netty in a chunked ssl http response:
+    .map(s -> Buffer.buffer(UnpooledByteBufAllocator.DEFAULT.directBuffer(s.length(), s.length())).appendString(s));
+    
+  RecordParser.newDelimited("\n", o).toObservable()
+    .doOnNext(b -> System.out.println("parsed: " + b.toString()))
+    .ignoreElements()
+    .subscribe(CompletableHelper.toObserver(ctx.asyncAssertSuccess()));
+}
+So in a nutshell the RecordParser now expects the buffers that it is given to be writeable which was not the case in the previous version. Was that change intentional?
+Other Reproducer
+Here's another reproducer that demonstrates how we ran into this issue. The following test also passes with Vert.x 3.9.1 and fails/hangs with Vert.x 3.9.2 (we use H2 but it happens for both protocols):
+@RunWith(VertxUnitRunner.class)
+public class RecordParserTest {
+
+  private Vertx vertx;
+  private int port;
+
+  @Before
+  public void setUp(TestContext ctx) {
+    vertx = Vertx.vertx();
+    vertx.createHttpServer(new HttpServerOptions()
+      .setSsl(true)
+      .setPemKeyCertOptions(new PemKeyCertOptions()
+        // openssl req -x509 -newkey rsa:4096 -nodes -keyout key.pem -out cert.pem -days 365
+        .setKeyPath("key.pem")
+        .setCertPath("cert.pem")))
+      .requestHandler(req -> req.response()
+        .setChunked(true)
+        .write(Buffer.buffer("a"))
+        .write(Buffer.buffer("\n"))
+        .write(Buffer.buffer("b\nc"))
+        .end())
+      .rxListen(0)
+      .doOnSuccess(s -> port = s.actualPort())
+      .subscribe(SingleHelper.toObserver(ctx.asyncAssertSuccess()));
+  }
+
+  @Test
+  public void testGet(TestContext ctx) {
+    var req = vertx.createHttpClient(new HttpClientOptions()
+      .setSsl(true)
+      .setTrustAll(true)
+      .setDefaultPort(port)).get("/");
+
+    var res = req.toObservable()
+      .firstOrError()
+      .flatMapObservable(HttpClientResponse::toObservable);
+
+    RecordParser.newDelimited("\n", res).toObservable()
+      .doOnNext(b -> System.out.println("received: " + b.toString()))
+      .count()
+      .doOnSuccess(n -> ctx.assertEquals(3L, n))
+      .subscribe(SingleHelper.toObserver(ctx.asyncAssertSuccess()));
+
+    req.end();
+  }
+}
+Our workaround for now is to copy the buffers before passing them to the RecordParser but I think it'd be better for the RecordParser to treat its input as read-only and manage the buffers it needs for parsing internally.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
