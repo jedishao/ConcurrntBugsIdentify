@@ -6,6 +6,7 @@ __pycache__/
 
 # C extensions
 *.so
+
 .gitignore
 # Distribution / packaging
 .Python
@@ -23,7 +24,6 @@ var/
 wheels/
 share/python-wheels/
 *.egg-info/
-dataset/
 .idea/
 .installed.cfg
 *.egg
@@ -139,4 +139,3 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-
