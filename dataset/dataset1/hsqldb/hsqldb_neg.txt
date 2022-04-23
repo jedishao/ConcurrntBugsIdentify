@@ -9695,18 +9695,9 @@ SELECT NEXT VALUE FOR test1 FROM
 INFORMATION_SCHEMA.SYSTEM_SEQUENCES;
 This will return 3 rows instead of just one with the
 values:
-1
-2
-3
 Repeating the SELECT will produce a result of:
-4
-5
-6
 If you change the SELECT to a different sequence like
 test2, it will return a rowset of 3 as follows:
-1
-2
-3
 So each sequence maintains individual counts but
 instead of a single row being returned, the rowset is
 based on the total number of system sequences created.
@@ -9720,11 +9711,6 @@ Shawn Potter <spotter@invoqsystems.com>
 #684 Inserts if some variables not bound
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Code:
-===
-ps = conn.prepareStatement("INSERT INTO t (c) VALUES (?)");
-// nothing here
-ps.executeUpdate();
-===
 Executed successfully, however value for column c is not bound.
 SQLException should be thrown.
 Found in 1.8.0.1.
@@ -9735,8 +9721,6 @@ Found in 1.8.0.1.
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 DISTINCT does`nt work for functions in version 1.8.0.2
 The bug is described in
-http://sourceforge.net/mailarchive/message.php?
-msg_id=13893701
 sql> create table tbl (dc date);
 sql> insert into tbl values ('2004-11-10');
 1 row updated
@@ -9855,18 +9839,10 @@ behaviour.
 #691 concat(round(xxx, 0), \' yy\') appends unwanted .0
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Hello there, I observed the following behaviour with hsqldb distributed with OpenOffice Base 2.0 (with Button "Run SQL command directly" toggled):
-select round("thickness",0) as "thickness"
-from "material";
-thickness
-3
-4
-5
 (thickness being a float column). This is what I expect. Now, trying to append a string to the result, I try
 select concat(round("thickness",0), ' mm') as "thickness"
 from "material";
 which produces "3.0 mm" instead of "3 mm". Same behaviour with "||". Is this intended?
-Regards, Ulf
-<ulf.mehlig@gmx.net>
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 692
