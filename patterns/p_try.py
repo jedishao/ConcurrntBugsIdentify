@@ -21,7 +21,7 @@ def check(line):
             for child in token.children:
                 if str(child.pos_) == 'VERB':
                     for grandchild in child.children:
-                        if str(grandchild.dep_) in corpus.OBJ:
+                        if str(grandchild.dep_) in corpus.obj:
                             if str(grandchild.lemma_) in corpus.MEC:
                                 return 'P1'
                         elif str(grandchild.dep_) == 'prep':

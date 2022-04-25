@@ -40,7 +40,7 @@ def check(line):
                         return 'P18'
                     elif str(child.lemma_) in corpus.COP:
                         return 'P19'
-                elif str(child.dep_) in corpus.ADV:
+                elif str(child.dep_) in corpus.adv:
                     if str(child.lemma_) in corpus.TMP:
                         return 'P20'
 

@@ -31,7 +31,7 @@ def check(line):
                 elif str(child.dep_) == 'acomp':
                     if str(child.lemma_) in corpus.SYMP:
                         symp = True
-                elif str(child.dep_) in corpus.OBJ:
+                elif str(child.dep_) in corpus.obj:
                     if str(child.lemma_) in corpus.MEC:
                         obj = True
                 elif str(child.dep_) == 'neg':
