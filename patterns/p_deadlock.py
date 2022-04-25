@@ -13,6 +13,7 @@ import corpus
 # The deadlock of RedissonMultiLock.
 # RedissonFairLock deadlock.
 # RedissonFairLock deadlock.
+# Thread deadlock when using distributed lock on 1.2.1.
 
 te = open('test.txt')
 lineList = []
