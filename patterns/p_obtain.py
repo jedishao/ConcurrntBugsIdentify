@@ -1,7 +1,6 @@
-# @Time    : 4/23/22 9:13 PM
+# @Time    : 4/23/22 8:58 PM
 # @Author  : Shuai S
-# @File    : p_race.py
-
+# @File    : p_obtain.py
 import spacy
 
 import corpus
@@ -18,11 +17,12 @@ def check(line):
     doc = nlp(line)
     sam, mec = False, False
     for token in doc:
-        if str(token.dep_) == 'ROOT':
-            for child in token.children:
-                if str(child.dep_) == 'amod':
-                    if str(child.lemma_) in corpus.MEC:
-                        return 'P15'
+        if str(token.lemma_) == 'same':
+            sam = True
+        elif str(token.lemma_) in corpus.MEC:
+            mec = True
+    if sam and mec:
+        return 'P14'
 
 
 for lii in lineList:
