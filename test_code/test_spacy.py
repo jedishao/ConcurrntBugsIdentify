@@ -4,8 +4,8 @@ import spacy
 
 def pattern1():
     nlp = spacy.load("en_core_web_sm")
-    # conSents = open("../results/deadlockSents_NER_copy.txt")
-    conSents = open("../results/test.txt")
+    # conSents = open("../dataset/deadlockSents_NER_copy.txt")
+    conSents = open("../dataset/test.txt")
     sentsList = []
     for line in conSents:
         sentsList.append(str(line))
@@ -29,7 +29,7 @@ def pattern1():
 
 def pattern2():
     nlp = spacy.load("en_core_web_sm")
-    conSents = open("../results/deadlockSents_NER_copy.txt")
+    conSents = open("../dataset/deadlockSents_NER_copy.txt")
     sentsList = []
     for line in conSents:
         sentsList.append(str(line))
@@ -54,7 +54,7 @@ def pattern2():
 
 def pattern3():
     nlp = spacy.load("en_core_web_sm")
-    conSents = open("../results/deadlockSents_NER_copy.txt")
+    conSents = open("../dataset/deadlockSents_NER_copy.txt")
     sentsList = []
     for line in conSents:
         sentsList.append(str(line))
@@ -78,7 +78,7 @@ def pattern3():
 
 def pattern4():
     nlp = spacy.load("en_core_web_sm")
-    conSents = open("../results/deadlockSents_NER_copy.txt")
+    conSents = open("../dataset/deadlockSents_NER_copy.txt")
     sentsList = []
     for line in conSents:
         sentsList.append(str(line))
@@ -102,7 +102,7 @@ def pattern4():
 
 def pattern5():
     nlp = spacy.load("en_core_web_sm")
-    conSents = open("../results/deadlockSents_NER_copy.txt")
+    conSents = open("../dataset/deadlockSents_NER_copy.txt")
     sentsList = []
     for line in conSents:
         sentsList.append(str(line))
@@ -175,7 +175,7 @@ def getPos():
 
 def getPos4file():
     nlp = spacy.load("en_core_web_sm")
-    conSents = open("../results/test.txt")
+    conSents = open("../dataset/test.txt")
     sentsList = []
     for line in conSents:
         sentsList.append(str(line))
@@ -191,7 +191,7 @@ def getPos4file():
 
 
 def getPosPattern():
-    conSents = open("../results/test.txt")
+    conSents = open("../dataset/test.txt")
     sentsList = []
     for line in conSents:
         list_list = ast.literal_eval(line)
@@ -214,8 +214,8 @@ def getPosPattern():
 
 
 def writeTofile():
-    conSents = open("../results/test.txt")
-    target = open("../results/testdel.txt", 'a')
+    conSents = open("../dataset/test.txt")
+    target = open("../dataset/testdel.txt", 'a')
     sentsList = []
     for line in conSents:
         sentsList.append(str(line))
@@ -270,7 +270,7 @@ print(spacy.explain("acl"))
 # for token in doc:
 #     print(token.text, token.dep_, token.head.text, token.head.pos_,
 #           [child for child in token.children])
-# conSents = open("../results/test.txt")
+# conSents = open("../dataset/test.txt")
 # sentsList = []
 # for line in conSents:
 #     sentsList.append(str(line))

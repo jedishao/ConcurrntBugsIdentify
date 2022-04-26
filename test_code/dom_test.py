@@ -25,7 +25,7 @@ name_node.appendChild(name_text)
 # 每一个结点对象（包括dom对象本身）都有输出XML内容的方法，如：toxml()--字符串, toprettyxml()--美化树形格式。
 
 try:
-    with open('../results/dom_write.xml', 'w', encoding='UTF-8') as fh:
+    with open('../dataset/dom_write.xml', 'w', encoding='UTF-8') as fh:
         # 4.writexml()第一个参数是目标文件对象，第二个参数是根节点的缩进格式，第三个参数是其他子节点的缩进格式，
         # 第四个参数制定了换行格式，第五个参数制定了xml内容的编码。
         dom.writexml(fh, indent='', addindent='\t', newl='\n', encoding='UTF-8')

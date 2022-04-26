@@ -3,13 +3,7 @@ COP = ['invoke', 'lock', 'cause', 'block', 'acquire', 'trigger', 'release', 'wai
 
 OTHER = ['be', 'experience', 'lead', 'confirm', 'happen', 'test', 'see', 'give', 'enter', 'complete', 'make']
 
-TMP = ['twice', 'again', 'forever', 'never', 'already', 'indefinitely']
-
-SYMP = ['deadlock', 'stick', 'stuck', 'hang', 'block', 'remain', 'hold', 'stall']
-
 EXC = ['exception', 'error', 'exc', 'npe']
-
-STE = ['thread', 'lock', 'transcation', 'race', 'concurrence', 'concurrency', 'concurrent']
 
 LOG = ['trace', 'log', 's_t_a']
 
@@ -23,12 +17,26 @@ TER = ['thsa', 'reentrant']  # thsa: thread safe
 
 NUM = []
 
-OBJ = ['dobj', 'conj']
+obj = ['dobj', 'conj', 'pobj']
 
 S = ['nsubj', 'nsubjpass']
 
-ADV = ['advmod', 'amod']
-
-ALL = ['invoke', 'lock', 'cause', 'block', 'acquire', 'trigger', 'release', 'wait', 'load', 'involve']
+adv = ['advmod', 'amod']
 
 CST = ['screen']
+
+MEC = ['lock', 'CMI', 'thread', 'Thread', 'Lock']
+
+SYMP = ['deadlock', 'stick', 'stuck', 'hang', 'block', 'remain', 'hold', 'stall']
+
+TMP = ['twice', 'again', 'forever', 'never', 'already', 'indefinitely', 'indefinite']
+
+CONDI = ['await']
+
+comp = ['ccomp', 'xcomp', 'pcomp', 'acomp']
+
+BAD = ['wrong', 'problem']
+
+STE = ['thread', 'lock', 'transcation', 'race', 'concurrence', 'concurrency', 'concurrent']
+
+ULO = ['unlock', 'unlocked']

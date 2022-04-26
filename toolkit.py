@@ -19,9 +19,9 @@ import spacy
 
 import corpus
 
-target = open("results/deadlockSents_NER.txt", encoding='utf-8')
-# con = open("results/deadlockSents_NER.txt", 'r')
-# results = open("results/only_one_cmi.txt", 'w')
+target = open("dataset/deadlockSents_NER.txt", encoding='utf-8')
+# con = open("dataset/deadlockSents_NER.txt", 'r')
+# dataset = open("dataset/only_one_cmi.txt", 'w')
 
 index = []
 sents = []

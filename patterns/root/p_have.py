@@ -12,7 +12,7 @@ import corpus
 # In our use case, we can have hundreds of unique fair locks being acquired many times, usually for short periods of time (~1-2 seconds).
 # RedissonSessionRepository topic listeners initialization has race condition.
 
-te = open('test.txt')
+te = open('../test.txt')
 lineList = []
 nlp = spacy.load("en_core_web_sm")
 for li in te:

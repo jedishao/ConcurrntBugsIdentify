@@ -11,7 +11,7 @@ import corpus
 # Rlock performance issue.
 # RedissonRedLock issue.
 
-te = open('test.txt')
+te = open('../test.txt')
 lineList = []
 nlp = spacy.load("en_core_web_sm")
 for li in te:

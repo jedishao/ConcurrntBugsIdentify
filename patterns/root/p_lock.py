@@ -15,7 +15,7 @@ import corpus
 # In this case, the Red Lock should always be locked for most of the lock is available.
 # redisson lock uncontrolled release.
 
-te = open('test.txt')
+te = open('../test.txt')
 lineList = []
 nlp = spacy.load("en_core_web_sm")
 for li in te:

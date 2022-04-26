@@ -12,7 +12,7 @@ import corpus
 # Thread gets stuck when trying to acquire lock via tryLock().
 # Some threads get stuck at the Waiting state at tryLock.
 
-te = open('test.txt')
+te = open('../test.txt')
 lineList = []
 nlp = spacy.load("en_core_web_sm")
 for li in te:

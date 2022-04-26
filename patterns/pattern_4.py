@@ -48,7 +48,7 @@ def pattern4_1(token):
                     if str(grandchild) == 'CMI':
                         flag = True
                         return flag, ste
-        elif str(child.dep_) in corpus.ADV:  # adv
+        elif str(child.dep_) in corpus.adv:  # adv
             # [STE][COP][TMP]
             if str(child.lemma_) in corpus.TMP:
                 ste = True
@@ -73,7 +73,7 @@ def pattern4_2(token):
         if re.search('comp', str(child.dep_)):  # complement
             if str(child.lemma_) in corpus.COP:
                 for grandchild in child.children:
-                    if str(grandchild.lemma_) in corpus.TMP and str(grandchild.dep_) in corpus.ADV:
+                    if str(grandchild.lemma_) in corpus.TMP and str(grandchild.dep_) in corpus.adv:
                         adv = True
                     elif str(grandchild.lemma_) in corpus.STE and str(grandchild.dep_) in corpus.S:
                         th = True

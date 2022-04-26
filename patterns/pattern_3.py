@@ -27,7 +27,7 @@ def check(nlp, dataset):
                         if str(child.lemma_) == 'not' and str(child.dep_) == 'neg':
                             neg2 = True
                         if str(child.lemma_) in ['correctly', 'properly']:
-                            if str(child.dep_) in corpus.ADV:
+                            if str(child.dep_) in corpus.adv:
                                 adv = True
                         if re.search('comp', str(child.dep_)):
                             if str(child.lemma_).lower() in corpus.COP:

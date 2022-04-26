@@ -23,13 +23,13 @@ def ree(dataset):
 
 def main():
     nlp = spacy.load("en_core_web_sm")
-    conSents = open("results/projects/grpc_train.txt", encoding='utf-8')
-    #  conSents = open("results/projects/test.txt", encoding='utf-8')
-    # conSents = open("results/projects/redisson_pp.txt", encoding='utf-8')
-    # only_one = open('results/only_one_cmi.txt')
-    # write_pos = open("./results/pos_concurrent.txt", "w")
-    # read_pos = open("./results/pos_concurrent.txt")
-    # den_results = open("./results/den_concurrent.txt", "a")
+    conSents = open("dataset/dataset1/grpc/grpc_issues.txt", encoding='utf-8')
+    #  conSents = open("dataset/dataset1/test.txt", encoding='utf-8')
+    # conSents = open("dataset/dataset1/redisson_pp.txt", encoding='utf-8')
+    # only_one = open('dataset/only_one_cmi.txt')
+    # write_pos = open("./dataset/pos_concurrent.txt", "w")
+    # read_pos = open("./dataset/pos_concurrent.txt")
+    # den_results = open("./dataset/den_concurrent.txt", "a")
     result = {}
     dataset = IOutils.getTestset(conSents)
 

@@ -4,7 +4,7 @@
 
 import requests
 from lxml import etree
-
+import time
 
 def get_404():
     # 拼接issue地址
@@ -37,8 +37,8 @@ def get_404():
 def get_content(issue_name):
     # 拼接issue地址
     # 4189
-    url = 'https://github.com/redisson/redisson/issues/' + str(issue_name)
-    #url = 'https://github.com/grpc/grpc-java/issues/' + str(issue_name)
+    #url = 'https://github.com/redisson/redisson/issues/' + str(issue_name)
+    url = 'https://github.com/eclipse-vertx/vert.x/issues/' + str(issue_name)
     response = requests.get(url)
     page_source = response.text
     tree = etree.HTML(page_source)
@@ -87,11 +87,11 @@ def get_hsqldbContent(issue_name):
 
 
 if __name__ == '__main__':
-    with open(r'results/projects/redisson_issues.txt', 'w', encoding='utf-8') as f:
+    with open(r'../dataset/dataset1/hsqldb/hsqldb_issues.txt', 'a+', encoding='utf-8') as f:
         repo = 'redisson/redisson'
         # repo = 'grpc/grpc-java'
         # 拼接项目url
-        repos_url = 'https://github.com/' + repo
+        #repos_url = 'https://github.com/' + repo
         # repos_url = 'https://sourceforge.net/p/hsqldb/bugs/'
         # print(repos_url)
         f.write('\n\n')
@@ -102,19 +102,23 @@ if __name__ == '__main__':
         # f.write(str(number))
         # f.write('\n')
         issues_list = []
-        for i in range(50):
-            i = i + 2500
+        for i in range(1650):
+            i = i + 1
             issues_list.append(str(i))
+        j = 0
         # 格式：/combust/mleap/issues/716
         for issue in issues_list:
+            # if j % 20 == 0:
+            #     time.sleep(20)
+            # j += 1
             # 获取issue的内容
-            issue_url = 'https://github.com/redisson/redisson/issues/' + issue
-            # issue_url = 'https://github.com/eclipse-vertx/vert.x/issues/' + issue
-            # issue_url = 'https://github.com/grpc/grpc-java/issues/' + issue
-            #issue_url = 'https://sourceforge.net/p/hsqldb/bugs/' + issue
+            # issue_url = 'https://github.com/redisson/redisson/issues/' + issue
+            #issue_url = 'https://github.com/eclipse-vertx/vert.x/issues/' + issue
+            #issue_url = 'https://github.com/grpc/grpc-java/issues/' + issue
+            issue_url = 'https://sourceforge.net/p/hsqldb/bugs/' + issue
             response = requests.get(issue_url)
             if response.url.find('pull') == -1:
-                title, content = get_content(issue)
+                title, content = get_hsqldbContent(issue)
                 # content=filter_emoji(content)
                 # if content is None:
                 #     print('S')

@@ -30,7 +30,7 @@ def get_issue_content(issue_name):
 
 
 if __name__ == '__main__':
-    url = 'https://sourceforge.net/p/hsqldb/bugs/161/'
+    url = 'https://github.com/redisson/redisson/issues/1079'
 
     # print(url)
     issue_content = []
@@ -38,6 +38,6 @@ if __name__ == '__main__':
     response = requests.get(url)
     page_source = response.text
     tree = etree.HTML(page_source)
-    print(tree.xpath('//div[@id="ticket_content"]')[0].xpath('string(.)'))
-    # print(page_source)
+    # print(tree.xpath('//div[@id="ticket_content"]')[0].xpath('string(.)'))
+    print(page_source)
     # tree = etree.HTML(page_source)

@@ -14,8 +14,8 @@ def getPos2file(nlp, dataset, results):
 
     :param dataset:
     :param nlp:
-    :param results: results file
-    :return: results
+    :param results: dataset file
+    :return: dataset
     """
     for sent in dataset:
         doc = nlp(sent)

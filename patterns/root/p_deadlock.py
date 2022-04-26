@@ -15,7 +15,7 @@ import corpus
 # RedissonFairLock deadlock.
 # Thread deadlock when using distributed lock on 1.2.1.
 
-te = open('test.txt')
+te = open('../test.txt')
 lineList = []
 nlp = spacy.load("en_core_web_sm")
 for li in te:

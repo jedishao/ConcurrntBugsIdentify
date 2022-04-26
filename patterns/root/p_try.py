@@ -7,7 +7,7 @@ import spacy
 # I'm trying to use Lock and Unlock on Jersey Resource.
 import corpus
 
-te = open('test.txt')
+te = open('../test.txt')
 lineList = []
 nlp = spacy.load("en_core_web_sm")
 for li in te:

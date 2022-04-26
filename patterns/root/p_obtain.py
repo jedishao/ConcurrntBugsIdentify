@@ -6,7 +6,7 @@ import spacy
 import corpus
 # The same lock name was likely concurrently obtained and held by another thread possibly on another jvm.
 
-te = open('test.txt')
+te = open('../test.txt')
 lineList = []
 nlp = spacy.load("en_core_web_sm")
 for li in te:
