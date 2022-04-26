@@ -1,0 +1,36 @@
+[ZOOKEEPER-102] Need to replace Jute with supported code
+[ZOOKEEPER-866] Adding no disk persistence option in zookeeper.
+[ZOOKEEPER-972] perl Net::ZooKeeper segfaults when setting a watcher on get_children
+[ZOOKEEPER-414] zkServer.sh is duplicated in a couple of places
+[ZOOKEEPER-126] zookeeper client close operation may block indefinitely
+[ZOOKEEPER-679] Offers a node design for interacting with the Java Zookeeper client.
+[ZOOKEEPER-900] FLE implementation should be improved to use non-blocking sockets
+[ZOOKEEPER-770] Slow add_auth calls with multi-threaded client
+[ZOOKEEPER-2104] Sudden crash of all nodes in the cluster
+[ZOOKEEPER-1720] Race in zookeeper_close() leads to hang
+[ZOOKEEPER-1485] client xid overflow is not handled
+[ZOOKEEPER-2092] A zk instance can not be connected for ZooKeeperServer is not running
+[ZOOKEEPER-1965] Install could not be done on powerpc Error: Unrecognized opcode: `lock'
+[ZOOKEEPER-1678] Server fails to join quorum when a peer is unreachable (5 ZK server setup)
+[ZOOKEEPER-1329] Lock recipe sorts sequenced children incorrectly
+[ZOOKEEPER-1004] TestClient.cc:363: Assertion: equality assertion failed
+[ZOOKEEPER-1312] Add a "getChildrenWithStat" operation
+[ZOOKEEPER-1289] Multi Op Watch Events
+[ZOOKEEPER-1306] hang in zookeeper_close()
+[ZOOKEEPER-646] Namespace partitioning in ZK
+[ZOOKEEPER-1121] Data cleanup / Eviction policy
+[ZOOKEEPER-1070] let org.apache.zookeeper.recipes.lock.WriteLock implements java.util.concurrent.locks.Lock
+[ZOOKEEPER-423] Add getFirstChild API
+[ZOOKEEPER-838] Chroot is an attribute of ClientCnxn
+[ZOOKEEPER-923] TaskManagement Using Zookeeper Recipe
+[ZOOKEEPER-80] Document process for client recipe contributions
+[ZOOKEEPER-91] provide an option for the WriteLock to also watch the locks own znode, so that if someone else deletes it then it is equivalent to calling WriteLock.unlock()
+[ZOOKEEPER-88] implement java.util.concurrent.locks.Lock
+[ZOOKEEPER-262] unnecesssarily complex reentrant zookeeper_close() logic
+[ZOOKEEPER-645] Bug in WriteLock recipe implementation?
+[ZOOKEEPER-935] Concurrent primitives library - shared lock
+[ZOOKEEPER-954] Findbugs/ClientCnxn: Bug type JLM_JSR166_UTILCONCURRENT_MONITORENTER
+[ZOOKEEPER-2038] Coding error in recipes/lock/src/c/src/zoo_lock.c
+[ZOOKEEPER-1314] improve zkpython synchronous api implementation
+[ZOOKEEPER-1446] C API makes it difficult to implement a timed wait_until_connected method correctly
+[ZOOKEEPER-661] Add Ruby bindings

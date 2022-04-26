@@ -1,0 +1,293 @@
+I'm trying to use Lock and Unlock on Jersey Resource.
+If i try to make some LOCK-UNLOCK in a while loop it works, but when i make these LOCK-UNLOCK from different Threads it does not works.
+I refer to a situation where a thread is dead and leave a resource locked (deadlock).
+Deadlock while obtaining lock.
+Thread gets stuck while obtaining lock.
+The same lock name was likely concurrently obtained and held by another thread possibly on another jvm, and then released.
+Lock reentrancy race.
+RedissonLock locks up.
+Under heavy use on production, Redisson's locks get all locked up, and the application stalls.
+I have 1 thread locked trying to release a lock.
+I have about 30 other threads locked awaiting for a lock (a different one from the one used by the previous thread).
+this key is the one corresponding to the thread blocked trying to release a lock. The other threads, that are waiting for a separate lock are locked even though there is no-one taking up such lock....
+when thread is interrupt...all Reference variables is locked!
+when use lock, but throw some class cast exception.
+Use issues---lock.
+lock.lock(2, TimeUnit.SECONDS)RLock lock = redisson.getLock("anyLock");lock.lock(2, TimeUnit.SECONDS);lock.unlock(); run it ,report error.
+lock.lock(2, TimeUnit.SECONDS) report error.
+Thread dead lock when using distributed lock on 1.2.1.
+I run into a thread dead lock problem when using distributed lock on 1.2.1.
+After a certain period, some threads will be dead lock, and we can tell this by VisualVM's thread dump:
+ConnectionManager call hangs forever if exception is thrown during Command processing.
+Bug found that can cause MasterSlaveConnectionManager to hang forever on get() call if exception is thrown anywhere in CommandHandler.
+When you try to fetch that object by using RedissonMap.get() call, deserialization of object will fail in MapOutput because of missing appropriate constructor and thread calling RedissonMap.get() will block forever.
+In more details, this is happening because get() method awaits forever on Future object, which is released when Command.complete() is called.
+This complete() call is executed in decode() method of CommandHandler after RedisStateMachine processes Redis response.
+This is causing calling thread to block forever in MasterSlaveConnectionManager.get() method.
+Issue in locking on key in concurrency.
+But while running a apache ab-test tool for concurrency, following exception occurs.
+As i understand it shouldn't lock the calling thread, and return value (Future) as soon as possible.
+But if for any reason connection is not established yet the calling thread will be blocked.
+And if redis server is not available at all it will be blocked for very long period of time.
+RLock.tryLock() thows Exception.org.redisson.client.RedisException:
+EOFException when I use RLock with SerializationCodec.
+Then I run my code in environment with concurrent threads and use Lock object to sync thread.
+After that I get exception and unlock only after expiration in 30 sec.
+Similar problem I have when I use CountDown.
+RLock.isLocked() get hung when I disable/enable my local network.
+I was crashed into a blocking issue when I was doing some configuration on my windows laptop.
+RLock.isLocked() got hung forever with callstack as following
+The program will be blocked with the callstack I pasted.
+RLock did not work.
+ElasticacheCluster not working correctly with DistributedLocks.
+I am trying to use redisson 2.2.7 for distributed locks.
+When I try to get lock using the following code, i get an error saying that i cant write to a Slave.
+Read Write lock cannot be correctly unlocked.
+However, when it is used in a distributed processing framework such as MapReduce, the Read and Write lock cannot be correctly unlocked.
+Deadlock using RedissonMultiLock.
+While using RedissonMultiLock with 3 locks both clients blocks.
+Error if first node is down in 3 node Master-Master cluster.
+But if we block node1's network then it fails with the below error.
+Rlock Exception in cluster mode.
+Sometimes when I try lock a key I get the following exceptions.
+Rlock performance issue.
+I am using reddison Rlock with a cluster setup , and sometimes I see latency when trying to acquire the lock or unlock.
+Dead Locks Happen in lock() Process.
+when heavy concurrency happens in my application, a few lock requests will "sink" without any responses, even after the lock lease time has passed.
+Asynchronous lock release.
+Once the lock is acquired, some async tasks gets done, finally, when I finish the job, I'm releasing the Redisson lock through the thread currently running - but i receive the following error.
+Deadlock on lock() and not only.
+Hi,I want to raise the issue with deadlocks again.
+Exception in using RedissonMultiLock.
+I have 5 independent masters and I use single server config to create Redission instance.
+The RedissonMultiLock works fine if all the redis nodes are alive. If I shutdown one of the redis nodes, it will throw RedisConnectionException.
+RLock trylock blocks forever.
+When tryLock is called with 0 wait time, the thread blocks forever.
+I took a thread dump and it looks like the stack pasted below.
+RedissonLock.isHeldByCurrentThread() doesn't check properly.
+loop lock blocked when master-slave failover.
+Attempt to unlock lock, not locked by current thread by node id.
+tryLock method throw Exception:a
+redisson lock failure problem.r
+rlock error report.
+RedissonRedLock & RedissonMultiLock lock method stuck.
+If more than 3 locks are supplied to RedissonRedLock or RedissonMultiLock instance then lock method could stuck.
+RedissonRedLock trylock success while another thread already hold the lock in specific conditions.
+CommandAsyncService blocks indefinitely.
+Hi,I have a thread stuck in the CommandAsyncService#get() indefinitely waiting for the CountdownLatch.
+DistributedLock - Lock is getting acquired by multiple threads.
+Unlock does not really unlock.
+RReadWriteLock is not reentrant.
+Problem with Rlock - unlock not releasing lock to waiting threads.
+Indefinite lock lost during master failover.
+I've found my indefinitely held locks will sometimes disappear after a master/slave failover.
+CommandAsyncService blocks indefinitely.
+all application threads are blocked with stack trace.
+RReadWriteLock is incompatible with reentry r&w op.
+Thread dump for some threads (Complete thread dump can be downloaded here):it looks like that is a lock issue, but i don't know how to solve it.
+Concurrency Issues.
+Today I tried some tests to experiment with Redisson's performance using a build from /master and discovered significant concurrency issues.
+RedisConnectionException in High Concurrence.
+I use redis as required data store, but in high concurrence, there are almost 50% connection failed.
+RedissonSortedSet's order seems broken.
+Hi, we have been using RedissonSortedSet and just found that on certain cases the order can be broken and I assume RedissonSortedSet is supposedly thread safe.
+Redisson map get makes the thread waiting forever.
+Incorrect RedissonRedLock.tryLock behaviour.
+Lock could acquired by several threads at once when leaseTime parameter less than waitTime parameter passed into RedissonRedLock.tryLock.
+performance slow, when multiple thread.
+StackOverflowException in URLBuilder.URIBuilder is not thread-safe.
+Following scenario causes infinite recursion and StackOverflowException when someone tries to create new URL:URLBuilder.replaceURLFactory() - URLBuilder.
+RedisNodeNotFoundException : Never catch, so never release the countdownlatch.
+URIBuilder seems not to be thread safe.
+RedissonList's Iterator Race Conditions.
+RedissonList iterator as it tries to keep "up to date" with data has a race condition in which if between the .hasNext() and the .next() call the set is emptied the list will throw NoSuchElementException.
+Report possible race issues.
+Hi, Developers of mrniko/redisson,I am writing to report two race issues on use of ConcurrentHashMap.
+Redisson shutdown hangs if redis server was down.
+Start redis server.
+Possible race-condition in RemoteService.
+Race-condition during ack checking is possible.
+Possible PublishSubscribe race-condition.There is a rare possibility of race-condition during channel re-connection and RTopic subscription invoked first time.
+RScoredSortedSet race condition with Redis cluster.
+Redisson hang on RBatch.execute().
+RFairLock dead lock issue.
+JVM crashes when using 1000 concurrent redisson threads.
+ReadLock not working correctly.
+There are multiple threads that are trying to lock and unlock the readlock concurrently but I am encountering the "attempt to unlock lock, not locked by current thread by node id" exception.
+The unlock part throws the following exception even though they're all read locks.
+org.redisson.RedissonTopic.removeAllListeners got blocked on CountDownLatch.await.
+RedissonRedLock.tryLock(l) still have something wrong.
+No matter which lock is locked first in thread t1, the Red Lock will always can be locked or cannot.
+In this case, the Red Lock should always be locked for most of the lock is available.
+We were initially at Redisson version 2.9.1, but when we following the previous steps, in step 5, we encountered the same issue as in #1268, which is removeListener thread blocks forever,
+ReadWriteLock timeout does not work as expected.
+I wrote a simple test to check the ReadWriteLock.The behaviour.First case: Read thread finishes executing properly, write thread hangs forever.
+Second case: Behaves as expected. Read thread locks, sleeps and unlocks. Write thread hangs until the read thread finishes and then locks and finishes.
+In the first case, where the readThread finished running but the lock1 entry never expires and is stuck forever like this:
+CommandAsyncService gets blocked at high concurrency.
+Hi,While running a load test on jmeter of 200 users with ramp up time of 10 seconds and number of puts per user equal to 10, threads are getting  stuck.
+tryLock waitTime no valid.
+hello, I have test the tryLock with waitTime, but find it has bug.
+My test is as follows:As you can see, the second thread faild to acquire lock but the lock is released during 2 seconds...please tell me ,thanks.
+i think some threads is hanging around Redisson connection with new slave loading data.
+Lock watchdog does not monitor read locks.
+Hi, when we acquire multiple (concurrent) read locks and process a task for longer than the Config.lockWatchdogTimeout, we get errors when unlocking.
+unlock fail and expirationRenewal still execute.unlock success.unlock fail.
+Deadlock with RedissonLock used by JCache.
+This causes deadlock of all other threads trying to grab the lock and can ultimately bring down an application as threads build up.
+Threads using RedissonLock will wait forever for a lock to be released.
+There is no timeout when waiting for the lock.
+This is prone to issues where it never gets destroyed and a lock is held forever. A lease time should be used to ensure the lock is never held forever.
+Deadlock while obtaining lock.Thread gets stuck while obtaining lock.
+The same lock name was likely concurrently obtained and held by another thread possibly on another jvm, and then released.
+two thread get the same lock by trylock?
+When I am using two threads to put values through redisson to different database with limited memory(maxmemory-policy :volatile-lru, maxmemory:4MB),  error like org.redisson.client.RedisOutOfMemoryException:
+Deadlock after Redis timeout.
+After a Redis response timeout, Redisson needs to be resilient and back to normal operation after Redis timeout and allow to lock and unlock critical sections again.
+After a Redis response timeout between attempts, Redisson adds the lock to scheduled renew task and never remove them.
+So, the application enters on a deadlock due to a lock renewed even after unlock.
+The task can run on the same thread due to reentrant lock feature, but when the task runs on another thread a deadlock occurs.
+Cannot shutdown RedissonNode if there infinite lock is locked.
+I got this problem when I trying to locking an object.
+The deadlock of RedissonMultiLock.
+I think there's a deadlock between 3 and 4, but I'm not going to try it out.
+Redisson 3.5.7 memory leak with locks.I'm using RLock and seeing memory leak via org.redisson.client.handler.CommandPubSubDecoder.Retained objects delta between heap dumps taken apart.Around 10MB leak per day.
+RedissonRateLimiter acquire() method blocks forever.The acquire method should block until a permit is available, but it blocks indefinitely instead of the remaining time until a new permit becomes available. From my testing I have found that it doesn't acquire a permit when one should be available based on the rate and interval I tested. If I set the rate to 1 every 5 seconds, it should take a loop of 10 single permit acquires approximately 50 seconds to complete. Instead it acquires the first permit, then blocks forever on the next acquires call.
+Multiple ReadLocks are not sharing locks properly after WriteLock releases.
+Hello!I've found something that I believe is a bug in Redisson's RReadWriteLock implementation where multiple ReadLocks seemed to become or at least behaved like WriteLock when it tried to lock on a lockpoint that another WriteLock has already acquired a lock, then released. Because of that, ReadLocks are not sharing the lockpoint like it should and are taking turns in locking the lockpoint.
+The failure on the latter test on Redisson's RReadWriteLock is what has prompted me to open this issue ticket.
+RTransaction Unusual Locking Problem.
+Redisson continuously send lock request to redis after redis cluster master-slave switch.
+redisson keep sending lock request to redis due to redis cluster master-slave failover.
+redisson failed to acquire lock and keep sending acquire lock request, below is request,
+RedissonBlockingQueue.take() returns null in case of internal error.The take() method in RedissonBlockingQueue uses Future.getNow(), which returns null if an exception occurs.
+RedissonRedLock issue.
+ReadWriteLock not working.
+Hello.I'm interested in this project. I am creating a sample project(https) using this, And I do not think readswriteLock is working properly.
+When I use Reentrant Lock in my application, this exception  ERR max number of clients reached occurs.
+I imported Redission in spring boot using distributedLock, but the log always show this WARN.
+RedLock slow performance when one redis instance is down.
+CommandAsyncService blocks indefinitely [without OutOfMemoryError].
+Thread indefinitely park.
+RMapCache get operation will be blocked.
+RRateLimiter.tryAcquire with timeout blocks forever.
+Even if the timeout elapses, the method tryAcquire keeps blocked.
+Unexpected exception while processing command while taking a lock on a key.
+Same scenario works as expected when there is no exception or error inside the try block.
+RedisResponseTimeoutException at getLockedLock for read operation in "replicatedServersConfig".
+Hi,I'm using jcache  implementation and using AWS Redis servers in "replicatedServersConfig", i'm getting response time out exception at "getLockedLock" method.
+Race condition in RedissonLock subscribing to pubsub channel.
+In our use case, we can have hundreds of unique fair locks being acquired many times, usually for short periods of time (~1-2 seconds).
+During testing, we noticed that sustained load eventually, but consistently, results in threads failing to acquire the lock.
+What we found was that it sometimes took a long time for the lock to subscribe to its pubsub channel, by which point the unlock message was already published.
+redlock unlock fail.
+tryLockAsync and lockAsync methods of RedissonMultiLock object get hang.No description provided.
+RedissonAtomicLong.get blocks indefinitely.Stack info:Steps to reproduce or test case.Small probability and we can't reproduce, maybe related to bad network.Redisson configuration.cluster default config.
+PriorityBlockingQueue doesn't release lock after reconnect on network.reconnect to network.there is a lock  name redisson_sortedset_lock:{testqueue} which dosen't release,it seem's like it can't release lock cause network boke,however it get a lock before network boke.Steps to reproduce or test case.1.run code blow.2.disconnect your network.3.wait a few minute,then reconnect your network.
+spring boot started incorrectly, but unlocking can work properly.
+Concurrent calls to RemoteService should not result in an exception.
+Concurrent calls to RemoteService should result in an exception.
+Mitigating Concurrency Issues.
+Hi,I was wondering what the standard approach is to Mitigate possible Concurrency issues when using Redisson as a spring data source.
+Im concerned that this will lead to concurrent read write issues:
+[CRITICAL] Redisson cluster sync failed.
+In cluster mode when master goes down and slave becomes a master, Redisson picks up new master but failes to sync slaves.
+Cluster nodes synchronisation crashes (never scheduled again) with IllegalArgumentException while processing slave nodes.
+redission AtomicObject in debug + breakpoint mode cause a different result.
+Possible race-condition during write operation cancellation.No description provided.
+RLock.unlock method returns true if lock doesn't exist.
+RedissonLock.renewExpiration will refresh forever.
+RedissonSemaphore doesn't take linux machine's down into account, like RedissonLock do.when machine is down, RedissonSemaphore should release it never released.
+Exception when use RedissonRedLock + RedissonMultiLock.
+To summarize the issue, we see that the timeouts in the redisson_lock_timeout sorted set created by RedissonFairLock can gradually increase over time to be hours or days in the future despite the queue only containing less than 10 threads;
+this condition continues until the fair wait queue empties, or one of the threads dies and the rest of the threads are forced to wait for the far in the future timeout on the dead thread to lapse (this creates a dead lock-like situation).
+`redissonClient.getRedLock` does not work well with Read-Write block in a multi-JVM environment.
+Why do locks fail occasionally?
+But there are still high concurrency issues.
+multiple threads get the lock at the same time.Thank you.
+As can be seen from the above, transaction committing occurs after the unlocking operation.
+Is there a possibility that other threads will have concurrent problems because the thread has been unlocked before the transaction has been submitted?
+RLock unlock with a different thread that the one that locked gives: attempt to unlock lock, not locked by current thread by node id.
+I'm using RxJava and as a part of the sequence I use a RLock, at some point (in another process) I unlock it and if the thread to unlock is not the same as the one that blocked I get an exception (see below).
+An exception is thrown and the lock is not unlocked.
+redission ScheduledFuture can not be execute after definite time.
+when I unlock the lock, accept an exception.
+RedissonFairLock deadlock.
+The FairLock acquired on high load system without lease time defined.
+Redisson does not handle the case of Fair lock without lease time (on high load).
+when many different threads are asking for the same lock key the client is stuck and no thread acquires the lock.
+LockWatchdogTimeout will cause the IllegalMonitorStateException.
+threads blocked waiting on CountDownLatch.
+Hello,We are facing an an issue where some threads get blocked indefinitely waiting on the CountDownLatch in CommandAsyncService.get().
+Relevant section of the thread dump:The reason for why the requests aren't able to complete isn't relevant here (we are deploying redis in kubernetes, and are working through various upgrade/failure scenarios that currently can result in severed connections).
+Please let me know if I am misunderstanding the situation.CommandAsyncService.get() should throw an exception if the future is unable to complete within a timeout.
+Many threads are hanging indefinitely in the CommandAsyncService.get() method.
+thread blocked at closeNodeConnections.
+Hi,The call to closeNodeConnection waits indefinitely on call to MasterSlaveConnectionManager.closeNodeConnections.
+Thread hangs indefinitely at the request.
+when aquire redisson lock, that throw redis response timeout sometimes.
+RBlockingQueue.take doesn't throw InterruptedException.
+RedissonLock.unlock() hangs infinitely waiting for RedissonPromise.Calls to RedissonLock.unlock() are expected to finish after the lock has been deleted from Redis.
+We have experienced several threads locked forever waiting inside calls to RedissonLock.unlock() in our production system within a few hours after upgrading to Redisson 3.11.4 from Redisson 3.8.0.Steps to reproduce or test case.
+After that we were investigating issues with blocked threads by analyzing thread dumps.
+All stuck threads had exactly the same stack trace as below:
+Interrupted blocking methods aren't canceled.
+Reactive/Rxjava2 transaction doesn't unlock lock on rollback or commit.
+Lock expiration renewal stops working after connection error/timeout.
+I believe the problem is in RedissonLock.unlockAsync method, when opStatus is null, the cancelExpirationRenewal method should be called.
+The following code snippet will successfully create and lock RLock and will throw RedisException unlocking the lock.
+Unable to remove lock automatically.
+The code is as follows, the lock cannot be automatically deleted, the lock will continue to live.
+Unable to unlock  when thread isInterrupted.
+RedissonLock fails to unsubscribe from channel when a lock is acquired.
+When calling RedissonLock to obtain new locks this returned the error : Subscribe timeout: (7500ms).
+Machines are not evenly distributed, and one server never gets the lock. It's going to last forever.
+In a frequent job, sometime lock.tryLock() can not get lock.
+Distlock Mutual exclusion problem?
+RedissonBoundedBlockingQueue drainTo method got infinite hung.
+RLock throws java.lang.IllegalMonitorStateException in the thread where got the lock twice.
+RedissonLock.tryLock() interrupted and keep renew lock.
+when tryLock is interrupted, watchdog keeps renewing lock, this makes ifinite lock.
+RedissonReactiveClient getLock and getLexSortedSet is executing on different thread.
+So here lockk is printed as true, but redissonReactiveClient.getLexSortedSet(redisKey) cannot execute and directly goes to onErrorResume as it is executing in different thread than lock.tryLock().
+`tryLock` in redis cluster working not properly.
+Expected behavior.tryLock of RLock can not return true when the lock key still exist in cluster redis.
+Sometimes tryLock can acquire the lock key although it still exists.
+Thread that called tryLock stops in standby state.Hello,Running the redisServer again does not resolve the issue.In particular, Scheduler threads cause serious problems.Is there a solution?Below is the test code.This result is Thread dump.
+Is tryLock() method expected to return false when redis is not available.Expected behavior.tryLock() method return false after certain time when redis is not available.Actual behavior.tryLock() method is hanging forever.Steps to reproduce or test case.when application starts, the redis server is there, then bring down the redis.local redis docker without authentication.
+spring-integration unlock error when use redisson.use redisson and spring-integration.Steps to reproduce or test case.this keyCommands() retuen this OBJECT occur recursion.Maybe,we need override method unlink in RedissonConnection.
+redisson lock uncontrolled release.
+Hi all,I am facing strange problems with Redisson lock.
+The problem: sometimes when a thread(that acquired it) tries to release the lock the thread receives IllegalMonitorStateException , which means that this lock is already released.
+redisson 3.13.1 Always connected to redis cluster and can not to acquire lock, but no exception.r
+redisson,The current thread does not release the lock, will hava some problems.y
+Don't release the lock actively, there is a problem in high concurrency.
+RedissonFairLock deadlock.RedissonFairLock result.
+possible concurrent issue in RedissonLock?
+When running multiple threads to acquire the lock with the same name, the below error happened from time to time.
+Thread gets stuck when trying to acquire lock via tryLock()
+Thread gets stuck in Waiting state.
+Some threads get stuck at the Waiting state at tryLock.
+FairLock is freezed after run more than 9000 times.
+Non thread-safe initialization in RedissonObjectBuilder.
+Data is not cleared from ThraedLocal while using Serialization of FST library.
+When we are saving some data in redis using FST codec then data is not cleared from ThreadLocal after data saved to the redis.
+This is causing issue of OutOfMemory as tomcat thread's ThreadLocalMap is filled with huge data which was used while FST serialization.Detail
+On Reading Locks.Multithread concurrency can be unlocked successfully.
+Multithread concurrency with only one thread successfully unlocked.
+RLock unlock always throw an exception what like 'not lock by current thread'.
+lock.isHeldByCurrentThread() verification before unlocking Exception.RLock.lock.isHeldByCurrentThread() verification  before unlocking. but sometimes exception.
+A lot of threads waiting on "org.redisson.spring.data.connection.RedissonConnection.sync".
+We analyzed the thread dump and noticed the below errors.
+Spring Data Redis connection in multi mode may cause thread hang.
+InternalThreadLocalMap memory leak.
+RedissonAtomicLong#getAndSet throws NullPointerException when value does not exist yet.
+Redisson throws RedisTimeoutException before timeout has exceeded.
+Redisson throws RedisTimeoutException after timeout has exceeded.
+There is a race condition where Redisson may throw RedisTimeoutException after retryInterval has exceeded but before timeout has exceeded (in a nutshell when there are bursts of commands, commands will timeout even if timeout hasn't passed if retry interval is set to 0).
+We’ve been experiencing intermittent NullPointerExceptions (stacktrace at end) that appeared to be race condition.
+RedissonSessionRepository topic listeners initialization has race condition.
+RedissonSession#changeSessionId expiredKey race condition.
+We have a number of instances of our app in production, and we’ve encountered a race condition where the same session might have changeSessionId invoked on the same session separate servers.
+RedissonFairLock blocks indefinitely after threadWaitTimeExpiry.
+When a RedissonFairLock is locked by long-running Thread T1, and other Threads (T2, ..., Tn) attempts to access the lock and waits for longer than 5 minutes (the default threadWaitTime), even when T1 releases the lock all waiting Threads T2 to Tn hang indefinitely.

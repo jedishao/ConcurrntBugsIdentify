@@ -1,0 +1,6 @@
+There is a rare possibility of race-condition during channel re-connection and RTopic subscription invoked first time.
+There is no timeout when waiting for the lock.
+Is there a possibility that other threads will have concurrent problems because the thread has been unlocked before the transaction has been submitted?
+when many different threads are asking for the same lock key the client is stuck and no thread acquires the lock.
+This result is Thread dump.
+there is a problem in high concurrency.
