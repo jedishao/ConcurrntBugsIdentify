@@ -72,6 +72,9 @@ def check(line):
                         unlock = True
                     elif str(child.lemma_) in ['reentrant', 'incompatible']:
                         fea = True
+                    elif str(child.lemma_) in corpus.SYMP:
+                        sym = True
+
                 elif str(child.dep_) == 'neg':
                     neg = True
     if sbj:
