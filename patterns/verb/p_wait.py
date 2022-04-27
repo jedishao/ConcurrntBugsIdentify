@@ -1,11 +1,12 @@
-# @Time    : 4/25/22 8:45 PM
+# @Time    : 4/27/22 2:38 PM
 # @Author  : Shuai S
-# @File    : cmi.py
+# @File    : p_wait.py
+
 import spacy
 
 import corpus
 
-# there is a lock name CMI which doesn't release.
+# There is no timeout when waiting for the lock.
 
 te = open('../test.txt')
 lineList = []
@@ -16,12 +17,13 @@ for li in te:
 
 def check(line):
     doc = nlp(line)
+    sbj, sym, unlock, fea, neg = False, False, False, False, False
     for token in doc:
-        if str(token) == 'CMI':
+        if str(token.lemma_) == 'wait':
             for child in token.children:
-                if str(child.lemma_) == 'release':
+                if str(child.dep_) == 'prep':
                     for grandchild in child.children:
-                        if str(grandchild.dep_) == 'neg':
+                        if str(grandchild.lemma_) in corpus.MEC:
                             return 'P41'
 
 

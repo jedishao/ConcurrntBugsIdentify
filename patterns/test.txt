@@ -1,6 +1,18 @@
-There is a rare possibility of race-condition during channel re-connection and RTopic subscription invoked first time.
-There is no timeout when waiting for the lock.
-Is there a possibility that other threads will have concurrent problems because the thread has been unlocked before the transaction has been submitted?
-when many different threads are asking for the same lock key the client is stuck and no thread acquires the lock.
-This result is Thread dump.
-there is a problem in high concurrency.
+When you try to fetch that object by using RedissonMap.get() call, deserialization of object will fail in MapOutput because of missing appropriate constructor and thread calling RedissonMap.get() will block forever.
+But if for any reason connection is not established yet the calling thread will be blocked.
+And if redis server is not available at all it will be blocked for very long period of time.
+The program will be blocked with the callstack I pasted.
+RLock trylock blocks forever.
+When tryLock is called with 0 wait time, the thread blocks forever.
+loop lock blocked when master-slave failover.
+CommandAsyncService blocks indefinitely.
+CommandAsyncService blocks indefinitely.
+all application threads are blocked with stack trace.
+org.redisson.RedissonTopic.removeAllListeners got blocked on CountDownLatch.await.
+CommandAsyncService gets blocked at high concurrency.
+The acquire method should block until a permit is available, but it blocks indefinitely instead of the remaining time until a new permit becomes available.
+CommandAsyncService blocks indefinitely [without OutOfMemoryError].
+RMapCache get operation will be blocked.
+threads blocked waiting on CountDownLatch.
+RedissonAtomicLong.get blocks indefinitely.
+RedissonFairLock blocks indefinitely after threadWaitTimeExpiry.

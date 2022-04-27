@@ -74,7 +74,11 @@ def check(line):
                         fea = True
                     elif str(child.lemma_) in corpus.SYMP:
                         sym = True
-
+                elif str(child.dep_) == 'advcl':
+                    for grandchild in child.children:
+                        if str(grandchild.dep_) in corpus.S:
+                            if str(grandchild.lemma_) in corpus.MEC:
+                                sbj = True
                 elif str(child.dep_) == 'neg':
                     neg = True
     if sbj:
