@@ -24,7 +24,7 @@ for li in te:
 
 def check(line):
     doc = nlp(line)
-    sbj, symp, obj, neg, exc = False, False, False, False, False
+    sbj, symp, obj, neg, exc, cmi = False, False, False, False, False, False
     for token in doc:
         if str(token.dep_) == 'ROOT':
             for child in token.children:
