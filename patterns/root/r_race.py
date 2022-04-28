@@ -1,6 +1,6 @@
 # @Time    : 4/23/22 9:13 PM
 # @Author  : Shuai S
-# @File    : p_race.py
+# @File    : r_race.py
 
 import spacy
 

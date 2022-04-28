@@ -1,6 +1,6 @@
 # @Time    : 4/23/22 9:16 PM
 # @Author  : Shuai S
-# @File    : p_lock.py
+# @File    : r_lock.py
 
 import spacy
 import corpus

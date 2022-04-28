@@ -1,6 +1,6 @@
 # @Time    : 4/27/22 2:38 PM
 # @Author  : Shuai S
-# @File    : p_wait.py
+# @File    : v_wait.py
 
 import spacy
 

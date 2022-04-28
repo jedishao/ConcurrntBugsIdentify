@@ -1,6 +1,6 @@
 # @Time    : 4/23/22 5:39 PM
 # @Author  : Shuai S
-# @File    : p_work.py
+# @File    : r_work.py
 import spacy
 
 # but when i make these MEC from different Threads it does not works.

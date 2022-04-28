@@ -1,6 +1,6 @@
 # @Time    : 4/23/22 6:04 PM
 # @Author  : Shuai S
-# @File    : p_deadlock.py
+# @File    : r_deadlock.py
 import spacy
 
 import corpus

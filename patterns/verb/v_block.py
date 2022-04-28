@@ -1,11 +1,11 @@
 # @Time    : 4/27/22 2:50 PM
 # @Author  : Shuai S
-# @File    : p_block.py
+# @File    : v_block.py
 import spacy
 
 import corpus
 
-# RLock trylock blocks forever.
+#
 
 te = open('../test.txt')
 lineList = []

@@ -1,6 +1,6 @@
 # @Time    : 4/23/22 8:58 PM
 # @Author  : Shuai S
-# @File    : p_obtain.py
+# @File    : r_obtain.py
 import spacy
 
 import corpus

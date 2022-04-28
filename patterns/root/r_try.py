@@ -1,6 +1,6 @@
 # @Time    : 4/23/22 4:55 PM
 # @Author  : Shuai S
-# @File    : p_try.py
+# @File    : r_try.py
 import spacy
 
 # I am trying to use redisson for distributed locks.
