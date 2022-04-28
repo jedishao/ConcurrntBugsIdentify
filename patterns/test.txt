@@ -1,1 +1,1 @@
-I'm getting response time out exception at CMI.
+The second thread failed to acquire lock but the lock is released during 2 seconds...please tell me ,thanks
