@@ -1,10 +1,7 @@
-CMI hangs forever if exception is thrown during Command processing.
-Redisson hang on CMI.
-write thread hangs forever.
-Write thread hangs until the read thread finishes and then locks and finishes.
-Many threads are hanging indefinitely in the CommandAsyncService.get() method.
-Thread hangs indefinitely at the request.
-CMI is hanging forever.
-CMI get hung when I disable/enable my local network.
-CMI got hung forever with callstack as following.
-CMI and CMI of CMI object get hang.
+This is causing calling thread to block forever in MasterSlaveConnectionManager.get() method.
+Following scenario causes infinite recursion and StackOverflowException when someone tries to create new URL:URLBuilder.replaceURLFactory() - URLBuilder.
+This causes deadlock of all other threads trying to grab the lock and can ultimately bring down an application as threads build up.
+redission AtomicObject in debug + breakpoint mode cause a different result.
+LockWatchdogTimeout will cause the IllegalMonitorStateException.
+In particular, Scheduler threads cause serious problems.
+Spring Data Redis connection in multi mode may cause thread hang.

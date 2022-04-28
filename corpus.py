@@ -25,7 +25,7 @@ adv = ['advmod', 'amod']
 
 CST = ['screen']
 
-MEC = ['lock', 'CMI', 'thread', 'Thread', 'Lock']
+MEC = ['lock', 'CMI', 'thread', 'Thread', 'Lock', 'locking']
 
 SYMP = ['deadlock', 'stick', 'stuck', 'hang', 'block', 'remain', 'hold', 'stall']
 
