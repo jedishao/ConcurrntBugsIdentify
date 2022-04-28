@@ -35,7 +35,7 @@ CONDI = ['await']
 
 comp = ['ccomp', 'xcomp', 'pcomp', 'acomp']
 
-BAD = ['wrong', 'problem', 'Exception', 'exception', 'issue']
+BAD = ['wrong', 'problem', 'Exception', 'exception', 'issue', 'error']
 
 STE = ['thread', 'lock', 'transcation', 'race', 'concurrence', 'concurrency', 'concurrent', 'deadlock',
        'synchronization']

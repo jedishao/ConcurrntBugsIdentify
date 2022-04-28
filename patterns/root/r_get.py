@@ -11,6 +11,7 @@ import corpus
 # sometime lock.tryLock() can not get lock.
 # Thread gets stuck when trying to acquire lock via tryLock().
 # Some threads get stuck at the Waiting state at tryLock.
+# we get errors when unlocking.
 
 te = open('../test.txt')
 lineList = []
@@ -21,7 +22,7 @@ for li in te:
 
 def check(line):
     doc = nlp(line)
-    sbj, symp, obj, neg = False, False, False, False
+    sbj, symp, obj, neg, exc = False, False, False, False, False
     for token in doc:
         if str(token.dep_) == 'ROOT':
             for child in token.children:
@@ -34,16 +35,23 @@ def check(line):
                 elif str(child.dep_) in corpus.obj:
                     if str(child.lemma_) in corpus.MEC:
                         obj = True
+                    elif str(child.lemma_) in corpus.BAD:
+                        exc = True
                 elif str(child.dep_) == 'neg':
                     neg = True
+                elif str(child.dep_) == 'advcl':
+                    if str(child.lemma_) in corpus.ULO:
+                        sbj = True
 
     if sbj:
         if symp:
-            return 'p11'
+            return 'P11'
         elif neg and obj:
-            return 'p12'
+            return 'P12'
         elif obj:
-            return 'p13'
+            return 'P13'
+        elif exc:
+            return 'P74'
 
 
 for lii in lineList:
