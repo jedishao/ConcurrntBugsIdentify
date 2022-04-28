@@ -1,6 +1,5 @@
 import spacy
-
-import Iden
+import Identify
 import labelOfdata
 from utils import IOutils
 
@@ -34,7 +33,7 @@ def main():
     dataset = IOutils.getTestset(conSents)
 
     for key in dataset.keys():
-        if Iden.identify(nlp, dataset[key], key):
+        if Identify.identify(nlp, dataset[key], key):
             result[key] = 1
         else:
             result[key] = 0
