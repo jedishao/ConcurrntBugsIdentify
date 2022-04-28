@@ -37,6 +37,7 @@ comp = ['ccomp', 'xcomp', 'pcomp', 'acomp']
 
 BAD = ['wrong', 'problem', 'Exception', 'exception', 'issue']
 
-STE = ['thread', 'lock', 'transcation', 'race', 'concurrence', 'concurrency', 'concurrent', 'deadlock']
+STE = ['thread', 'lock', 'transcation', 'race', 'concurrence', 'concurrency', 'concurrent', 'deadlock',
+       'synchronization']
 
 ULO = ['unlock', 'unlocked']
