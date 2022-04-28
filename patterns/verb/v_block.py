@@ -5,7 +5,7 @@ import spacy
 
 import corpus
 
-#
+# This is causing calling thread to block forever in MasterSlaveConnectionManager.get() method.
 
 te = open('../test.txt')
 lineList = []
@@ -16,13 +16,24 @@ for li in te:
 
 def check(line):
     doc = nlp(line)
+    sym, cmi = False, False
     for token in doc:
         if str(token.lemma_) == 'block':
             for child in token.children:
                 if str(child.dep_) == 'prep':
                     for grandchild in child.children:
-                        if str(grandchild.lemma_) in corpus.MEC:
-                            return 'P41'
+                        if str(grandchild.dep_) in corpus.obj:
+                            print(grandchild)
+                            if str(grandchild.lemma_) in corpus.MEC:
+                                cmi = True
+                elif str(child.dep_) in corpus.adv:
+                    if str(child.lemma_) in corpus.TMP:
+                        sym = True
+    if cmi:
+        if sym:
+            return 'P41'
+        else:
+            return 'P53'
 
 
 for lii in lineList:

@@ -1,6 +1,6 @@
 # @Time    : 4/25/22 5:38 PM
 # @Author  : Shuai S
-# @File    : p_be.py
+# @File    : r_be.py
 import spacy
 
 import corpus
@@ -14,7 +14,7 @@ import corpus
 # URIBuilder is not thsa.
 # Race-condition during ack checking is possible.
 
-te = open('test.txt')
+te = open('../test.txt')
 lineList = []
 nlp = spacy.load("en_core_web_sm")
 for li in te:

@@ -27,16 +27,16 @@ CST = ['screen']
 
 MEC = ['lock', 'CMI', 'thread', 'Thread', 'Lock', 'locking']
 
-SYMP = ['deadlock', 'stick', 'stuck', 'hang', 'block', 'remain', 'hold', 'stall']
+SYMP = ['deadlock', 'stick', 'stuck', 'hang', 'block', 'remain', 'hold', 'stall', 'livelock', 'wait']
 
-TMP = ['twice', 'again', 'forever', 'never', 'already', 'indefinitely', 'indefinite']
+TMP = ['twice', 'again', 'forever', 'never', 'already', 'indefinitely', 'indefinite', 'infinite']
 
 CONDI = ['await']
 
 comp = ['ccomp', 'xcomp', 'pcomp', 'acomp']
 
-BAD = ['wrong', 'problem']
+BAD = ['wrong', 'problem', 'Exception']
 
-STE = ['thread', 'lock', 'transcation', 'race', 'concurrence', 'concurrency', 'concurrent']
+STE = ['thread', 'lock', 'transcation', 'race', 'concurrence', 'concurrency', 'concurrent', 'deadlock']
 
 ULO = ['unlock', 'unlocked']
