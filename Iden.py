@@ -1,8 +1,6 @@
 # @Time    : 4/3/22 1:02 PM
 # @Author  : Shuai S
-# @File    : Identify.py
-import corpus
-from patterns import pattern_1, pattern_2, pattern_3, pattern_4, pattern_5, pattern_6, pattern_7
+# @File    : Iden.py
 
 # def identify(nlp, dataset, key):
 #

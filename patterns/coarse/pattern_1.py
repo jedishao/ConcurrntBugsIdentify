@@ -1,7 +1,7 @@
 import ast
 import corpus
 import spacy
-p = open('train_patterns.txt')
+p = open('../train_patterns.txt')
 lineList = []
 nlp = spacy.load("en_core_web_sm")
 for line in p:
