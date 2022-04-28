@@ -12,6 +12,8 @@ import corpus
 # Thread gets stuck when trying to acquire lock via tryLock().
 # Some threads get stuck at the Waiting state at tryLock.
 # we get errors when unlocking.
+# After that I get exception and unlock only after expiration in 30 sec.
+# When I try to get lock using the following code, i get an error saying that i can't write to a Slave.
 
 te = open('../test.txt')
 lineList = []
@@ -39,9 +41,10 @@ def check(line):
                         exc = True
                 elif str(child.dep_) == 'neg':
                     neg = True
-                elif str(child.dep_) == 'advcl':
-                    if str(child.lemma_) in corpus.ULO:
-                        sbj = True
+        elif str(token.lemma_) in corpus.ULO:
+            sbj = True
+        elif str(token.lemma_) in corpus.MEC:
+            cmi = True
 
     if sbj:
         if symp:
@@ -52,6 +55,9 @@ def check(line):
             return 'P13'
         elif exc:
             return 'P74'
+    if cmi:
+        if exc:
+            return 'P75'
 
 
 for lii in lineList:
