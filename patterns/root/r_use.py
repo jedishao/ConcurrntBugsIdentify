@@ -7,10 +7,8 @@ import corpus
 
 #The take() method in RedissonBlockingQueue uses Future.getNow(), which returns null if an exception occurs.
 # When I am using two threads to put values through redisson to different database with limited memory(maxmemory-policy :volatile-lru, maxmemory:4MB),  error like org.redisson.client.RedisOutOfMemoryException:
-# Deadlock using RedissonMultiLock.
 # While using RedissonMultiLock with 3 locks both clients blocks.
 # I am using reddison Rlock with a cluster setup , and sometimes I see latency when trying to acquire the lock or unlock.
-# Hi, we have been using RedissonSortedSet and just found that on certain cases the order can be broken and I assume RedissonSortedSet is supposedly thread safe.
 # I'm using RLock and seeing memory leak via org.redisson.client.handler.CommandPubSubDecoder.
 # I'm using RxJava and as a part of the sequence I use a RLock, at some point (in another process) I unlock it and if the thread to unlock is not the same as the one that blocked I get an exception (see below).
 # when use lock, but throw some class cast exception.
@@ -24,7 +22,7 @@ for li in te:
 
 def check(line):
     doc = nlp(line)
-    cmi, exc, sym = False, False, False
+    cmi, exc, sym, ex = False, False, False, False
     for token in doc:
         if str(token.dep_) == 'ROOT':
             for child in token.children:
@@ -36,8 +34,18 @@ def check(line):
                             if str(grandchild.dep_) in corpus.obj:
                                 if str(grandchild.lemma_) in corpus.BAD:
                                     exc = True
-    if cmi and exc:
-        return 'P68'
+        # memory leak --> Exception
+        elif str(token.lemma_) in corpus.SYMP:
+            sym = True
+        elif str(token.lemma_) in corpus.BAD:
+            ex = True
+    if cmi:
+        if exc:
+            return 'P68'
+        elif sym:
+            return 'P69'
+        elif ex:
+            return 'P71'
 
 
 for lii in lineList:

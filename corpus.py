@@ -27,7 +27,7 @@ CST = ['screen']
 
 MEC = ['lock', 'CMI', 'thread', 'Thread', 'Lock', 'locking', 'blocking']
 
-SYMP = ['deadlock', 'stick', 'stuck', 'hang', 'block', 'remain', 'hold', 'stall', 'livelock', 'wait']
+SYMP = ['deadlock', 'stick', 'stuck', 'hang', 'block', 'remain', 'hold', 'stall', 'livelock', 'wait', 'latency']
 
 TMP = ['twice', 'again', 'forever', 'never', 'already', 'indefinitely', 'indefinite', 'infinite']
 
