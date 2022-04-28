@@ -5,8 +5,7 @@ import spacy
 
 import corpus
 
-# I've found something that I believe is a bug in Redisson's CMI implementation where multiple ReadLocks seemed to become or at least behaved like WriteLock when it tried to lock on a lockpoint that another WriteLock has already acquired a lock, then released.
-
+# In more details, this is happening because get() method awaits forever on Future object, which is released when Command.complete() is called.
 te = open('../test.txt')
 lineList = []
 nlp = spacy.load("en_core_web_sm")
@@ -16,21 +15,19 @@ for li in te:
 
 def check(line):
     doc = nlp(line)
+    cmi, sym = False, False
     for token in doc:
-        if str(token.lemma_) == 'bug':
+        if str(token.lemma_) == 'await':
             for child in token.children:
-                if str(child.dep_) == 'compound':
-                    if str(child.lemma_) in corpus.STE:
-                        return 'P58'
-                if str(child.dep_) == 'prep':
-                    for grandchild in child.children:
-                        if str(grandchild.dep_) in corpus.obj:
-                            if str(grandchild.lemma_) in corpus.MEC:
-                                return 'P62'
-                            else:
-                                for sgrandchild in grandchild.children:
-                                    if str(sgrandchild.lemma_) in corpus.MEC:
-                                        return 'P62'
+                if str(child.dep_) in corpus.s:
+                    if str(child.lemma_) in corpus.MEC:
+                        cmi = True
+                elif str(child.dep_) in corpus.adv:
+                    if str(child.lemma_) in corpus.TMP:
+                        sym = True
+    if cmi:
+        if sym:
+            return 'P63'
 
 
 for lii in lineList:

@@ -1,1 +1,1 @@
-Hello!I've found something that I believe is a bug in Redisson's CMI implementation where multiple ReadLocks seemed to become or at least behaved like WriteLock when it tried to lock on a lockpoint that another WriteLock has already acquired a lock, then released.
+In more details, this is happening because CMI awaits forever on Future object, which is released when Command.complete() is called.
