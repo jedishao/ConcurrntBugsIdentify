@@ -25,7 +25,7 @@ adv = ['advmod', 'amod']
 
 CST = ['screen']
 
-MEC = ['lock', 'CMI', 'thread', 'Thread', 'Lock', 'locking']
+MEC = ['lock', 'CMI', 'thread', 'Thread', 'Lock', 'locking', 'blocking']
 
 SYMP = ['deadlock', 'stick', 'stuck', 'hang', 'block', 'remain', 'hold', 'stall', 'livelock', 'wait']
 
@@ -35,7 +35,7 @@ CONDI = ['await']
 
 comp = ['ccomp', 'xcomp', 'pcomp', 'acomp']
 
-BAD = ['wrong', 'problem', 'Exception']
+BAD = ['wrong', 'problem', 'Exception', 'exception', 'issue']
 
 STE = ['thread', 'lock', 'transcation', 'race', 'concurrence', 'concurrency', 'concurrent', 'deadlock']
 
