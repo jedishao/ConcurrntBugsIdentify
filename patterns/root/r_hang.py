@@ -49,6 +49,11 @@ def check(line):
                 elif str(child.dep_) in corpus.adv:
                     if str(child.lemma_) in corpus.TMP:
                         sym = True
+                elif str(child.dep_) == 'aux':
+                    for grandchild in child.children:
+                        if str(grandchild.dep_) in corpus.s:
+                            if str(grandchild.lemma_) in corpus.MEC:
+                                cmi = True
     if cmi:
         if sym:
             return 'P47'
