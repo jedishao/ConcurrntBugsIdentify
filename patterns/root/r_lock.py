@@ -27,12 +27,12 @@ def check(line):
     for token in doc:
         if str(token.dep_) == 'ROOT':
             for child in token.children:
-                if str(child.dep_) in corpus.S:
+                if str(child.dep_) in corpus.s:
                     if str(child.lemma_) in corpus.MEC:
                         return 'P16'
                 elif str(child.dep_) in ['auxpass', 'advcl']:
                     for grandchild in child.children:
-                        if str(grandchild.dep_) in corpus.S:
+                        if str(grandchild.dep_) in corpus.s:
                             if str(grandchild.lemma_) in corpus.MEC:
                                 return 'P17'
                 elif str(child.dep_) in corpus.OBJ:

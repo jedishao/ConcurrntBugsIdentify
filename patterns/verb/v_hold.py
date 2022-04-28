@@ -21,7 +21,7 @@ def check(line):
         if str(token.pos_) == 'VERB':
             if str(token.lemma_) == 'hold':
                 for child in token.children:
-                    if str(child.dep_) in corpus.S:
+                    if str(child.dep_) in corpus.s:
                         if str(child.lemma_) in corpus.MEC:
                             cmi = True
                     elif str(child.dep_) in corpus.adv:

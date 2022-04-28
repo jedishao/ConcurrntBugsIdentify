@@ -55,7 +55,7 @@ def check(line):
                             if str(grandchild.dep_) in corpus.comp:
                                 if str(grandchild.lemma_) in corpus.CONDI:
                                     return 'P24'
-                elif str(child.dep_) in corpus.S:
+                elif str(child.dep_) in corpus.s:
                     if str(child.lemma_) in corpus.MEC:
                         cmi = True
     if cmi and wrong:

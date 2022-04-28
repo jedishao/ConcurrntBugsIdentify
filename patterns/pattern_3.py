@@ -14,7 +14,7 @@ def check(nlp, dataset):
             if str(token.dep_) == 'ROOT':
                 if str(token.lemma_) in ['work', 'unlock']:
                     for child in token.children:
-                        if str(child) == 'CMI' and str(child.dep_) in corpus.S:
+                        if str(child) == 'CMI' and str(child.dep_) in corpus.s:
                             cmi = True
                         if str(child.lemma_) == 'not' and str(child.dep_) == 'neg':
                             neg1 = True
@@ -22,7 +22,7 @@ def check(nlp, dataset):
                     # CMI is not reentrant.
                     # CMI cannot be correctly unlocked.
                     for child in token.children:
-                        if str(child) == 'CMI' and str(child.dep_) in corpus.S:
+                        if str(child) == 'CMI' and str(child.dep_) in corpus.s:
                             cmi = True
                         if str(child.lemma_) == 'not' and str(child.dep_) == 'neg':
                             neg2 = True

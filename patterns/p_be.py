@@ -27,7 +27,7 @@ def check(line):
     for token in doc:
         if str(token.dep_) == 'ROOT':
             for child in token.children:
-                if str(child.dep_) in corpus.S:
+                if str(child.dep_) in corpus.s:
                     if str(child.lemma_) in corpus.MEC:
                         sbj = True
                     elif str(child.lemma_) == 'condition':
@@ -76,7 +76,7 @@ def check(line):
                         sym = True
                 elif str(child.dep_) == 'advcl':
                     for grandchild in child.children:
-                        if str(grandchild.dep_) in corpus.S:
+                        if str(grandchild.dep_) in corpus.s:
                             if str(grandchild.lemma_) in corpus.MEC:
                                 sbj = True
                 elif str(child.dep_) == 'neg':

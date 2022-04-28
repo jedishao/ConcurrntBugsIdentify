@@ -34,7 +34,7 @@ def check(line):
                             for grandchild in child1.children:
                                 if str(grandchild.lemma_) in corpus.MEC:
                                     return 'P3'
-                        elif str(child1.dep_) in corpus.S:
+                        elif str(child1.dep_) in corpus.s:
                             if str(child1.lemma_) in corpus.MEC:
                                 return 'P4'
                             else:

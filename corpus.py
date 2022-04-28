@@ -19,7 +19,7 @@ NUM = []
 
 obj = ['dobj', 'conj', 'pobj']
 
-S = ['nsubj', 'nsubjpass']
+s = ['nsubj', 'nsubjpass', 'csubj']
 
 adv = ['advmod', 'amod']
 

@@ -29,13 +29,33 @@ for li in te:
 
 def check(line):
     doc = nlp(line)
-    cmi, exc = False, False
-    # for token in doc:
-    #     if str(token.dep_) == 'ROOT':
-    #         for child in token.children:
-    #             if str(child.dep_) == 'advcl':
-    #                 for grandchild in child.children:
-    #
+    cmi, sym = False, False
+    for token in doc:
+        if str(token.dep_) == 'ROOT':
+            for child in token.children:
+                if str(child.dep_) == 'prep':
+                    for grandchild in child.children:
+                        if str(grandchild.dep_) in corpus.obj:
+                            if str(grandchild.lemma_) in corpus.MEC:
+                                cmi = True
+                elif str(child.dep_) in corpus.s:
+                    if str(child.lemma_) in corpus.MEC:
+                        cmi = True
+                    else:
+                        for grandchild in child.children:
+                            if str(grandchild.dep_) in corpus.obj:
+                                if str(grandchild.lemma_) in corpus.MEC:
+                                    cmi = True
+                elif str(child.dep_) in corpus.adv:
+                    if str(child.lemma_) in corpus.TMP:
+                        sym = True
+    if cmi:
+        if sym:
+            return 'P47'
+        else:
+            return 'P48'
+
+
 for lii in lineList:
     s = check(lii)
     print(s)

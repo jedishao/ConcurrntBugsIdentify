@@ -94,7 +94,7 @@ def getSentsOfPtn1(nlp, coarse):
                     flag = True
                     cmi, adv, symp = False, False, False
                     for child in token.children:
-                        if str(child.dep_) in corpus.S:
+                        if str(child.dep_) in corpus.s:
                             if str(child) == 'CMI':
                                 cmi = True
                         elif str(child.dep_) in corpus.adv:
@@ -112,7 +112,7 @@ def getSentsOfPtn1(nlp, coarse):
                     flag = True
                     cmi, cop, symp = False, False, False
                     for child in token.children:
-                        if str(child.dep_) in corpus.S:
+                        if str(child.dep_) in corpus.s:
                             if str(child) == 'CMI':
                                 cmi = True
                         elif str(child.dep_) == 'attr':
@@ -135,7 +135,7 @@ def getSentsOfPtn1_2(nlp, coarse):
                     cmi = False
                     symp = False
                     for child in token.children:
-                        if str(child.dep_) in corpus.S:
+                        if str(child.dep_) in corpus.s:
                             if str(child) == 'CMI':
                                 cmi = True
                         elif str(child.dep_) == 'dobj':
