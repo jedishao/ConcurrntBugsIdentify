@@ -22,34 +22,69 @@ def ree(dataset):
 
 def main():
     nlp = spacy.load("en_core_web_sm")
-    conSents = open("dataset/dataset1/grpc/grpc_issues.txt", encoding='utf-8')
+    conSents = open("dataset/dataset1/redisson/pos.txt", encoding='utf-8')
+    wre = open("dataset/dataset1/redisson/weka_p.txt", 'w')
     #  conSents = open("dataset/dataset1/test.txt", encoding='utf-8')
     # conSents = open("dataset/dataset1/redisson_pp.txt", encoding='utf-8')
     # only_one = open('dataset/only_one_cmi.txt')
     # write_pos = open("./dataset/pos_concurrent.txt", "w")
     # read_pos = open("./dataset/pos_concurrent.txt")
     # den_results = open("./dataset/den_concurrent.txt", "a")
-    result = {}
-    dataset = IOutils.getTestset(conSents)
+    result = []
+    rer = []
+    # dataset = IOutils.getTestset(conSents)
+    lineList = []
+    for li in conSents:
+        lineList.append(li)
 
-    for key in dataset.keys():
-        if Identify.identify(nlp, dataset[key], key):
-            result[key] = 1
-        else:
-            result[key] = 0
+    j = 1
+    for re in lineList:
+        doc = nlp(re)
+        lsss = []
+        rer = []
+        for i in range(138):
+            rer.append(0)
+        for sent in doc.sents:
+            lsss.append(str(sent))
+        for s in lsss:
+            rew = Identify.identify(nlp, s)
+            if rew is not None:
+                rer[rew] = 1
+        result.append(rer)
 
-    one = []
-    zero = []
-    #print(result)
-    for re in result.keys():
-        if result[re] == 1:
-            one.append(re)
-        else:
-            zero.append(re)
-    print(len(one))
-    print(one)
-    print(len(zero))
-    print(zero)
+    bai = []
+    for r in result:
+        r.append(1)
+        wre.write(str(r))
+        wre.write('\n')
+        # key = 0
+        # for oo in r:
+        #     if oo == 1:
+        #         key = 1
+        # if key == 1:
+        #     bai.append(j)
+        # j += 1
+
+    print(len(bai))
+    print(bai)
+    # for key in dataset.keys():
+    #     if Identify.identify(nlp, dataset[key], key):
+    #         result[key] = 1
+    #     else:
+    #         result[key] = 0
+
+    # one = []
+    # zero = []
+    # #print(result)
+    # for re in result.keys():
+    #     if result[re] == 1:
+    #         one.append(re)
+    #     else:
+    #         zero.append(re)
+    # print(len(one))
+    # print(one)
+    # print(len(zero))
+    # print(zero)
     # file-->pos-->pattern1(SVO)-->targetFile(sents)-->dependence
     # data = getDataset2list(conSents)
     # data = IOutils.getDataset2list(conSents)
@@ -70,9 +105,9 @@ def main():
     # for sent in C_set:
     #     print(sent)
     # print(data[sent], end="")
-    fp, fn = ree(result)
-    print(fp)
-    print(fn)
+    # fp, fn = ree(result)
+    # print(fp)
+    # print(fn)
     conSents.close()
     # only_one.close()
 
