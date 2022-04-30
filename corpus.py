@@ -25,19 +25,24 @@ adv = ['advmod', 'amod']
 
 CST = ['screen']
 
-MEC = ['lock', 'CMI', 'thread', 'Thread', 'Lock', 'locking', 'blocking']
+MEC = ['lock', 'CMI', 'thread', 'Thread', 'Lock', 'locking', 'blocking', 'sync']
 
 SYMP = ['deadlock', 'stick', 'stuck', 'hang', 'block', 'remain', 'hold', 'stall', 'livelock', 'wait', 'latency']
 
-TMP = ['twice', 'again', 'forever', 'never', 'already', 'indefinitely', 'indefinite', 'infinite']
+TMP = ['twice', 'again', 'forever', 'never', 'already', 'indefinitely', 'indefinite', 'infinite', 'infinitely',
+       'continuously']
 
 CONDI = ['await']
 
 comp = ['ccomp', 'xcomp', 'pcomp', 'acomp']
 
-BAD = ['wrong', 'problem', 'Exception', 'exception', 'issue', 'error']
+BAD = ['wrong', 'problem', 'Exception', 'exception', 'issue', 'error', 'fail', 'bug']
 
 STE = ['thread', 'lock', 'transcation', 'race', 'concurrence', 'concurrency', 'concurrent', 'deadlock',
        'synchronization']
 
-ULO = ['unlock', 'unlocked']
+ULO = ['unlock', 'unlocked', 'unlocking']
+
+POS = ['properly', 'correctly']
+
+NEG = ['incorrectly', 'incorrect']
