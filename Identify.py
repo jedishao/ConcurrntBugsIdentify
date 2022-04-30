@@ -4,82 +4,149 @@
 import patterns.root as root
 import patterns.verb as verb
 import patterns.noun as noun
+from patterns import p_keywords
+from patterns.CMI import cmi, unlock, lock, infinite
+from patterns.noun import n_bug, n_deadlock, n_lock, n_problem, n_exception, n_fail, n_error, n_issue, n_dump, n_block, \
+    n_hung, n_condition
+from patterns.root import r_fail, r_release, r_race, r_problem, r_hang, r_have, r_issue, r_throw, r_try, r_use, r_work, \
+    r_be, r_block, r_cause, r_crash, r_deadlock, r_exception, r_execute, r_get, r_lock, r_obtain, r_stuck, root, \
+    r_condition, r_park, r_acquire
+from patterns.verb import v_await, v_block, v_break, v_hang, v_have, v_hold, v_unlock, v_occur, v_receive, v_wait, \
+    v_stuck, v_lock, verb, v_fail, v_release
 
 
-def identify(nlp, dataset, key):
-    for sentence in dataset:
-        doc = nlp(sentence)
-        for token in doc:
-            if str(token.dep_) == 'ROOT':
-                if str(token.lemma_).lower() == 'be':
-                    return root.r_be.check(doc)
-                elif str(token.lemma_).lower() == 'block':
-                    return root.r_block.check(doc)
-                elif str(token.lemma_).lower() == 'cause':
-                    return root.r_cause.check(doc)
-                elif str(token.lemma_).lower() == 'crash':
-                    return root.r_crash.check(doc)
-                elif str(token.lemma_).lower() == 'deadlock':
-                    return root.r_deadlock.check(doc)
-                elif str(token.lemma_).lower() == 'exception':
-                    return root.r_exception.check(doc)
-                elif str(token.lemma_).lower() == 'execute':
-                    return root.r_execute.check(doc)
-                elif str(token.lemma_).lower() == 'fail':
-                    return root.r_fail.check(doc)
-                elif str(token.lemma_).lower() == 'get':
-                    return root.r_get.check(doc)
-                elif str(token.lemma_).lower() == 'hang':
-                    return root.r_hang.check(doc)
-                elif str(token.lemma_).lower() == 'have':
-                    return root.r_have.check(doc)
-                elif str(token.lemma_).lower() == 'issue':
-                    return root.r_issue.check(doc)
-                elif str(token.lemma_).lower() == 'lock':
-                    return root.r_lock.check(doc)
-                elif str(token.lemma_).lower() == 'obtain':
-                    return root.r_obtain.check(doc)
-                elif str(token.lemma_).lower() == 'problem':
-                    return root.r_problem.check(doc)
-                elif str(token.lemma_).lower() == 'race':
-                    return root.r_race.check(doc)
-                elif str(token.lemma_).lower() == 'release':
-                    return root.r_release.check(doc)
-                elif str(token.lemma_).lower() == 'throw':
-                    return root.r_throw.check(doc)
-                elif str(token.lemma_).lower() == 'try':
-                    return root.r_try.check(doc)
-                elif str(token.lemma_).lower() == 'use':
-                    return root.r_use.check(doc)
-                elif str(token.lemma_).lower() == 'work':
-                    return root.r_work.check(doc)
-            elif str(token.dep_) == 'VERB':
-                if str(token.lemma_).lower() == 'await':
-                    return verb.v_await.check(doc)
-                elif str(token.lemma_).lower() == 'block':
-                    return verb.v_block.check(doc)
-                elif str(token.lemma_).lower() == 'break':
-                    return verb.v_break.check(doc)
-                elif str(token.lemma_).lower() == 'hang':
-                    return verb.v_hang.check(doc)
-                elif str(token.lemma_).lower() == 'have':
-                    return verb.v_have.check(doc)
-                elif str(token.lemma_).lower() == 'hold':
-                    return verb.v_hold.check(doc)
-                elif str(token.lemma_).lower() == 'occur':
-                    return verb.v_occur.check(doc)
-                elif str(token.lemma_).lower() == 'receive':
-                    return verb.v_receive.check(doc)
-                elif str(token.lemma_).lower() == 'unlock':
-                    return verb.v_unlock.check(doc)
-                elif str(token.lemma_).lower() == 'wait':
-                    return verb.v_wait.check(doc)
-            elif str(token.dep_) == 'NOUN':
-                if str(token.lemma_).lower() == 'bug':
-                    return noun.n_bug.check(doc)
-                elif str(token.lemma_).lower() == 'deadlock':
-                    return noun.n_deadlock.check(doc)
-                elif str(token.lemma_).lower() == 'lock':
-                    return noun.n_lock.check(doc)
-                elif str(token.lemma_).lower() == 'problem':
-                    return noun.n_problem.check(doc)
+def identify(nlp, dataset):
+    # for sentence in dataset:
+    result = None
+    doc = nlp(dataset)
+    for token in doc:
+        if str(token.dep_) == 'ROOT':
+            if str(token.lemma_).lower() == 'acquire':
+                result = r_acquire.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'be':
+                result = r_be.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'block':
+                result = r_block.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'cause':
+                result = r_cause.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'crash':
+                result = r_crash.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'condition':
+                result = r_condition.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'deadlock':
+                result = r_deadlock.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'exception':
+                result = r_exception.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'execute':
+                result = r_execute.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'fail':
+                result = r_fail.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'get':
+                result = r_get.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'hang':
+                result = r_hang.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'have':
+                result = r_have.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'issue':
+                result = r_issue.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'lock':
+                result = r_lock.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'obtain':
+                result = r_obtain.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'park':
+                result = r_park.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'problem':
+                result = r_problem.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'race':
+                result = r_race.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'release':
+                result = r_release.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'throw':
+                result = r_throw.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'try':
+                result = r_try.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'use':
+                result = r_use.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'work':
+                result = r_work.check(nlp, doc)
+            elif str(token.lemma_).lower() in ['stuck', 'stick']:
+                result = r_stuck.check(nlp, doc)
+            else:
+                result = root.check(nlp, doc)
+        if result is not None:
+            return result
+    for token in doc:
+        if str(token.pos_) == 'VERB':
+            if str(token.lemma_).lower() == 'await':
+                result = v_await.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'block':
+                result = v_block.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'break':
+                result = v_break.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'hang':
+                result = v_hang.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'have':
+                result = v_have.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'hold':
+                result = v_hold.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'occur':
+                result = v_occur.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'receive':
+                result = v_receive.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'release':
+                result = v_release.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'fail':
+                result = v_fail.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'lock':
+                result = v_lock.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'unlock':
+                result = v_unlock.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'wait':
+                result = v_wait.check(nlp, doc)
+            elif str(token.lemma_).lower() in ['stuck', 'stick']:
+                result = v_stuck.check(nlp, doc)
+            else:
+                result = verb.check(nlp, doc)
+        if result is not None:
+            return result
+    for token in doc:
+        if str(token.pos_) in ['NOUN', 'PROPN']:
+            if str(token.lemma_).lower() == 'bug':
+                result = n_bug.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'block':
+                result = n_block.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'condition':
+                result = n_condition.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'deadlock':
+                result = n_deadlock.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'lock':
+                result = n_lock.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'hung':
+                result = n_hung.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'problem':
+                result = n_problem.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'exception':
+                result = n_exception.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'fail':
+                result = n_fail.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'error':
+                result = n_error.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'issue':
+                result = n_issue.check(nlp, doc)
+            elif str(token.lemma_).lower() == 'dump':
+                result = n_dump.check(nlp, doc)
+        if result is not None:
+            return result
+    for token in doc:
+        if str(token) == 'CMI':
+            result = cmi.check(nlp, doc)
+        elif str(token.lemma_).lower() == 'unlock':
+            result = unlock.check(nlp, doc)
+        elif str(token.lemma_).lower() == 'lock':
+            result = lock.check(nlp, doc)
+        elif str(token.lemma_).lower() == 'infinite':
+            result = infinite.check(nlp, doc)
+        if result is not None:
+            return result
+    result = p_keywords.check(nlp, doc)
+    return result
