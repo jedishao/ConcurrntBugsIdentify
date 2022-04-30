@@ -7,14 +7,8 @@ import corpus
 
 # Deadlock using RedissonMultiLock.
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     for token in doc:
         if str(token.lemma_) == 'deadlock':
@@ -23,9 +17,9 @@ def check(line):
                     for grandchild in child.children:
                         if str(grandchild.dep_) in corpus.obj:
                             if str(grandchild.lemma_) in corpus.MEC:
-                                return 'P69'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
+                                return 8
+                elif str(child.dep_) == 'prep':
+                    return 9
+    for token in doc:
+        if str(token.lemma_) in corpus.MEC:
+            return 10

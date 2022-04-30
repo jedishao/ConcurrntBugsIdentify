@@ -13,14 +13,8 @@ import spacy
 
 import corpus
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     cmi, exc = False, False
     for token in doc:
@@ -28,12 +22,12 @@ def check(line):
             for child in token.children:
                 if str(child.dep_) in corpus.obj:
                     if str(child.lemma_) in corpus.SYMP:
-                        return 'P54'
+                        return 35
                     elif str(child.lemma_) == 'recursion':
                         for grandchild in child.children:
                             if str(grandchild.dep_) in corpus.adv:
                                 if str(grandchild.lemma_) in corpus.TMP:
-                                    return 'p55'
+                                    return 36
                     elif str(child.lemma_) in corpus.BAD:
                         exc = True
                 elif str(child.dep_) in corpus.s:
@@ -43,11 +37,8 @@ def check(line):
                     if str(child.lemma_) in corpus.SYMP:
                         for grandchild in child.children:
                             if str(grandchild.lemma_) in corpus.MEC:
-                                return 'P57'
+                                return 37
     if cmi:
         if exc:
-            return 'P56'
+            return 38
 
-for lii in lineList:
-    s = check(lii)
-    print(s)

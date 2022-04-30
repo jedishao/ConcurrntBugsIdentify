@@ -14,14 +14,7 @@ import corpus
 # URIBuilder is not thsa.
 # Race-condition during ack checking is possible.
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
-
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     sbj, sym, unlock, fea, neg = False, False, False, False, False
     for token in doc:
@@ -34,7 +27,7 @@ def check(line):
                         for grandchild in child.children:
                             if str(grandchild.dep_) == 'compound':
                                 if str(grandchild.lemma_) == 'race':
-                                    return 'P37'
+                                    return 22
                 elif str(child.dep_) == 'attr':
                     if str(child.lemma_) in corpus.SYMP:
                         sym = True
@@ -42,12 +35,12 @@ def check(line):
                         for grandchild in child.children:
                             if str(grandchild.dep_) == 'compound':
                                 if str(grandchild.lemma_) == 'race':
-                                    return 'P34'
+                                    return 23
                     elif str(child.lemma_) == 'dump':
                         for grandchild in child.children:
                             if str(grandchild.dep_) == 'compound':
                                 if str(grandchild.lemma_).lower() == 'thread':
-                                    return 'P39'
+                                    return 24
                     elif str(child.lemma_) in ['thsa']:
                         fea = True
                     elif str(child.lemma_) in corpus.BAD:
@@ -56,7 +49,7 @@ def check(line):
                                 for sgrandchild in grandchild.children:
                                     if str(sgrandchild.dep_) in corpus.obj:
                                         if str(sgrandchild.lemma_) in corpus.STE:
-                                            return 'P38'
+                                            return 25
                     else:
                         for grandchild in child.children:
                             if str(grandchild.dep_) == 'prep':
@@ -65,7 +58,7 @@ def check(line):
                                         if str(sgrandchild.lemma_) == 'condition':
                                             for ssgrandchild in sgrandchild.children:
                                                 if str(ssgrandchild.lemma_) == 'race':
-                                                    return 'P37'
+                                                    return 26
 
                 elif str(child.dep_) in corpus.comp:
                     if str(child.lemma_) in corpus.ULO:
@@ -83,16 +76,11 @@ def check(line):
                     neg = True
     if sbj:
         if sym:
-            return 'P32'
+            return 27
         elif unlock:
-            return 'P33'
+            return 28
     if fea:
         if neg:
-            return 'P35'
+            return 29
         elif sbj:
-            return 'P36'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
+            return 30

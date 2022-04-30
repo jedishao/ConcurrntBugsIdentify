@@ -7,14 +7,8 @@ import corpus
 
 # Bug found that can cause MasterSlaveConnectionManager to hang forever on get() call if exception is thrown anywhere in CommandHandler.
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     sym, cmi = False, False
     for token in doc:
@@ -27,11 +21,6 @@ def check(line):
                         sym = True
     if cmi:
         if sym:
-            return 'P60'
-        # else:
-        #     return 'P53'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
+            return 112
+        else:
+            return 113

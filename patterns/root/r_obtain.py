@@ -6,14 +6,8 @@ import spacy
 import corpus
 # The same lock name was likely concurrently obtained and held by another thread possibly on another jvm.
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     sam, mec = False, False
     for token in doc:
@@ -22,9 +16,5 @@ def check(line):
         elif str(token.lemma_) in corpus.MEC:
             mec = True
     if sam and mec:
-        return 'P14'
+        return 81
 
-
-for lii in lineList:
-    s = check(lii)
-    print(s)

@@ -7,14 +7,8 @@ import corpus
 
 # This is causing calling thread to block forever in MasterSlaveConnectionManager.get() method.
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     sym, cmi = False, False
     for token in doc:
@@ -31,11 +25,8 @@ def check(line):
                         sym = True
     if cmi:
         if sym:
-            return 'P41'
+            return 107
         else:
-            return 'P53'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
+            return 108
+    if sym:
+        return 109

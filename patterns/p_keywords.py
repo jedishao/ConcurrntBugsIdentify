@@ -7,30 +7,43 @@ import corpus
 
 # But while running a apache ab-test tool for concurrency, following exception occurs.
 
-te = open('test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
-    mec, ste, exc = False, False, False
+    mec, ste, exc, ulo, cop, sym, tmp, thsa, non = False, False, False, False, False, False, False, False, False
     for token in doc:
         if str(token.lemma_) in corpus.MEC:
             mec = True
-        elif str(token) == 'exception':
+        if str(token.lemma_) in corpus.BAD:
             exc = True
-        elif str(token.lemma_) in corpus.STE:
+        if str(token.lemma_).lower() in corpus.STE:
             ste = True
+        if str(token.lemma_) in corpus.ULO:
+            ulo = True
+        if str(token.lemma_) in corpus.COP:
+            cop = True
+        if str(token.lemma_) in corpus.SYMP:
+            sym = True
+        if str(token.lemma_) in corpus.TMP:
+            tmp = True
+        if str(token.lemma_) == 'thsa':
+            thsa = True
+        if str(token.dep_) == 'neg':
+            non = True
     if exc:
         if mec:
-            return 'p100'
+            return 131
         elif ste:
-            return 'P101'
+            return 132
+        elif ulo:
+            return 133
+        if cop:
+            return 134
+    if sym:
+        if tmp:
+            return 135
+        elif mec:
+            return 136
 
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
+    if thsa and non:
+        return 137

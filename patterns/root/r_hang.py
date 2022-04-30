@@ -20,14 +20,8 @@ import spacy
 
 import corpus
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     cmi, sym = False, False
     for token in doc:
@@ -56,11 +50,6 @@ def check(line):
                                 cmi = True
     if cmi:
         if sym:
-            return 'P47'
+            return 62
         else:
-            return 'P48'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
+            return 63

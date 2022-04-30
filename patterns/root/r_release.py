@@ -6,14 +6,8 @@ import spacy
 import corpus
 # unlock not releasing lock to waiting threads.
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     neg, mec = False, False
     for token in doc:
@@ -25,9 +19,4 @@ def check(line):
                     if str(child.lemma_) in corpus.MEC:
                         mec = True
     if neg and mec:
-        return 'P73'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
+        return 88

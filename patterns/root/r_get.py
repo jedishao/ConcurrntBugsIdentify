@@ -14,15 +14,10 @@ import corpus
 # we get errors when unlocking.
 # After that I get exception and unlock only after expiration in 30 sec.
 # When I try to get lock using the following code, i get an error saying that i can't write to a Slave.
-
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
+# I got this problem when I trying to locking an object.
 
 
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     sbj, symp, obj, neg, exc, cmi = False, False, False, False, False, False
     for token in doc:
@@ -48,18 +43,13 @@ def check(line):
 
     if sbj:
         if symp:
-            return 'P11'
+            return 57
         elif neg and obj:
-            return 'P12'
+            return 58
         elif obj:
-            return 'P13'
+            return 59
         elif exc:
-            return 'P74'
+            return 60
     if cmi:
         if exc:
-            return 'P75'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
+            return 61

@@ -10,39 +10,30 @@ import corpus
 # Issue in locking on key in concurrency.
 # Rlock performance issue.
 # RedissonRedLock issue.
-
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
+# CMI deadlock issue.
 
 
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     for token in doc:
         if str(token.dep_) == 'ROOT':
             for child in token.children:
                 if str(child.dep_) == 'compound':
                     if str(child.lemma_).lower() in corpus.STE:
-                        return 'P27'
+                        return 70
                     elif str(child.lemma_) in corpus.MEC:
-                        return 'P28'
+                        return 71
                     else:
                         for grandchild in child.children:
                             if str(grandchild.dep_) == 'compound':
                                 if str(grandchild.lemma_) in corpus.MEC:
-                                    return 'P29'
+                                    return 72
                 elif str(child.dep_) == 'appos':
                     if str(child.lemma_).lower() in corpus.STE:
-                        return 'P30'
+                        return 73
                 elif str(child.dep_) == 'prep':
                     for grandchild in child.children:
                         if str(grandchild.dep_) in corpus.comp:
                             if str(grandchild.lemma_) in corpus.MEC:
-                                return 'P31'
+                                return 74
 
-
-for lii in lineList:
-    s = check(lii)
-    print(s)

@@ -7,16 +7,11 @@ import spacy
 import corpus
 
 # The second thread failed to acquire lock but the lock is released during 2 seconds...please tell me, thanks
+# redisson failed to acquire lock and keep sending acquire lock request.
+# But if we block node1's network then it fails with the below error.
 
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
-
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     for token in doc:
         if str(token.dep_) == 'ROOT':
@@ -26,10 +21,11 @@ def check(line):
                         for grandchild in child.children:
                             if str(grandchild.dep_) in corpus.obj:
                                 if str(grandchild.lemma_) in corpus.MEC:
-                                    return 'P76'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
+                                    return 54
+                elif str(child.dep_) == 'advcl':
+                    if str(child.lemma_) in corpus.COP:
+                        return 55
+                elif str(child.dep_) in corpus.s:
+                    if str(child.lemma_) in corpus.COP:
+                        return 56
 

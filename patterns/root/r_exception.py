@@ -17,14 +17,8 @@ import spacy
 
 import corpus
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     cmi, exc = False, False
     for token in doc:
@@ -34,27 +28,24 @@ def check(line):
                     for grandchild in child.children:
                         if str(grandchild.dep_) in corpus.obj:
                             if str(grandchild.lemma_) in corpus.MEC:
-                                return 'P45'
+                                return 48
                         elif str(grandchild.dep_) == 'advcl':
                             for sgrandchild in grandchild.children:
                                 if str(sgrandchild.dep_) in corpus.obj:
                                     if str(sgrandchild.lemma_) in corpus.MEC:
-                                        return 'P45'
+                                        return 48
                 elif str(child.dep_) == 'compound':
                     if str(child.lemma_) in corpus.MEC:
-                        return 'P46'
+                        return 49
                 elif str(child.dep_) == 'prep':
                     for grandchild in child.children:
                         if str(grandchild.dep_) in corpus.obj:
                             if str(grandchild.lemma_) in corpus.MEC:
-                                return 'P47'
+                                return 50
                             elif str(grandchild.lemma_).lower() in corpus.STE:
-                                return 'P48'
+                                return 51
                         elif str(grandchild.dep_) in corpus.comp:
                             for sgrandchild in grandchild.children:
                                 if str(sgrandchild.dep_) in corpus.obj:
                                     if str(sgrandchild.lemma_) in corpus.MEC:
-                                        return 'P47'
-for lii in lineList:
-    s = check(lii)
-    print(s)
+                                        return 52

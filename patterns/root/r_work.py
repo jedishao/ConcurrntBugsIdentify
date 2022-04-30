@@ -16,14 +16,8 @@ import spacy
 
 import corpus
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     for token in doc:
         if str(token.dep_) == 'ROOT':
@@ -33,17 +27,15 @@ def check(line):
                         if str(child1.dep_) == 'advcl':
                             for grandchild in child1.children:
                                 if str(grandchild.lemma_) in corpus.MEC:
-                                    return 'P3'
+                                    return 96
                         elif str(child1.dep_) in corpus.s:
                             if str(child1.lemma_) in corpus.MEC:
-                                return 'P4'
+                                return 97
                             else:
                                 for grandchild in child1.children:
                                     if str(grandchild.lemma_) in corpus.MEC:
-                                        return 'P5'
+                                        return 98
                         elif str(child1.dep_) == 'prep':
                             for grandchild in child1.children:
                                 if str(grandchild.lemma_) in corpus.MEC:
-                                    return 'P6'
-
-
+                                    return 99

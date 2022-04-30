@@ -13,14 +13,8 @@ import corpus
 # I'm using RxJava and as a part of the sequence I use a RLock, at some point (in another process) I unlock it and if the thread to unlock is not the same as the one that blocked I get an exception (see below).
 # when use lock, but throw some class cast exception.
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     cmi, exc, sym, ex = False, False, False, False
     for token in doc:
@@ -41,14 +35,8 @@ def check(line):
             ex = True
     if cmi:
         if exc:
-            return 'P68'
+            return 93
         elif sym:
-            return 'P69'
+            return 94
         elif ex:
-            return 'P71'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
-
+            return 95

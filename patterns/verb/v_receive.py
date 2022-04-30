@@ -7,14 +7,8 @@ import corpus
 
 # sometimes when a thread(that acquired it) tries to release the lock the thread receives Exception.
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     cmi, exc = False, False
     for token in doc:
@@ -28,9 +22,4 @@ def check(line):
                         cmi = True
     if cmi:
         if exc:
-            return 'P52'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
+            return 119

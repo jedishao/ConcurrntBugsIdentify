@@ -8,14 +8,8 @@ import corpus
 
 # redission ScheduledFuture can not be execute after definite time.
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     cmi, neg = False, False
     for token in doc:
@@ -27,9 +21,4 @@ def check(line):
                 elif str(child.dep_) == 'neg':
                     neg = True
     if cmi and neg:
-        return 'P64'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
+        return 53

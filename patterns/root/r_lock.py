@@ -15,36 +15,27 @@ import corpus
 # In this case, the Red Lock should always be locked for most of the lock is available.
 # redisson lock uncontrolled release.
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     for token in doc:
         if str(token.dep_) == 'ROOT':
             for child in token.children:
                 if str(child.dep_) in corpus.s:
                     if str(child.lemma_) in corpus.MEC:
-                        return 'P16'
+                        return 75
                 elif str(child.dep_) in ['auxpass', 'advcl']:
                     for grandchild in child.children:
                         if str(grandchild.dep_) in corpus.s:
                             if str(grandchild.lemma_) in corpus.MEC:
-                                return 'P17'
+                                return 76
                 elif str(child.dep_) in corpus.obj:
                     if str(child.lemma_) in corpus.MEC:
-                        return 'P18'
+                        return 77
                     elif str(child.lemma_) in corpus.COP:
-                        return 'P19'
+                        return 78
+                    elif str(child.lemma_) in corpus.BAD:
+                        return 79
                 elif str(child.dep_) in corpus.adv:
                     if str(child.lemma_) in corpus.TMP:
-                        return 'P20'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
+                        return 80

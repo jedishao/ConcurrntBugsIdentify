@@ -7,14 +7,8 @@ import corpus
 
 # I've found my indefinitely held locks will sometimes disappear after a master/slave failover.
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     for token in doc:
         if str(token.lemma_) == 'lock':
@@ -24,9 +18,6 @@ def check(line):
                         for grandchild in child.children:
                             if str(grandchild.dep_) in corpus.adv:
                                 if str(grandchild.lemma_) in corpus.TMP:
-                                    return 'P61'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
+                                    return 17
+                    elif str(child.lemma_) in corpus.TMP:
+                        return 18

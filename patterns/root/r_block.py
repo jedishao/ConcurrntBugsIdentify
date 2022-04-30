@@ -22,19 +22,14 @@
 # but it blocks indefinitely instead of the remaining time until a new permit becomes available.
 # CommandAsyncService blocks indefinitely [without OutOfMemoryError].
 # RMapCache get operation will be blocked.
+# RedissonRateLimiter CMI blocks forever.
 
 import spacy
 
 import corpus
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     sym, cmi = False, False
     for token in doc:
@@ -47,7 +42,7 @@ def check(line):
                     if str(child.lemma_) in corpus.TMP:
                         sym = True
                 elif str(child.dep_) == 'auxpass':
-                    return 'P44'
+                    return 31
                 elif str(child.dep_) == 'prep':
                     for grandchild in child.children:
                         if str(grandchild.dep_) in corpus.adv:
@@ -55,13 +50,8 @@ def check(line):
                                 sym = True
     if cmi:
         if sym:
-            return 'P41'
+            return 32
         else:
-            return 'P42'
+            return 33
     if sym:
-        return 'P43'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
+        return 34

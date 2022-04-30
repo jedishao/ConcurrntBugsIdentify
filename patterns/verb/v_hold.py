@@ -6,15 +6,10 @@ import spacy
 import corpus
 
 # This is prone to issues where it never gets destroyed and a lock is held forever.
-
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
+# RedissonRedLock trylock success while another thread already hold the lock in specific conditions.
 
 
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     cmi, tmp = False, False
     for token in doc:
@@ -28,10 +23,4 @@ def check(line):
                         if str(child.lemma_) in corpus.TMP:
                             tmp = True
     if cmi and tmp:
-        return 'P40'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
-
+        return 115

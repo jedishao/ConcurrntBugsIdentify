@@ -15,14 +15,8 @@ import corpus
 # RedissonFairLock deadlock.
 # Thread deadlock when using distributed lock on 1.2.1.
 
-te = open('../test.txt')
-lineList = []
-nlp = spacy.load("en_core_web_sm")
-for li in te:
-    lineList.append(li)
 
-
-def check(line):
+def check(nlp, line):
     doc = nlp(line)
     for token in doc:
         if str(token.dep_) == 'ROOT':
@@ -30,21 +24,15 @@ def check(line):
                 if str(child.dep_) == 'advcl':
                     for grandchild in child.children:
                         if str(grandchild.lemma_) in corpus.MEC:
-                            return 'p7'
+                            return 44
                 elif str(child.dep_) == 'prep':
                     for grandchild in child.children:
                         if str(grandchild.lemma_) in corpus.MEC:
-                            return 'p8'
+                            return 45
                         elif str(grandchild.dep_) == 'pobj':
                             for sgrandchild in grandchild.children:
                                 if str(sgrandchild) in corpus.MEC:
-                                    return 'p9'
+                                    return 46
                 elif str(child.dep_) == 'compound':
                     if str(child) in corpus.MEC:
-                        return 'p10'
-
-
-for lii in lineList:
-    s = check(lii)
-    print(s)
-
+                        return 47
