@@ -22,7 +22,7 @@ def ree(dataset):
 
 def main():
     nlp = spacy.load("en_core_web_sm")
-    conSents = open("dataset/dataset1/redisson/pos.txt", encoding='utf-8')
+    conSents = open("dataset/dataset1/redisson/redisson_pos.txt", encoding='utf-8')
     wre = open("dataset/dataset1/redisson/weka_p.txt", 'w')
     #  conSents = open("dataset/dataset1/test.txt", encoding='utf-8')
     # conSents = open("dataset/dataset1/redisson_pp.txt", encoding='utf-8')
@@ -48,22 +48,27 @@ def main():
             lsss.append(str(sent))
         for s in lsss:
             rew = Identify.identify(nlp, s)
+            if rew == 9999:
+                break
             if rew is not None:
+                # print(j, "--->", rew)
                 rer[rew] = 1
         result.append(rer)
+        j += 1
 
+    k = 1
     bai = []
     for r in result:
-        r.append(1)
-        wre.write(str(r))
-        wre.write('\n')
-        # key = 0
-        # for oo in r:
-        #     if oo == 1:
-        #         key = 1
-        # if key == 1:
-        #     bai.append(j)
-        # j += 1
+        # r.append(1)
+        # wre.write(str(r))
+        # wre.write('\n')
+        key = 0
+        for oo in r:
+            if oo == 1:
+                key = 1
+        if key == 0:
+            bai.append(k)
+        k += 1
 
     print(len(bai))
     print(bai)

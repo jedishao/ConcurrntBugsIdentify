@@ -17,7 +17,6 @@ def check(nlp, line):
                 if str(child.dep_) == 'prep':
                     for grandchild in child.children:
                         if str(grandchild.dep_) in corpus.obj:
-                            print(grandchild)
                             if str(grandchild.lemma_) in corpus.MEC:
                                 cmi = True
                 elif str(child.dep_) in corpus.adv:

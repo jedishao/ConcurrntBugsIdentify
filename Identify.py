@@ -20,6 +20,9 @@ def identify(nlp, dataset):
     result = None
     doc = nlp(dataset)
     for token in doc:
+        if str(token.lemma_).lower() in ['question', 'suggestion', 'implement', 'optimization', 'feature']:
+            return 9999
+    for token in doc:
         if str(token.dep_) == 'ROOT':
             if str(token.lemma_).lower() == 'acquire':
                 result = r_acquire.check(nlp, doc)
