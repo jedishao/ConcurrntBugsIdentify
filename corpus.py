@@ -1,5 +1,4 @@
-COP = ['invoke', 'lock', 'cause', 'block', 'acquire', 'trigger', 'release', 'wait', 'load', 'involve', 'interrupt',
-       'unlock', 'unlocked']
+COP = ['lock', 'block', 'acquire', 'release', 'wait', 'interrupt', 'unlock', 'unlocked']
 
 OTHER = ['be', 'experience', 'lead', 'confirm', 'happen', 'test', 'see', 'give', 'enter', 'complete', 'make']
 
