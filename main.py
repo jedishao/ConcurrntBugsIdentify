@@ -23,7 +23,7 @@ def ree(dataset):
 def main():
     nlp = spacy.load("en_core_web_sm")
     conSents = open("dataset/dataset1/grpc/grpc_pos.txt", encoding='utf-8')
-    wre = open("dataset/dataset1/grpc/weja_neg.txt", 'w')
+    #wre = open("dataset/dataset1/grpc/weka_p.txt", 'w')
     #  conSents = open("dataset/dataset1/test.txt", encoding='utf-8')
     # conSents = open("dataset/dataset1/redisson_pp.txt", encoding='utf-8')
     # only_one = open('dataset/only_one_cmi.txt')
@@ -39,6 +39,7 @@ def main():
 
     j = 1
     for re in lineList:
+        biao = 0
         print('ss')
         doc = nlp(re)
         lsss = []
@@ -52,8 +53,9 @@ def main():
             if rew == 9999:
                 break
             if rew is not None:
-                # print(j, "--->", rew)
+                # biao = 1
                 rer[rew] = 1
+        # if biao == 1:
         result.append(rer)
         j += 1
 
@@ -61,16 +63,16 @@ def main():
     k = 1
     bai = []
     for r in result:
-        r.append(1)
-        wre.write(str(r))
-        wre.write('\n')
-        # key = 0
-        # for oo in r:
-        #     if oo == 1:
-        #         key = 1
-        # if key == 0:
-        #     bai.append(k)
-        # k += 1
+        # r.append(1)
+        # wre.write(str(r))
+        # wre.write('\n')
+        key = 0
+        for oo in r:
+            if oo == 1:
+                key = 1
+        if key == 0:
+            bai.append(k)
+        k += 1
 
     print(len(bai))
     print(bai)
@@ -79,6 +81,7 @@ def main():
     #         result[key] = 1
     #     else:
     #         result[key] = 0
+    lop = [5, 8, 10, 15, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 33, 40, 41, 43, 45, 47, 53]
 
     # one = []
     # zero = []
