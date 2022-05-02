@@ -9,8 +9,8 @@ import labelOfdata
 
 np.set_printoptions(threshold=np.inf)
 
-conSents = open("data/redisson.txt", encoding='utf-8')
-ifidf = open("data/redisson_ifidf.txt", 'w', encoding='utf-8')
+conSents = open("../../dataset/dataset1/redisson/redisson_neg.txt", encoding='utf-8')
+ifidf = open("../../dataset/dataset1/redisson/IF_IDF.txt", 'w', encoding='utf-8')
 
 data = []
 
@@ -20,17 +20,18 @@ for line in conSents:
 vector = TfidfVectorizer(stop_words='english')
 
 X_train = vector.fit_transform((d for d in data))
-print(len(vector.get_feature_names_out()))
-# for v in vector.get_feature_names_out():
+#print(len(vector.get_feature_names_out()))
+# for v in vector.get_feature_names():
 #     print("@attribute '"+v+"' real")
 # print(X_train)
 arr = X_train.toarray()
+# print(len(arr))
 for w in arr:
-    print(len(w))
-    # wr = arr[w].tolist()
-    # wr.append(labelOfdata.redisson_label[w])
-    # ifidf.write(str(wr))
-    # ifidf.write('\n')
+    #print(len(w))
+    wr = w.tolist()
+    wr.append(0)
+    ifidf.write(str(wr))
+    ifidf.write('\n')
 # #print(len(arr))
 # conSents.close()
 # ifidf.close()

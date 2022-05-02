@@ -29,6 +29,7 @@ def check(nlp, line):
                         if str(grandchild.dep_) in corpus.s:
                             if str(grandchild.lemma_) in corpus.MEC:
                                 return 76
+                    return 76
                 elif str(child.dep_) in corpus.obj:
                     if str(child.lemma_) in corpus.MEC:
                         return 77

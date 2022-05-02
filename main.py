@@ -22,8 +22,8 @@ def ree(dataset):
 
 def main():
     nlp = spacy.load("en_core_web_sm")
-    conSents = open("dataset/dataset1/redisson/redisson_pos.txt", encoding='utf-8')
-    wre = open("dataset/dataset1/redisson/weka_p.txt", 'w')
+    conSents = open("dataset/dataset1/grpc/grpc_pos.txt", encoding='utf-8')
+    wre = open("dataset/dataset1/grpc/weja_neg.txt", 'w')
     #  conSents = open("dataset/dataset1/test.txt", encoding='utf-8')
     # conSents = open("dataset/dataset1/redisson_pp.txt", encoding='utf-8')
     # only_one = open('dataset/only_one_cmi.txt')
@@ -39,6 +39,7 @@ def main():
 
     j = 1
     for re in lineList:
+        print('ss')
         doc = nlp(re)
         lsss = []
         rer = []
@@ -56,19 +57,20 @@ def main():
         result.append(rer)
         j += 1
 
+    print('=======================')
     k = 1
     bai = []
     for r in result:
-        # r.append(1)
-        # wre.write(str(r))
-        # wre.write('\n')
-        key = 0
-        for oo in r:
-            if oo == 1:
-                key = 1
-        if key == 0:
-            bai.append(k)
-        k += 1
+        r.append(1)
+        wre.write(str(r))
+        wre.write('\n')
+        # key = 0
+        # for oo in r:
+        #     if oo == 1:
+        #         key = 1
+        # if key == 0:
+        #     bai.append(k)
+        # k += 1
 
     print(len(bai))
     print(bai)
