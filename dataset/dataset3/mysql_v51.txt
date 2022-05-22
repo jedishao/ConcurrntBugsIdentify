@@ -1,0 +1,10 @@
+global read lock via dump --master-data blocked with lots of commits
+server can deadlock with three parallel xa transactions
+main.partition_innodb fails sometimes with the innodb plugin
+Warning: found too many locks at read: read lock with no write locks
+Allow LOCK TABLE WRITE lock a non-existent table.
+index->lock held while preads are done
+Slave MySQLD does not reconnect w/ slave cluster after network outage restored
+System tables manual locking enforcement is inconsistent
+Row lock isn't released after evaluating WHERE condition in READ COMMITTED
+Windows	Any	Using IF EXISTS(SELECT * ...) acquires a lock when using read uncommitted
